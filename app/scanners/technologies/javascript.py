@@ -5,8 +5,8 @@ from pathlib import Path
 
 from app.scanners.technologies.base import TecnologyScanner
 from app.scanners.technologies.javascript_frameworks import (
-    FRAMEWORK_CONFIGS,
     FRAMEWORK_DEPENDENCIES,
+    FRAMEWORK_CONFIGS,
 )
 
 
