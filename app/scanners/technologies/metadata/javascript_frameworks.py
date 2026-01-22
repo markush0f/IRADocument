@@ -26,3 +26,10 @@ FRAMEWORK_CONFIGS = {
     "sveltekit": {"svelte.config.js", "svelte.config.mjs", "svelte.config.ts"},
     "vite": {"vite.config.js", "vite.config.mjs", "vite.config.ts"},
 }
+
+PACKAGE_MANAGERS = {
+    "npm": {"package-lock.json"},
+    "yarn": {"yarn.lock"},
+    "pnpm": {"pnpm-lock.yaml"},
+    "bun": {"bun.lockb"},
+}

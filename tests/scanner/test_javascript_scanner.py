@@ -15,22 +15,33 @@ def test_javascript_scanner_detects_js_and_ts(tmp_path):
     logger.info("JavaScriptScanner result: %s", result)
 
     assert result is not None
-    assert result["language"] == "javascript/typescript"
-    assert result["javascript"]["detected"] is True
-    assert result["typescript"]["detected"] is True
-    assert result["javascript"]["count"] == 1
-    assert result["typescript"]["count"] == 1
+    assert result["type"] == "ecosystem"
+    assert result["name"] == "javascript"
+    assert result["languages"]["javascript"]["detected"] is True
+    assert result["languages"]["typescript"]["detected"] is True
+    assert result["languages"]["javascript"]["count"] == 1
+    assert result["languages"]["typescript"]["count"] == 1
     assert result["frameworks"]["detected"] is True
     assert result["frameworks"]["count"] == 2
     assert set(result["frameworks"]["items"]) == {"express", "react"}
 
-    js_paths = {Path(path).relative_to(repo_path).as_posix() for path in result["javascript"]["files"]}
-    ts_paths = {Path(path).relative_to(repo_path).as_posix() for path in result["typescript"]["files"]}
+    js_paths = {
+        Path(path).relative_to(repo_path).as_posix()
+        for path in result["languages"]["javascript"]["files"]
+    }
+    ts_paths = {
+        Path(path).relative_to(repo_path).as_posix()
+        for path in result["languages"]["typescript"]["files"]
+    }
 
     assert "src/index.js" in js_paths
     assert "src/helper.ts" in ts_paths
-    assert all(not path.endswith(".py") for path in result["javascript"]["files"])
-    assert all(not path.endswith(".py") for path in result["typescript"]["files"])
+    assert all(
+        not path.endswith(".py") for path in result["languages"]["javascript"]["files"]
+    )
+    assert all(
+        not path.endswith(".py") for path in result["languages"]["typescript"]["files"]
+    )
 
 
 def test_javascript_scanner_returns_none_without_js_ts(tmp_path):
@@ -67,3 +78,21 @@ def test_javascript_scanner_detects_frameworks(tmp_path):
         "react",
         "vite",
     }
+
+
+def test_javascript_scanner_detects_package_managers(tmp_path):
+    settings.log_dir = str(tmp_path / "logs")
+    logger = get_logger(f"test_js_scanner_pm_{tmp_path.name}")
+
+    # Use persistent fixture that now includes bun.lockb
+    repo_path = Path("tests/fixtures/repo_with_js_frameworks")
+
+    result = JavaScriptScanner(repo_path).scan()
+
+    logger.info("JavaScriptScanner result (pm): %s", result)
+
+    assert result is not None
+    assert result["package_managers"]["detected"] is True
+    # 'npm' might be detected if package-lock.json exists, 'bun' if bun.lockb
+    # Checking if 'bun' is in the set of detected package managers
+    assert "bun" in result["package_managers"]["items"]

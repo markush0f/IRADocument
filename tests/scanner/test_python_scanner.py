@@ -15,9 +15,10 @@ def test_python_scanner_detects_frameworks(tmp_path):
     logger.info("PythonScanner result: %s", result)
 
     assert result is not None
-    assert result["language"] == "python"
-    assert result["python"]["detected"] is True
-    assert result["python"]["count"] >= 1  # main.py and manage.py
+    assert result["type"] == "ecosystem"
+    assert result["name"] == "python"
+    assert result["languages"]["python"]["detected"] is True
+    assert result["languages"]["python"]["count"] >= 1  # main.py and manage.py
 
     # Check specific frameworks
     frameworks = set(result["frameworks"]["items"])
@@ -33,6 +34,14 @@ def test_python_scanner_detects_frameworks(tmp_path):
     assert expected_frameworks.issubset(frameworks)
     assert result["frameworks"]["detected"] is True
     assert result["frameworks"]["count"] >= len(expected_frameworks)
+
+    # Check package managers
+    package_managers = set(result["package_managers"]["items"])
+    assert "pip" in package_managers
+    # We also added uv.lock and environment.yml to this fixture
+    assert "uv" in package_managers
+    assert "conda" in package_managers
+    assert result["package_managers"]["detected"] is True
 
 
 def test_python_scanner_returns_none_without_python(tmp_path):

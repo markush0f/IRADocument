@@ -8,15 +8,16 @@ except ImportError:
     tomllib = None
 
 from app.scanners.technologies.base import TecnologyScanner
-from app.scanners.technologies.python_frameworks import (
+from app.scanners.technologies.metadata.python_frameworks import (
     FRAMEWORK_CONFIGS,
     FRAMEWORK_DEPENDENCIES,
+    PACKAGE_MANAGERS,
 )
 
 
 class PythonScanner(TecnologyScanner):
     def __init__(self, repo_path: Path) -> None:
-        self._repo_path = repo_path
+        super().__init__(repo_path)
 
     def _iter_repo_files(self):
         """Yield repository files, skipping venvs and caches."""
@@ -155,11 +156,23 @@ class PythonScanner(TecnologyScanner):
             if file_path.name in config_files:
                 frameworks.add(framework)
 
+    def _detect_package_managers(
+        self, file_path: Path, package_managers: set[str]
+    ) -> None:
+        """Collect package managers from known lock files."""
+        if not file_path.is_file():
+            return
+
+        for manager, files in PACKAGE_MANAGERS.items():
+            if file_path.name in files:
+                package_managers.add(manager)
+
     def scan(self) -> dict | None:
         """Scan Python languages."""
         py_files = []
         ipynb_files = []
         frameworks = set()
+        package_managers = set()
 
         for file_path in self._iter_repo_files():
             self._detect_language_files(file_path, py_files, ipynb_files)
@@ -169,25 +182,34 @@ class PythonScanner(TecnologyScanner):
             self._detect_frameworks_from_requirements(file_path, frameworks)
             self._detect_frameworks_from_pyproject(file_path, frameworks)
             self._detect_frameworks_from_config(file_path, frameworks)
+            self._detect_package_managers(file_path, package_managers)
 
         if not py_files and not ipynb_files:
             return None
 
         return {
-            "language": "python",
-            "python": {
-                "detected": bool(py_files),
-                "files": py_files,
-                "count": len(py_files),
-            },
-            "jupyter": {
-                "detected": bool(ipynb_files),
-                "files": ipynb_files,
-                "count": len(ipynb_files),
+            "type": "ecosystem",
+            "name": "python",
+            "languages": {
+                "python": {
+                    "detected": bool(py_files),
+                    "files": py_files,
+                    "count": len(py_files),
+                },
+                "jupyter": {
+                    "detected": bool(ipynb_files),
+                    "files": ipynb_files,
+                    "count": len(ipynb_files),
+                },
             },
             "frameworks": {
                 "detected": bool(frameworks),
                 "items": sorted(frameworks),
                 "count": len(frameworks),
+            },
+            "package_managers": {
+                "detected": bool(package_managers),
+                "items": sorted(package_managers),
+                "count": len(package_managers),
             },
         }

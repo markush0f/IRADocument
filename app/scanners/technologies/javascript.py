@@ -4,15 +4,16 @@ import json
 from pathlib import Path
 
 from app.scanners.technologies.base import TecnologyScanner
-from app.scanners.technologies.javascript_frameworks import (
+from app.scanners.technologies.metadata.javascript_frameworks import (
     FRAMEWORK_DEPENDENCIES,
     FRAMEWORK_CONFIGS,
+    PACKAGE_MANAGERS,
 )
 
 
 class JavaScriptScanner(TecnologyScanner):
     def __init__(self, repo_path: Path) -> None:
-        self._repo_path = repo_path
+        super().__init__(repo_path)
 
     def _iter_repo_files(self):
         """Yield repository files, skipping node_modules."""
@@ -64,36 +65,57 @@ class JavaScriptScanner(TecnologyScanner):
             if file_path.name in config_files:
                 frameworks.add(framework)
 
+    def _detect_package_managers(
+        self, file_path: Path, package_managers: set[str]
+    ) -> None:
+        """Collect package managers from known lock files."""
+        if not file_path.is_file():
+            return
+
+        for manager, files in PACKAGE_MANAGERS.items():
+            if file_path.name in files:
+                package_managers.add(manager)
+
     def scan(self) -> dict | None:
         """Scan Javascript and Typescript languages."""
         js_files = []
         ts_files = []
         frameworks = set()
+        package_managers = set()
 
         for file_path in self._iter_repo_files():
             if self._detect_language_files(file_path, js_files, ts_files):
                 continue
             self._detect_frameworks_from_package_json(file_path, frameworks)
             self._detect_frameworks_from_config(file_path, frameworks)
+            self._detect_package_managers(file_path, package_managers)
 
         if not js_files and not ts_files:
             return None
 
         return {
-            "language": "javascript/typescript",
-            "javascript": {
-                "detected": bool(js_files),
-                "files": js_files,
-                "count": len(js_files),
-            },
-            "typescript": {
-                "detected": bool(ts_files),
-                "files": ts_files,
-                "count": len(ts_files),
+            "type": "ecosystem",
+            "name": "javascript",
+            "languages": {
+                "javascript": {
+                    "detected": bool(js_files),
+                    "files": js_files,
+                    "count": len(js_files),
+                },
+                "typescript": {
+                    "detected": bool(ts_files),
+                    "files": ts_files,
+                    "count": len(ts_files),
+                },
             },
             "frameworks": {
                 "detected": bool(frameworks),
                 "items": sorted(frameworks),
                 "count": len(frameworks),
+            },
+            "package_managers": {
+                "detected": bool(package_managers),
+                "items": sorted(package_managers),
+                "count": len(package_managers),
             },
         }

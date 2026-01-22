@@ -29,3 +29,12 @@ FRAMEWORK_CONFIGS = {
         ".streamlit/config.toml"
     },  # Often a directory, but file matching is usually by name
 }
+
+PACKAGE_MANAGERS = {
+    "pip": {"requirements.txt"},
+    "poetry": {"poetry.lock"},
+    "pipenv": {"Pipfile", "Pipfile.lock"},
+    "conda": {"environment.yml", "environment.yaml"},
+    "uv": {"uv.lock"},
+    "pdm": {"pdm.lock"},
+}
