@@ -63,9 +63,13 @@ class GitClient:
             else:
                 repo.git.checkout(branch_name)
         except GitCommandError as exc:
-            raise RuntimeError(f"Failed to checkout branch {branch_name}: {exc}") from exc
+            raise RuntimeError(
+                f"Failed to checkout branch {branch_name}: {exc}"
+            ) from exc
 
-    def pull(self, repo_path: str, remote_name: str = "origin", branch: str | None = None) -> None:
+    def pull(
+        self, repo_path: str, remote_name: str = "origin", branch: str | None = None
+    ) -> None:
         repo = self.open_repository(repo_path)
         try:
             remote = repo.remotes[remote_name]
