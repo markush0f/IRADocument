@@ -2,6 +2,7 @@
 
 import json
 from pathlib import Path
+from app.core.logger import get_logger
 
 from app.scanners.technologies.base import TecnologyScanner
 from app.scanners.technologies.metadata.javascript_frameworks import (
@@ -9,6 +10,9 @@ from app.scanners.technologies.metadata.javascript_frameworks import (
     FRAMEWORK_CONFIGS,
     PACKAGE_MANAGERS,
 )
+
+
+logger = get_logger(__name__)
 
 
 class JavaScriptScanner(TecnologyScanner):
@@ -78,6 +82,7 @@ class JavaScriptScanner(TecnologyScanner):
 
     def scan(self) -> dict | None:
         """Scan Javascript and Typescript languages."""
+        logger.info("Starting JavaScript/TypeScript scan in %s", self._repo_path)
         js_files = []
         ts_files = []
         frameworks = set()
@@ -91,9 +96,10 @@ class JavaScriptScanner(TecnologyScanner):
             self._detect_package_managers(file_path, package_managers)
 
         if not js_files and not ts_files:
+            logger.debug("No JavaScript or TypeScript files found.")
             return None
 
-        return {
+        result = {
             "type": "ecosystem",
             "name": "javascript",
             "languages": {
@@ -119,3 +125,6 @@ class JavaScriptScanner(TecnologyScanner):
                 "count": len(package_managers),
             },
         }
+
+        logger.info("JavaScript scan finished. Found frameworks: %s", frameworks)
+        return result

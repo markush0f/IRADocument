@@ -7,12 +7,17 @@ try:
 except ImportError:
     tomllib = None
 
+from app.core.logger import get_logger
+
 from app.scanners.technologies.base import TecnologyScanner
 from app.scanners.technologies.metadata.python_frameworks import (
     FRAMEWORK_CONFIGS,
     FRAMEWORK_DEPENDENCIES,
     PACKAGE_MANAGERS,
 )
+
+
+logger = get_logger(__name__)
 
 
 class PythonScanner(TecnologyScanner):
@@ -169,6 +174,7 @@ class PythonScanner(TecnologyScanner):
 
     def scan(self) -> dict | None:
         """Scan Python languages."""
+        logger.info("Starting Python scan in %s", self._repo_path)
         py_files = []
         ipynb_files = []
         frameworks = set()
@@ -185,9 +191,10 @@ class PythonScanner(TecnologyScanner):
             self._detect_package_managers(file_path, package_managers)
 
         if not py_files and not ipynb_files:
+            logger.debug("No Python or Jupyter files found.")
             return None
 
-        return {
+        result = {
             "type": "ecosystem",
             "name": "python",
             "languages": {
@@ -213,3 +220,6 @@ class PythonScanner(TecnologyScanner):
                 "count": len(package_managers),
             },
         }
+
+        logger.info("Python scan finished. Found frameworks: %s", frameworks)
+        return result
