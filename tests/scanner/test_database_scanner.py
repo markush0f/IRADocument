@@ -33,9 +33,11 @@ def test_database_scanner_detects_files(tmp_path):
     assert "001_initial.sql" in scripts
 
     assert result["configs"]["detected"] is True
-    assert result["configs"]["count"] == 1
+    assert result["configs"]["count"] >= 3
     configs = [Path(p).name for p in result["configs"]["files"]]
     assert "alembic.ini" in configs
+    assert "schema.prisma" in configs
+    assert "ormconfig.json" in configs
 
     assert result["directories"]["detected"] is True
     assert result["directories"]["count"] >= 2

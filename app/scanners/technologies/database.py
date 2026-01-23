@@ -59,12 +59,6 @@ class DatabaseScanner(TecnologyScanner):
 
             if file_path.name in CONFIG_FILES:
                 configs.append(str(file_path))
-                # Configs can also be in special dirs, so we don't 'continue' here safely if we want to check dir
-                # But typically configs are configs. Let's just remove the 'continue' from previous blocks if we want to check dir
-                # actually, a file is distinct from the dir check.
-                # If a file matches script, it is a script.
-                # BUT it also "lives" in a DB dir.
-                # So we should check dir for ALL files, not just 'continue' ones.
 
             # Check if file resides in a known DB directory
             # We look at the parent directory name
