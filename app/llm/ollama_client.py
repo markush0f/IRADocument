@@ -1,12 +1,13 @@
-from typing import AsyncGenerator, Optional, List, Dict
+from typing import AsyncGenerator, Optional, List, Dict, Any
 import ollama
 from app.core.config import settings
 from app.core.logger import get_logger
+from .base import BaseLLMClient
 
 logger = get_logger(__name__)
 
 
-class OllamaClient:
+class OllamaClient(BaseLLMClient):
     def __init__(self, host: Optional[str] = None, model: Optional[str] = None):
         self.host = host or settings.ollama_base_url
         self.model = model or settings.ollama_model
@@ -23,11 +24,17 @@ class OllamaClient:
             logger.error(f"Error generating response from Ollama library: {e}")
             raise
 
-    async def chat(self, messages: List[Dict[str, str]]) -> str:
-        """Send a chat-like conversation to Ollama."""
+    async def chat(
+        self,
+        messages: List[Dict[str, Any]],
+        tools: Optional[List[Dict[str, Any]]] = None,
+    ) -> Dict[str, Any]:
+        """Send a chat-like conversation to Ollama with optional tool support."""
         try:
-            response = await self.client.chat(model=self.model, messages=messages)
-            return response.get("message", {}).get("content", "")
+            response = await self.client.chat(
+                model=self.model, messages=messages, tools=tools
+            )
+            return response.get("message", {})
         except Exception as e:
             logger.error(f"Error in chat with Ollama library: {e}")
             raise
