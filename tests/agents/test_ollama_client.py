@@ -1,6 +1,6 @@
 import pytest
 import httpx
-from app.llm.ollama_client import OllamaClient
+from app.agents.core.ollama_client import OllamaClient
 from app.core.config import settings
 
 

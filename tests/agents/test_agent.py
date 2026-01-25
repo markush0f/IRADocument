@@ -1,7 +1,7 @@
 import pytest
 import json
-from app.llm.agent import ToolExecutor
-from app.llm.factory import LLMFactory
+from app.agents.executor import ToolExecutor
+from app.agents.core.factory import LLMFactory
 from app.core.config import settings
 
 

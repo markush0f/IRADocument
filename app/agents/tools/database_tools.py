@@ -1,5 +1,5 @@
 from typing import List, Optional
-from app.llm.tools.registry import registry
+from .registry import registry
 from app.storage.project_repository import ProjectRepository
 from app.core.database import AsyncSessionLocal
 

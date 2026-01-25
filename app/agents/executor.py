@@ -1,7 +1,7 @@
 import json
 import asyncio
 from typing import List, Dict, Any, Callable, Optional
-from .base import BaseLLMClient
+from .core.base import BaseLLMClient
 from .tools.registry import ToolRegistry
 from app.core.logger import get_logger
 

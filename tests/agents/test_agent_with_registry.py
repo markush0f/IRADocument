@@ -1,7 +1,7 @@
 import pytest
-from app.llm.agent import ToolExecutor
-from app.llm.factory import LLMFactory
-from app.llm.tools import registry
+from app.agents.executor import ToolExecutor
+from app.agents.core.factory import LLMFactory
+from app.agents.tools import registry
 from app.core.config import settings
 
 
