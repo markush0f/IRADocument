@@ -5,6 +5,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 from sqlmodel import SQLModel
 
+from app.agents.tools import registry  # Import registry and triggers tool registration
 from app.core.database import engine
 from app.models import (
     Project,
@@ -21,6 +22,10 @@ async def lifespan(app: FastAPI):
     # Initialize DB tables
     async with engine.begin() as conn:
         await conn.run_sync(SQLModel.metadata.create_all)
+
+    # Export Tool Definitions to JSON for visibility/external use
+    registry.save_to_json("app/agents/tools/definitions.json")
+
     yield
 
 

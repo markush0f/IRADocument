@@ -72,6 +72,13 @@ class ToolRegistry:
         tool = self._tools.get(name)
         return tool["func"] if tool else None
 
+    def save_to_json(self, file_path: str):
+        """Saves current tool definitions to a JSON file."""
+        definitions = self.get_definitions()
+        with open(file_path, "w", encoding="utf-8") as f:
+            json.dump(definitions, f, indent=4, ensure_ascii=False)
+        logger.info(f"exported {len(definitions)} tool definitions to {file_path}")
+
 
 # Singleton instance for easy access
 registry = ToolRegistry()
