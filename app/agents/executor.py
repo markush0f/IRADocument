@@ -9,9 +9,15 @@ logger = get_logger(__name__)
 
 
 class ToolExecutor:
-    def __init__(self, client: BaseLLMClient, registry: Optional[ToolRegistry] = None):
+    def __init__(
+        self,
+        client: BaseLLMClient,
+        registry: Optional[ToolRegistry] = None,
+        context: Optional[Dict[str, Any]] = None,
+    ):
         self.client = client
         self.registry = registry
+        self.context = context or {}
         self.tools_registry: Dict[str, Callable] = {}
         self.tools_definitions: List[Dict[str, Any]] = []
 
@@ -42,20 +48,91 @@ class ToolExecutor:
 
             # 1. Ask the LLM with all available tools
             tools = self._get_tools_definitions()
+            logger.info(f"Sending {len(tools)} tools to LLM")
             response_message = await self.client.chat(
                 messages, tools=tools if tools else None
             )
+            logger.info(f"LLM Response: {response_message}")
             messages.append(response_message)
 
             # 2. Check if the LLM wants to call tools
             tool_calls = response_message.get("tool_calls", [])
+
+            # Fallback: some models return tool calls as a JSON list in the content string
+            if not tool_calls and response_message.get("content"):
+                tool_calls = self._parse_tool_calls_from_content(
+                    response_message["content"]
+                )
+
             if not tool_calls:
                 return response_message.get("content", "")
 
             # 3. Execute tool calls
+            logger.info(f"Executing {len(tool_calls)} tool calls...")
             await self._handle_tool_calls(messages, tool_calls)
+            logger.info("Tool execution finished, continuing to next iteration")
 
         return "Max iterations reached without a final answer."
+
+    def _parse_tool_calls_from_content(self, content: str) -> List[Dict[str, Any]]:
+        """Attempts to find and parse multiple JSON tool calls in the message content."""
+        import re
+
+        logger.info(f"Attempting to parse tool calls from content: {content[:100]}...")
+
+        # Clean up markdown code blocks
+        content = re.sub(r"```[a-z]*", "", content)
+        content = content.replace("```", "").strip()
+
+        found_calls = []
+        i = 0
+        while i < len(content):
+            if content[i] == "{":
+                # Try parsing from current '{' to the potential end of the string
+                # We go backwards to find the longest valid JSON object starting at i
+                for j in range(len(content), i + 1, -1):
+                    try:
+                        chunk = content[i:j]
+                        if "name" in chunk:
+                            data = json.loads(chunk)
+                            if isinstance(data, dict) and "name" in data:
+                                found_calls.append(
+                                    {
+                                        "function": {
+                                            "name": data.get("name"),
+                                            "arguments": data.get("arguments", {}),
+                                        }
+                                    }
+                                )
+                                i = j - 1  # Skip to the end of this object
+                                break
+                    except (json.JSONDecodeError, Exception):
+                        continue
+            elif content[i] == "[":
+                # Similar logic for lists if any
+                for j in range(len(content), i + 1, -1):
+                    try:
+                        chunk = content[i:j]
+                        data = json.loads(chunk)
+                        if isinstance(data, list):
+                            for item in data:
+                                if isinstance(item, dict) and "name" in item:
+                                    found_calls.append(
+                                        {
+                                            "function": {
+                                                "name": item.get("name"),
+                                                "arguments": item.get("arguments", {}),
+                                            }
+                                        }
+                                    )
+                            i = j - 1
+                            break
+                    except (json.JSONDecodeError, Exception):
+                        continue
+            i += 1
+
+        logger.info(f"Extracted {len(found_calls)} tool calls from content")
+        return found_calls
 
     def _prepare_messages(
         self, user_prompt: str, system_prompt: Optional[str]
@@ -98,11 +175,23 @@ class ToolExecutor:
             logger.warning(f"Tool {function_name} not found in any registry")
             return {"error": f"Tool {function_name} not found"}
 
+        # 3. Context Injection: if arguments are missing but available in context, inject them
+        import inspect
+
+        sig = inspect.signature(func)
+        final_args = arguments.copy()
+        for param_name in sig.parameters:
+            if param_name not in final_args and param_name in self.context:
+                logger.debug(
+                    f"Injecting {param_name} from context into {function_name}"
+                )
+                final_args[param_name] = self.context[param_name]
+
         try:
             if asyncio.iscoroutinefunction(func):
-                return await func(**arguments)
+                return await func(**final_args)
             else:
-                return func(**arguments)
+                return func(**final_args)
         except Exception as e:
             logger.error(f"Error executing tool {function_name}: {e}")
             return {"error": str(e)}

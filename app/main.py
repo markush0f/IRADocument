@@ -61,3 +61,16 @@ def clone_project(payload: CloneRepoRequest) -> dict[str, object]:
         "repo_path": str(context.repo_path),
         "latest_commit": context.latest_commit,
     }
+
+
+@app.post("/analyze/{project_id}")
+async def analyze_project(project_id: str):
+    from app.services.analysis_service import AnalysisService
+    from app.core.database import AsyncSessionLocal
+
+    async with AsyncSessionLocal() as session:
+        service = AnalysisService(session)
+        result = await service.generate_analysis_report(project_id)
+        if result.get("status") == "failed":
+            raise HTTPException(status_code=500, detail=result.get("error"))
+        return result
