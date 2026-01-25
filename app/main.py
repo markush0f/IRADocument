@@ -1,12 +1,30 @@
+from contextlib import asynccontextmanager
 from types import SimpleNamespace
 
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
+from sqlmodel import SQLModel
 
+from app.core.database import engine
+from app.models import (
+    Project,
+    File,
+    Fact,
+    Relation,
+)  # Import all models to register them
 from app.pipeline.steps.clone_repo import CloneRepositoryError, clone_repo
 from app.pipeline.steps.prepare_workspace import WorkspaceError, prepare_workspace
 
-app = FastAPI(title="IRADocument API")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Initialize DB tables
+    async with engine.begin() as conn:
+        await conn.run_sync(SQLModel.metadata.create_all)
+    yield
+
+
+app = FastAPI(title="IRADocument API", lifespan=lifespan)
 
 
 class CloneRepoRequest(BaseModel):
