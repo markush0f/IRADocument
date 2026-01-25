@@ -5,6 +5,7 @@ CREATE TABLE projects (
     created_at TEXT,
     updated_at TEXT
 );
+
 CREATE TABLE files (
     project_id TEXT,
     path TEXT,
@@ -16,6 +17,7 @@ CREATE TABLE files (
     PRIMARY KEY (project_id, path),
     FOREIGN KEY (project_id) REFERENCES projects(id)
 );
+
 CREATE TABLE facts (
     id TEXT PRIMARY KEY,
     project_id TEXT,
@@ -26,7 +28,6 @@ CREATE TABLE facts (
     created_at TEXT,
     FOREIGN KEY (project_id) REFERENCES projects(id)
 );
-
 
 CREATE TABLE relations (
     project_id TEXT,

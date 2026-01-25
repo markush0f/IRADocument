@@ -1,5 +1,7 @@
 from .registry import registry
-from . import database_tools  # Import to trigger registration
-from . import discovery_tools  # Import to trigger registration
+from . import project_tools
+from . import file_tools
+from . import fact_tools
+from . import relation_tools
 
 __all__ = ["registry"]
