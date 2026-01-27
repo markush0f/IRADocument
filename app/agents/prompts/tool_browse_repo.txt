@@ -1,0 +1,1 @@
+Explore the directory structure of project '{project_id}' and identify the main architectural components. Register your findings.

@@ -1,0 +1,1 @@
+Identify languages, frameworks and libraries in project '{project_id}'. Use tools to explore files like package.json, requirements.txt, etc. Register facts for each discovery.

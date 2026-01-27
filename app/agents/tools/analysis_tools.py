@@ -11,6 +11,7 @@ async def analyze_tech_stack(project_id: str) -> str:
     """
     from app.agents.agent_executor import AgentExecutor
     from app.agents.core.factory import LLMFactory
+    from app.agents.core.prompt_loader import PromptLoader
     from app.core.config import settings
 
     client = LLMFactory.get_client(settings.llm_provider, model="qwen2.5-coder:3b")
@@ -21,7 +22,8 @@ async def analyze_tech_stack(project_id: str) -> str:
     tech_tools = ["list_directory_content", "read_file_content", "register_fact"]
     agent._get_tools_definitions = lambda: registry.get_definitions_by_names(tech_tools)
 
-    prompt = f"Identify languages, frameworks and libraries in project '{project_id}'. Use tools to explore files like package.json, requirements.txt, etc. Register facts for each discovery."
+    # Load prompt from file
+    prompt = PromptLoader.load_prompt("tool_tech_stack", project_id=project_id)
     agent.add_user_message(prompt)
     return await agent.run_until_complete()
 
@@ -34,6 +36,7 @@ async def browse_repository(project_id: str) -> str:
     """
     from app.agents.agent_executor import AgentExecutor
     from app.agents.core.factory import LLMFactory
+    from app.agents.core.prompt_loader import PromptLoader
     from app.core.config import settings
 
     client = LLMFactory.get_client(settings.llm_provider, model="qwen2.5-coder:3b")
@@ -45,6 +48,7 @@ async def browse_repository(project_id: str) -> str:
         browse_tools
     )
 
-    prompt = f"Explore the directory structure of project '{project_id}' and identify the main architectural components. Register your findings."
+    # Load prompt from file
+    prompt = PromptLoader.load_prompt("tool_browse_repo", project_id=project_id)
     agent.add_user_message(prompt)
     return await agent.run_until_complete()

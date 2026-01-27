@@ -1,0 +1,1 @@
+Synthesize all discovered information for project '{project_id}' into a final technical summary. Consolidate architectural and technological findings into a clear and concise report. Use the registered facts as your source of truth.

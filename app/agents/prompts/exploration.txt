@@ -1,0 +1,1 @@
+Begin the analysis of project '{project_id}'. Explore the directory structure to understand the general architecture and purpose. Register your findings as facts.
