@@ -22,7 +22,7 @@ class AnalysisService:
     ) -> Dict[str, Any]:
         """
         Executes a project analysis using a structured discovery pipeline.
-        Prompts are loaded from external files.
+        The pipeline is configured at instantiation time.
         """
         try:
             # 1. Initialize the shared AgentExecutor
@@ -37,11 +37,15 @@ class AnalysisService:
             system_prompt = PromptLoader.load_prompt("system_analyst")
             agent.set_system_prompt(system_prompt)
 
-            # 2. Instantiate and run the Discovery Ladder (Pipeline) with dynamic stages
-            pipeline = ProjectDiscoveryPipeline(agent)
-            result = await pipeline.execute(project_id, enabled_stages=enabled_stages)
+            # 2. Setup the Pipeline with dynamic variables in the constructor
+            pipeline = ProjectDiscoveryPipeline(
+                agent, project_id, enabled_stages=enabled_stages
+            )
 
-            # 3. Retrieve facts count for additional metadata
+            # 3. Execute the ladder
+            result = await pipeline.execute()
+
+            # 4. Final discoveries metadata
             facts = await self.fact_service.get_facts_by_project(project_id)
 
             return {

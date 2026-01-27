@@ -5,15 +5,26 @@ from .core.prompt_loader import PromptLoader
 
 class ProjectDiscoveryPipeline(BasePipeline):
     """
-    Concrete implementation of the project discovery ladder.
-    Stages are modular and use externalized prompts.
+    Project Discovery Ladder configured via constructor.
+    The execution flow is determined at instantiation time.
     """
 
-    def _get_stage_definitions(self, project_id: str) -> Dict[str, Dict[str, Any]]:
-        """
-        Returns the definitions of all available stages using loaded prompts.
-        """
-        return {
+    def __init__(
+        self, agent, project_id: str, enabled_stages: Optional[List[str]] = None
+    ):
+        super().__init__(agent)
+        self.project_id = project_id
+
+        # 1. Define the full logical sequence (the order of the ladder)
+        self.full_ladder = ["exploration", "tech_stack", "summary"]
+
+        # 2. Filter stages based on variables passed to the constructor
+        self.active_stages = [
+            s for s in self.full_ladder if enabled_stages is None or s in enabled_stages
+        ]
+
+        # 3. Pre-map definitions for the active stages
+        self.definitions = {
             "exploration": {
                 "prompt": PromptLoader.load_prompt(
                     "exploration", project_id=project_id
@@ -30,25 +41,12 @@ class ProjectDiscoveryPipeline(BasePipeline):
             },
         }
 
-    async def execute(
-        self, project_id: str, enabled_stages: Optional[List[str]] = None
-    ):
+    async def execute(self):
         """
-        Executes selected stages for project discovery in the correct order.
-        If enabled_stages is None, it runs the full sequence by default.
+        Executes the pre-configured sequence of stages.
         """
-        definitions = self._get_stage_definitions(project_id)
-
-        # The 'ladder' order is defined here
-        sequence = ["exploration", "tech_stack", "summary"]
-
-        # Filter and maintain order
-        stages_to_run = [
-            s for s in sequence if enabled_stages is None or s in enabled_stages
-        ]
-
-        for stage_name in stages_to_run:
-            stage_def = definitions.get(stage_name)
+        for stage_name in self.active_stages:
+            stage_def = self.definitions.get(stage_name)
             if stage_def:
                 await self.run_stage(
                     name=stage_name,
@@ -57,7 +55,7 @@ class ProjectDiscoveryPipeline(BasePipeline):
                 )
 
         return {
-            "project_id": project_id,
+            "project_id": self.project_id,
             "stages_executed": list(self.stages_results.keys()),
             "stages_detail": self.stages_results,
             "summary": self.stages_results.get("summary"),
