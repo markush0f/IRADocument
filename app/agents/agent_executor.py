@@ -20,9 +20,20 @@ class AgentExecutor:
         self.context = context or {}
         self.tools_registry: Dict[str, Callable] = {}
         self.tools_definitions: List[Dict[str, Any]] = []
+        self.messages: List[Dict[str, Any]] = []
 
     def register_tool(self, definition: Dict[str, Any], func: Callable):
-        """Register a tool definition and its implementation manually."""
+        """
+        Manually registers a tool by linking its LLM-readable definition with its Python implementation.
+
+        This is useful for adding ad-hoc tools that are not part of the global registry or tools
+        that require specific local context closure.
+
+        Args:
+            definition: A dictionary containing the tool's JSON schema (name, description, parameters).
+                      Must follow the OpenAI/Ollama tool calling format.
+            func: The callable Python function or coroutine that implements the tool's logic.
+        """
         name = definition["function"]["name"]
         self.tools_registry[name] = func
         self.tools_definitions.append(definition)
@@ -32,69 +43,75 @@ class AgentExecutor:
         dynamic_tools = self.registry.get_definitions() if self.registry else []
         return self.tools_definitions + dynamic_tools
 
-    async def run(
-        self,
-        user_prompt: str,
-        system_prompt: Optional[str] = None,
-        max_iterations: int = 5,
-    ) -> str:
-        """Run the agent loop: Chat -> Tool Call -> Execute -> Repeat."""
-        messages = self._prepare_messages(user_prompt, system_prompt)
+    def set_system_prompt(self, system_prompt: str):
+        """Initializes or resets the conversation with a system prompt."""
+        self.messages = [{"role": "system", "content": system_prompt}]
 
-        for i in range(max_iterations):
-            logger.debug(f"Iteration {i+1}/{max_iterations} of agent loop")
+    def add_user_message(self, content: str):
+        """Adds a user message to the conversation history."""
+        self.messages.append({"role": "user", "content": content})
 
-            # 1. Ask the LLM with all available tools
-            tools = self._get_tools_definitions()
-            logger.info(f"Sending {len(tools)} tools to LLM")
-            #  Chat with LLM (DEPENDS OF INSTANTIATION OF CLIENT => ollama, openai...)
-            response_message = await self.client.chat(
-                messages, tools=tools if tools else None
+    async def run_step(self) -> Dict[str, Any]:
+        """
+        Performs a single execution step: Chat -> Tool Execution -> History Update.
+        Returns the LLM's response message after tool executions (if any).
+        """
+        tools = self._get_tools_definitions()
+
+        # 1. Ask the LLM: It can return a text response OR a request to call tools.
+        # We send the entire conversation history (context) and the available tools.
+        response_message = await self.client.process_messages(
+            self.messages, tools=tools if tools else None
+        )
+
+        # We save the LLM's response (text or tool call) to history.
+        # This keeps the model informed about its own previous actions.
+        self.messages.append(response_message)
+
+        # 2. Check if the LLM wants to interact with the system via tools.
+        tool_calls = response_message.get("tool_calls", [])
+
+        # Fallback parsing for models that don't support native tool calling well.
+        if not tool_calls and response_message.get("content"):
+            tool_calls = self._parse_tool_calls_from_content(
+                response_message["content"]
             )
-            logger.info(f"LLM Response: {response_message}")
-            messages.append(response_message)
 
-            # 2. Check if the LLM wants to call tools
-            tool_calls = response_message.get("tool_calls", [])
+        # 3. Execute the requested tools and feed the results back into the history.
+        if tool_calls:
+            logger.info(f"Agent requested {len(tool_calls)} tool calls.")
+            for tool_call in tool_calls:
+                # We execute the actual Python function linked to this tool.
+                result = await self._execute_tool(tool_call)
 
-            # Fallback: some models return tool calls as a JSON list in the content string
-            if not tool_calls and response_message.get("content"):
-                tool_calls = self._parse_tool_calls_from_content(
-                    response_message["content"]
+                # IMPORTANT: We add the result back to history with role='tool'.
+                # This 'closes the loop', providing the LLM with the data it requested.
+                self.messages.append(
+                    {
+                        "role": "tool",
+                        "content": json.dumps(result),
+                    }
                 )
 
-            if not tool_calls:
-                return response_message.get("content", "")
+        return response_message
 
-            # 3. Execute tool calls
-            logger.info(f"Executing {len(tool_calls)} tool calls...")
-            await self._handle_tool_calls(messages, tool_calls)
-            logger.info("Tool execution finished, continuing to next iteration")
+    async def run_until_complete(self, max_iterations: int = 5) -> str:
+        """
+        Runs multiple steps until the agent provides a final text response without tool calls.
+        """
+        for i in range(max_iterations):
+            logger.debug(f"Iteration {i+1}/{max_iterations}")
+
+            response = await self.run_step()
+
+            # If the LLM didn't ask for tools in its LAST response, and we have some content
+            # we consider it a final answer.
+            # Note: run_step already executed tool calls and added results,
+            # so we check if the response_message ITSELF had tool calls.
+            if not response.get("tool_calls") and response.get("content"):
+                return response["content"]
 
         return "Max iterations reached without a final answer."
-
-    def _prepare_messages(
-        self, user_prompt: str, system_prompt: Optional[str]
-    ) -> List[Dict[str, Any]]:
-        """Initializes the message list with system and user prompts."""
-        messages = []
-        if system_prompt:
-            messages.append({"role": "system", "content": system_prompt})
-        messages.append({"role": "user", "content": user_prompt})
-        return messages
-
-    async def _handle_tool_calls(
-        self, messages: List[Dict[str, Any]], tool_calls: List[Dict[str, Any]]
-    ):
-        """Iterates and executes a list of tool calls."""
-        for tool_call in tool_calls:
-            result = await self._execute_tool(tool_call)
-            messages.append(
-                {
-                    "role": "tool",
-                    "content": json.dumps(result),
-                }
-            )
 
     async def _execute_tool(self, tool_call: Dict[str, Any]) -> Any:
         """Executes a single tool and returns its result."""
@@ -103,54 +120,37 @@ class AgentExecutor:
 
         logger.info(f"Executing tool: {function_name} with args: {arguments}")
 
-        # 1. Search in manual registry
         func = self.tools_registry.get(function_name)
-
-        # 2. If not found, search in dynamic registry
         if not func and self.registry:
             func = self.registry.get_function(function_name)
 
         if not func:
-            logger.warning(f"Tool {function_name} not found in any registry")
             return {"error": f"Tool {function_name} not found"}
 
-        # Check if the function is async and call it accordingly
         try:
             if asyncio.iscoroutinefunction(func):
                 return await func(**arguments)
-            else:
-                return func(**arguments)
+            return func(**arguments)
         except Exception as e:
             logger.error(f"Error executing tool {function_name}: {e}")
             return {"error": str(e)}
 
     def _parse_tool_calls_from_content(self, content: str) -> List[Dict[str, Any]]:
-        """Attempts to parse tool calls from a JSON-like string or block in the message content."""
+        """Attempts to parse tool calls from a JSON-like string in the content."""
         import re
 
-        logger.info(f"Attempting to parse tool calls from content: {content[:100]}...")
-
-        # Clean up markdown code blocks if present
-        content = re.sub(r"```[a-z]*", "", content)
-        content = content.replace("```", "").strip()
-
-        # Try to find a list [...] or a single object { ... "name": ... }
+        content = re.sub(r"```[a-z]*", "", content).replace("```", "").strip()
         match_list = re.search(r"(\[.*\])", content, re.DOTALL)
         match_obj = re.search(r"(\{.*\})", content, re.DOTALL)
 
         found_data = None
-        if match_list:
-            try:
+        try:
+            if match_list:
                 found_data = json.loads(match_list.group(1))
-                logger.info("Matched JSON list in content")
-            except Exception:
-                pass
-        elif match_obj:
-            try:
+            elif match_obj:
                 found_data = [json.loads(match_obj.group(1))]
-                logger.info("Matched JSON object in content")
-            except Exception:
-                pass
+        except Exception:
+            return []
 
         if found_data and isinstance(found_data, list):
             standardized = []
@@ -164,7 +164,5 @@ class AgentExecutor:
                             }
                         }
                     )
-            logger.info(f"Standardized {len(standardized)} tool calls from content")
             return standardized
-        logger.info("No tool calls found in content")
         return []

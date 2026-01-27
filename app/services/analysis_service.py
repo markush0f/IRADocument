@@ -33,7 +33,8 @@ class AnalysisService:
             user_prompt = (
                 prompt or f"Perform a technical analysis of project '{project_id}'."
             )
-            final_answer = await agent.run(user_prompt, max_iterations=10)
+            agent.add_user_message(user_prompt)
+            final_answer = await agent.run_until_complete(max_iterations=10)
 
             # 3. Final summary of findings
             facts = await self.fact_service.get_facts_by_project(project_id)
@@ -66,23 +67,16 @@ class AnalysisService:
             orchestrator_tools
         )
 
-        # Override system prompt to set orchestrator persona
-        original_run = agent.run
-
-        async def run_with_persona(*args, **kwargs):
-            kwargs[
-                "system_prompt"
-            ] = f"""
-            You are the Project Analysis Orchestrator. Your mission is to analyze project '{project_id}'.
-            
-            You have several specialized tools (sub-agents) to help you:
-            - 'browse_repository': To understand structure and architecture.
-            - 'analyze_tech_stack': To identify technologies and dependencies.
-            - 'list_project_facts': To check existing findings.
-            
-            Decide which tool to use based on the current state of the analysis and the user's request.
-            """
-            return await original_run(*args, **kwargs)
-
-        agent.run = run_with_persona
+        # Set orchestrator persona
+        system_prompt = f"""
+        You are the Project Analysis Orchestrator. Your mission is to analyze project '{project_id}'.
+        
+        You have several specialized tools (sub-agents) to help you:
+        - 'browse_repository': To understand structure and architecture.
+        - 'analyze_tech_stack': To identify technologies and dependencies.
+        - 'list_project_facts': To check existing findings.
+        
+        Decide which tool to use based on the current state of the analysis and the user's request.
+        """
+        agent.set_system_prompt(system_prompt)
         return agent

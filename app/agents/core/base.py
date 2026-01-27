@@ -9,12 +9,12 @@ class BaseLLMClient(ABC):
         pass
 
     @abstractmethod
-    async def chat(
+    async def process_messages(
         self,
         messages: List[Dict[str, Any]],
         tools: Optional[List[Dict[str, Any]]] = None,
     ) -> Dict[str, Any]:
-        """Send a chat-like conversation with optional tool support."""
+        """Process a conversation history and return the next message."""
         pass
 
     @abstractmethod

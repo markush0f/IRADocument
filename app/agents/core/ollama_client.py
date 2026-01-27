@@ -24,19 +24,19 @@ class OllamaClient(BaseLLMClient):
             logger.error(f"Error generating response from Ollama library: {e}")
             raise
 
-    async def chat(
+    async def process_messages(
         self,
         messages: List[Dict[str, Any]],
         tools: Optional[List[Dict[str, Any]]] = None,
     ) -> Dict[str, Any]:
-        """Send a chat-like conversation to Ollama with optional tool support."""
+        """Send a conversation history to Ollama with optional tool support."""
         try:
             response = await self.client.chat(
                 model=self.model, messages=messages, tools=tools
             )
             return response.get("message", {})
         except Exception as e:
-            logger.error(f"Error in chat with Ollama library: {e}")
+            logger.error(f"Error in process_messages with Ollama library: {e}")
             raise
 
     async def stream_generate(

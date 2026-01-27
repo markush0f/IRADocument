@@ -22,7 +22,8 @@ async def analyze_tech_stack(project_id: str) -> str:
     agent._get_tools_definitions = lambda: registry.get_definitions_by_names(tech_tools)
 
     prompt = f"Identify languages, frameworks and libraries in project '{project_id}'. Use tools to explore files like package.json, requirements.txt, etc. Register facts for each discovery."
-    return await agent.run(prompt)
+    agent.add_user_message(prompt)
+    return await agent.run_until_complete()
 
 
 @registry.tool
@@ -45,4 +46,5 @@ async def browse_repository(project_id: str) -> str:
     )
 
     prompt = f"Explore the directory structure of project '{project_id}' and identify the main architectural components. Register your findings."
-    return await agent.run(prompt)
+    agent.add_user_message(prompt)
+    return await agent.run_until_complete()
