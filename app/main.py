@@ -1,5 +1,7 @@
 from contextlib import asynccontextmanager
 from types import SimpleNamespace
+from enum import Enum
+from typing import List, Optional
 import json
 
 from fastapi import FastAPI, HTTPException
@@ -64,16 +66,59 @@ def clone_project(payload: CloneRepoRequest) -> dict[str, object]:
     }
 
 
-@app.post("/analyze/{project_id}")
-async def analyze_project(project_id: str):
+class AnalysisStage(str, Enum):
+    exploration = "exploration"
+    tech_stack = "tech_stack"
+
+
+class AnalysisRequest(BaseModel):
+    stages: Optional[List[AnalysisStage]] = Field(
+        default=None,
+        description="List of stages to execute: 'exploration' and/or 'tech_stack'",
+    )
+
+
+@app.post("/analysis/tech-stack")
+async def analyze_repo_tech_stack(payload: CloneRepoRequest):
+    """
+    Clones a repository and performs ONLY technical stack analysis.
+    Directly returns the AI reasoning about the discovered stack.
+    """
     from app.services.analysis_service import AnalysisService
+    from app.services.project_service import ProjectService
     from app.core.database import AsyncSessionLocal
 
+    # 1. Setup context and Clone
+    context = SimpleNamespace(repo_url=payload.repo_url, branch=payload.branch)
+    try:
+        prepare_workspace(context)
+        clone_repo(context)
+    except (WorkspaceError, CloneRepositoryError) as exc:
+        raise HTTPException(status_code=500, detail=f"Clone failed: {str(exc)}")
+
+    project_id = context.workspace_id
+    repo_path = str(context.repo_path)
+
     async with AsyncSessionLocal() as session:
-        service = AnalysisService(session)
-        result = await service.generate_analysis_report(project_id)
+        # 2. Ensure project is registered
+        project_service = ProjectService(session)
+        try:
+            await project_service.create_project(
+                id=project_id, name=f"Quick Tech Scan {project_id}", root_path=repo_path
+            )
+        except Exception:
+            # Continue if already exists
+            pass
+
+        # 3. Run ONLY tech_stack analysis
+        analysis_service = AnalysisService(session)
+        result = await analysis_service.generate_analysis_report(
+            project_id, enabled_stages=["tech_stack"]
+        )
+
         if result.get("status") == "failed":
             raise HTTPException(status_code=500, detail=result.get("error"))
+
         return result
 
 

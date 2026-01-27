@@ -1,1 +1,12 @@
-Identify the languages, frameworks, and libraries used in project '{project_id}'. Look for manifests or configuration files (e.g., package.json, requirements.txt, go.mod) to identify versions and dependencies. Register each technology found as a fact.
+Based on the following detected technologies for project '{project_id}':
+
+{tech_data}
+
+Generate an 'Internal AI Technical Context'. This document will be used as background knowledge for future coding and debugging tasks. Focus on:
+
+1. Technical Mapping: How these specific technologies interlink in this architecture (e.g., ORM to Database, Framework to Package Manager).
+2. Constraints & Gotchas: List version-specific limitations, known bottlenecks of this stack, or strict architectural constraints that must be respected.
+3. Developer/AI Notes: Key technical patterns identified. What should an AI agent know before modifying this specific codebase?
+
+FORMAT: Use a structured, technical format (e.g., Markdown Headers). 
+GOAL: Create a "Technical Memory" that makes future tasks more accurate. Do not explain basic concepts; focus on integration and constraints.

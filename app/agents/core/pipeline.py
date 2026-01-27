@@ -30,12 +30,13 @@ class BasePipeline:
         logger.info(f"Starting Pipeline Stage: {name}")
 
         # 1. Limit tools if specified for this stage
-        if tools:
+        if tools is not None:
+            # If an empty list [] is passed, no tools will be available
             self.agent._get_tools_definitions = (
                 lambda: registry.get_definitions_by_names(tools)
             )
         else:
-            # If no specific tools, use all available
+            # If None, use all available tools
             self.agent._get_tools_definitions = lambda: (
                 self.agent.tools_definitions + registry.get_definitions()
             )
@@ -46,7 +47,7 @@ class BasePipeline:
         # 3. Let the agent work until it reaches a conclusion for this stage
         result = await self.agent.run_until_complete()
 
-        self.stages_results[name] = result
+        self.stages_results[name] = {"prompt": prompt, "result": result}
         logger.info(f"Stage '{name}' completed.")
         return result
 
