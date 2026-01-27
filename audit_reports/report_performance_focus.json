@@ -1,0 +1,34 @@
+{
+  "audit_type": "performance_focus",
+  "project_id": "audit-performance_focus-f4f4",
+  "system_prompt": "You are a Performance Engineer Bot. Analyze project 'audit-performance_focus-f4f4'. Focus on bottlenecks and scalability. Conclude with a 'discovery_report'. MANDATORY: NO PROSE. ONLY TOOL CALLS. START with 'list_directory_content'.",
+  "user_prompt": "Full performance audit for 'audit-performance_focus-f4f4' now.",
+  "ai_documentation_response": "Max iterations reached without a final answer.",
+  "consolidated_report": "{\"summary\": \"Max iterations reached without a final answer.\", \"note\": \"Auto-generated from agent conversation\"}",
+  "discoveries": [
+    {
+      "type": "language",
+      "source": "main.py",
+      "payload": {
+        "name": "Python",
+        "version": "3.9"
+      }
+    },
+    {
+      "type": "framework",
+      "source": "main.py",
+      "payload": {
+        "name": "FastAPI",
+        "version": "0.78"
+      }
+    },
+    {
+      "type": "database",
+      "source": "main.py",
+      "payload": {
+        "name": "SQLite"
+      }
+    }
+  ],
+  "all_facts_count": 4
+}

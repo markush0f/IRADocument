@@ -8,7 +8,7 @@ from app.core.logger import get_logger
 logger = get_logger(__name__)
 
 
-class ToolExecutor:
+class AgentExecutor:
     def __init__(
         self,
         client: BaseLLMClient,
@@ -28,11 +28,9 @@ class ToolExecutor:
         self.tools_definitions.append(definition)
 
     def _get_tools_definitions(self) -> List[Dict[str, Any]]:
-        """Combines manual and registry tool definitions."""
-        definitions = list(self.tools_definitions)
-        if self.registry:
-            definitions.extend(self.registry.get_definitions())
-        return definitions
+        """Returns all available tools from manual and dynamic registries."""
+        dynamic_tools = self.registry.get_definitions() if self.registry else []
+        return self.tools_definitions + dynamic_tools
 
     async def run(
         self,
@@ -44,11 +42,12 @@ class ToolExecutor:
         messages = self._prepare_messages(user_prompt, system_prompt)
 
         for i in range(max_iterations):
-            logger.debug(f"Iteration {i+1} of agent loop")
+            logger.debug(f"Iteration {i+1}/{max_iterations} of agent loop")
 
             # 1. Ask the LLM with all available tools
             tools = self._get_tools_definitions()
             logger.info(f"Sending {len(tools)} tools to LLM")
+            #  Chat with LLM (DEPENDS OF INSTANTIATION OF CLIENT => ollama, openai...)
             response_message = await self.client.chat(
                 messages, tools=tools if tools else None
             )
@@ -73,66 +72,6 @@ class ToolExecutor:
             logger.info("Tool execution finished, continuing to next iteration")
 
         return "Max iterations reached without a final answer."
-
-    def _parse_tool_calls_from_content(self, content: str) -> List[Dict[str, Any]]:
-        """Attempts to find and parse multiple JSON tool calls in the message content."""
-        import re
-
-        logger.info(f"Attempting to parse tool calls from content: {content[:100]}...")
-
-        # Clean up markdown code blocks
-        content = re.sub(r"```[a-z]*", "", content)
-        content = content.replace("```", "").strip()
-
-        found_calls = []
-        i = 0
-        while i < len(content):
-            if content[i] == "{":
-                # Try parsing from current '{' to the potential end of the string
-                # We go backwards to find the longest valid JSON object starting at i
-                for j in range(len(content), i + 1, -1):
-                    try:
-                        chunk = content[i:j]
-                        if "name" in chunk:
-                            data = json.loads(chunk)
-                            if isinstance(data, dict) and "name" in data:
-                                found_calls.append(
-                                    {
-                                        "function": {
-                                            "name": data.get("name"),
-                                            "arguments": data.get("arguments", {}),
-                                        }
-                                    }
-                                )
-                                i = j - 1  # Skip to the end of this object
-                                break
-                    except (json.JSONDecodeError, Exception):
-                        continue
-            elif content[i] == "[":
-                # Similar logic for lists if any
-                for j in range(len(content), i + 1, -1):
-                    try:
-                        chunk = content[i:j]
-                        data = json.loads(chunk)
-                        if isinstance(data, list):
-                            for item in data:
-                                if isinstance(item, dict) and "name" in item:
-                                    found_calls.append(
-                                        {
-                                            "function": {
-                                                "name": item.get("name"),
-                                                "arguments": item.get("arguments", {}),
-                                            }
-                                        }
-                                    )
-                            i = j - 1
-                            break
-                    except (json.JSONDecodeError, Exception):
-                        continue
-            i += 1
-
-        logger.info(f"Extracted {len(found_calls)} tool calls from content")
-        return found_calls
 
     def _prepare_messages(
         self, user_prompt: str, system_prompt: Optional[str]
@@ -175,23 +114,57 @@ class ToolExecutor:
             logger.warning(f"Tool {function_name} not found in any registry")
             return {"error": f"Tool {function_name} not found"}
 
-        # 3. Context Injection: if arguments are missing but available in context, inject them
-        import inspect
-
-        sig = inspect.signature(func)
-        final_args = arguments.copy()
-        for param_name in sig.parameters:
-            if param_name not in final_args and param_name in self.context:
-                logger.debug(
-                    f"Injecting {param_name} from context into {function_name}"
-                )
-                final_args[param_name] = self.context[param_name]
-
+        # Check if the function is async and call it accordingly
         try:
             if asyncio.iscoroutinefunction(func):
-                return await func(**final_args)
+                return await func(**arguments)
             else:
-                return func(**final_args)
+                return func(**arguments)
         except Exception as e:
             logger.error(f"Error executing tool {function_name}: {e}")
             return {"error": str(e)}
+
+    def _parse_tool_calls_from_content(self, content: str) -> List[Dict[str, Any]]:
+        """Attempts to parse tool calls from a JSON-like string or block in the message content."""
+        import re
+
+        logger.info(f"Attempting to parse tool calls from content: {content[:100]}...")
+
+        # Clean up markdown code blocks if present
+        content = re.sub(r"```[a-z]*", "", content)
+        content = content.replace("```", "").strip()
+
+        # Try to find a list [...] or a single object { ... "name": ... }
+        match_list = re.search(r"(\[.*\])", content, re.DOTALL)
+        match_obj = re.search(r"(\{.*\})", content, re.DOTALL)
+
+        found_data = None
+        if match_list:
+            try:
+                found_data = json.loads(match_list.group(1))
+                logger.info("Matched JSON list in content")
+            except Exception:
+                pass
+        elif match_obj:
+            try:
+                found_data = [json.loads(match_obj.group(1))]
+                logger.info("Matched JSON object in content")
+            except Exception:
+                pass
+
+        if found_data and isinstance(found_data, list):
+            standardized = []
+            for item in found_data:
+                if isinstance(item, dict) and "name" in item:
+                    standardized.append(
+                        {
+                            "function": {
+                                "name": item.get("name"),
+                                "arguments": item.get("arguments", {}),
+                            }
+                        }
+                    )
+            logger.info(f"Standardized {len(standardized)} tool calls from content")
+            return standardized
+        logger.info("No tool calls found in content")
+        return []

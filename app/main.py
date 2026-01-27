@@ -1,5 +1,6 @@
 from contextlib import asynccontextmanager
 from types import SimpleNamespace
+import json
 
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
@@ -74,3 +75,42 @@ async def analyze_project(project_id: str):
         if result.get("status") == "failed":
             raise HTTPException(status_code=500, detail=result.get("error"))
         return result
+
+
+@app.post("/pipeline/analyze")
+async def run_full_pipeline(payload: CloneRepoRequest):
+    from app.pipeline.orchestrator import create_standard_pipeline, PipelineContext
+    from app.core.database import AsyncSessionLocal
+
+    async with AsyncSessionLocal() as session:
+        # 1. Initialize Context
+        context = PipelineContext(
+            repo_url=payload.repo_url, branch=payload.branch, session=session
+        )
+
+        # 2. Run the Parent Pipeline (Orchestrator)
+        pipeline = create_standard_pipeline()
+        await pipeline.run(context)
+
+        if context.errors:
+            raise HTTPException(status_code=500, detail={"errors": context.errors})
+
+        # 3. Return the result
+        report_payload = {}
+        if context.discovery_report:
+            report_payload = (
+                json.loads(context.discovery_report.payload)
+                if isinstance(context.discovery_report.payload, str)
+                else context.discovery_report.payload
+            )
+
+        return {
+            "workspace_id": context.workspace_id,
+            "status": "completed",
+            "analysis": context.analysis_result,
+            "documentation": report_payload,
+            "repo_details": {
+                "latest_commit": context.latest_commit,
+                "repo_path": str(context.repo_path),
+            },
+        }

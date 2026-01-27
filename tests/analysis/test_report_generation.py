@@ -1,6 +1,7 @@
 import pytest
 import uuid
 import os
+import json
 from app.services.project_service import ProjectService
 from app.services.analysis_service import AnalysisService
 from app.core.database import AsyncSessionLocal, engine
@@ -49,3 +50,18 @@ async def test_project_report_generation_flow():
 
         assert result["status"] == "completed"
         assert result["discoveries_count"] > 0
+
+        # Look for the conclusion report in the facts
+        async with AsyncSessionLocal() as session:
+            from app.services.fact_service import FactService
+
+            fact_service = FactService(session)
+            facts = await fact_service.get_facts_by_project(project_id)
+            report = next((f for f in facts if f.type == "discovery_report"), None)
+            if report:
+                print(f"\n--- ARCHITECTURAL CONCLUSIONS ---\n")
+                payload = report.payload
+                if isinstance(payload, str):
+                    payload = json.loads(payload)
+                print(json.dumps(payload, indent=2))
+                print(f"\n----------------------------------\n")

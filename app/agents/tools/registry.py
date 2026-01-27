@@ -63,9 +63,21 @@ class ToolRegistry:
             "required": schema.get("required", []),
         }
 
-    def get_definitions(self) -> List[Dict[str, Any]]:
+    def get_definitions(
+        self, exclude: Optional[List[str]] = None
+    ) -> List[Dict[str, Any]]:
         """Returns the list of tool definitions for the LLM."""
-        return [tool["definition"] for tool in self._tools.values()]
+        return [
+            tool["definition"]
+            for name, tool in self._tools.items()
+            if not exclude or name not in exclude
+        ]
+
+    def get_definitions_by_names(self, names: List[str]) -> List[Dict[str, Any]]:
+        """Returns definitions for specific tools by their names."""
+        return [
+            self._tools[name]["definition"] for name in names if name in self._tools
+        ]
 
     def get_function(self, name: str) -> Optional[Callable]:
         """Returns the function implementation by name."""

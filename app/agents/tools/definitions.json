@@ -2,6 +2,35 @@
     {
         "type": "function",
         "function": {
+            "name": "create_project",
+            "description": "Creates a new project record in the system.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "project_id": {
+                        "title": "Project Id",
+                        "type": "string"
+                    },
+                    "name": {
+                        "title": "Name",
+                        "type": "string"
+                    },
+                    "root_path": {
+                        "title": "Root Path",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "project_id",
+                    "name",
+                    "root_path"
+                ]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
             "name": "list_projects",
             "description": "Lists all projects available in the database.\n    Returns a list of project objects with their id and name.",
             "parameters": {
@@ -16,6 +45,275 @@
         "function": {
             "name": "get_project_details",
             "description": "Gets full details of a specific project by its ID.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "project_id": {
+                        "title": "Project Id",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "project_id"
+                ]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "list_project_files",
+            "description": "Lists all files that have been registered for a project.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "project_id": {
+                        "title": "Project Id",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "project_id"
+                ]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "register_file",
+            "description": "Registers a new file in the project database.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "project_id": {
+                        "title": "Project Id",
+                        "type": "string"
+                    },
+                    "path": {
+                        "title": "Path",
+                        "type": "string"
+                    },
+                    "language": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Language"
+                    }
+                },
+                "required": [
+                    "project_id",
+                    "path"
+                ]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "read_file_content",
+            "description": "Reads the full content of a file from the local filesystem.\n    This is useful for analyzing configuration files like package.json, requirements.txt, or source code.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "project_id": {
+                        "title": "Project Id",
+                        "type": "string"
+                    },
+                    "path": {
+                        "title": "Path",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "project_id",
+                    "path"
+                ]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "list_directory_content",
+            "description": "Lists files and directories at a given path within the project root.\n    Use this to explore the project structure.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "project_id": {
+                        "title": "Project Id",
+                        "type": "string"
+                    },
+                    "path": {
+                        "default": "",
+                        "title": "Path",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "project_id"
+                ]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "register_fact",
+            "description": "Registers a new finding or fact discovered about the project.\n\n    Args:\n        project_id: The ID of the project.\n        fact_type: Category (e.g., 'framework', 'database', 'language').\n        source: Source of info (e.g., 'package.json').\n        name: Name of the item (e.g., 'React').\n        details: Extra info (e.g., {'version': '18.2.0'}).",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "project_id": {
+                        "title": "Project Id",
+                        "type": "string"
+                    },
+                    "fact_type": {
+                        "title": "Fact Type",
+                        "type": "string"
+                    },
+                    "source": {
+                        "title": "Source",
+                        "type": "string"
+                    },
+                    "name": {
+                        "title": "Name",
+                        "type": "string"
+                    },
+                    "details": {
+                        "default": null,
+                        "title": "Details",
+                        "type": "object"
+                    },
+                    "confidence": {
+                        "default": 1.0,
+                        "title": "Confidence",
+                        "type": "number"
+                    }
+                },
+                "required": [
+                    "project_id",
+                    "fact_type",
+                    "source",
+                    "name"
+                ]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "list_project_facts",
+            "description": "Lists all facts discovered for a specific project.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "project_id": {
+                        "title": "Project Id",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "project_id"
+                ]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "register_relation",
+            "description": "Registers a relationship between two components of the project.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "project_id": {
+                        "title": "Project Id",
+                        "type": "string"
+                    },
+                    "from_node": {
+                        "title": "From Node",
+                        "type": "string"
+                    },
+                    "to_node": {
+                        "title": "To Node",
+                        "type": "string"
+                    },
+                    "relation_type": {
+                        "title": "Relation Type",
+                        "type": "string"
+                    },
+                    "source": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Source"
+                    }
+                },
+                "required": [
+                    "project_id",
+                    "from_node",
+                    "to_node",
+                    "relation_type"
+                ]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "list_project_relations",
+            "description": "Lists all architectural relations discovered in the project.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "project_id": {
+                        "title": "Project Id",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "project_id"
+                ]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "analyze_tech_stack",
+            "description": "Performs a deep dive into the project's technical stack (languages, frameworks, libraries).\n    Use this when you need to know exactly what technologies are being used.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "project_id": {
+                        "title": "Project Id",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "project_id"
+                ]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "browse_repository",
+            "description": "Explores the repository structure to understand the architecture and organization.\n    Use this to get an overview of how the project is organized.",
             "parameters": {
                 "type": "object",
                 "properties": {

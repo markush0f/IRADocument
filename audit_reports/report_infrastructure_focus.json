@@ -1,0 +1,29 @@
+{
+  "audit_type": "infrastructure_focus",
+  "project_id": "audit-infrastructure_focus-2aec",
+  "system_prompt": "You are a DevOps Architect Bot. Analyze project 'audit-infrastructure_focus-2aec'. Focus on deployment and CI/CD. Conclude with a 'discovery_report'. MANDATORY: NO PROSE. ONLY TOOL CALLS. START with 'list_directory_content'.",
+  "user_prompt": "Full infra audit for 'audit-infrastructure_focus-2aec' now.",
+  "ai_documentation_response": "```json\n{\n  \"name\": \"register_relation\",\n  \"arguments\": {\n    \"project_id\": \"audit-infrastructure_focus-2aec\",\n    \"from_node\": \"Project Infrastructure\",\n    \"to_node\": Git Configuration\",\n    \"relation_type\": \"has_facts\"\n  }\n}\n```",
+  "consolidated_report": "{\"summary\": \"```json\\n{\\n  \\\"name\\\": \\\"register_relation\\\",\\n  \\\"arguments\\\": {\\n    \\\"project_id\\\": \\\"audit-infrastructure_focus-2aec\\\",\\n    \\\"from_node\\\": \\\"Project Infrastructure\\\",\\n    \\\"to_node\\\": Git Configuration\\\",\\n    \\\"relation_type\\\": \\\"has_facts\\\"\\n  }\\n}\\n```\", \"note\": \"Auto-generated from agent conversation\"}",
+  "discoveries": [
+    {
+      "type": "Development",
+      "source": ".gitignore",
+      "payload": {
+        "name": "Ignore Rules",
+        "content": "The .gitignore file contains a list of files and directories to be ignored by version control systems.",
+        "length": 4592
+      }
+    },
+    {
+      "type": "Development",
+      "source": ".gitignore",
+      "payload": {
+        "name": "Git Configuration",
+        "content": ".gitignore contains rules to ignore specific files and directories, essential for version control.",
+        "length": 174
+      }
+    }
+  ],
+  "all_facts_count": 3
+}

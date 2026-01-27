@@ -52,7 +52,9 @@ async def read_file_content(project_id: str, path: str) -> Dict[str, Any]:
 
         import os
 
-        full_path = os.path.join(project.root_path, path)
+        # Sanitize path
+        path = path.lstrip("/")
+        full_path = os.path.normpath(os.path.join(project.root_path, path))
 
         try:
             if not os.path.exists(full_path):
@@ -84,14 +86,19 @@ async def list_directory_content(project_id: str, path: str = "") -> Dict[str, A
 
         import os
 
-        # Handle cases where the agent might provide an absolute path instead of relative
+        # Sanitize path: ensure it's relative to project root
+        # LLMs often send "/" or absolute paths; we force them to be relative
         if os.path.isabs(path) and path.startswith(project.root_path):
             path = os.path.relpath(path, project.root_path)
-            if path == ".":
-                path = ""
+
+        path = path.lstrip("/")
+        if path == "." or path == "/":
+            path = ""
 
         full_path = os.path.normpath(os.path.join(project.root_path, path))
-        logger.info(f"Listing directory: {full_path} (Root: {project.root_path})")
+        logger.info(
+            f"Listing directory: {full_path} (Requested: {path}, Root: {project.root_path})"
+        )
 
         # Security check: ensure path is within project root
         if not full_path.startswith(os.path.normpath(project.root_path)):
@@ -99,7 +106,10 @@ async def list_directory_content(project_id: str, path: str = "") -> Dict[str, A
 
         try:
             if not os.path.exists(full_path):
-                return {"error": f"Path {path} does not exist"}
+                return {
+                    "error": f"Path '{path}' does not exist.",
+                    "hint": f"The root of the project is '{project.root_path}'. Any path you provide is relative to this root. Try path='' to list the root.",
+                }
 
             items = os.listdir(full_path)
             content = []
