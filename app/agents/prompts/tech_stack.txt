@@ -1,12 +1,38 @@
-Based on the following detected technologies for project '{project_id}':
+The following raw technologies have been detected in the project scanner:
 
 {tech_data}
 
-Generate an 'Internal AI Technical Context'. This document will be used as background knowledge for future coding and debugging tasks. Focus on:
+Your task is to CLASSIFY these technologies into a structured architectural map.
+You must return a valid JSON object with the following structure:
 
-1. Technical Mapping: How these specific technologies interlink in this architecture (e.g., ORM to Database, Framework to Package Manager).
-2. Constraints & Gotchas: List version-specific limitations, known bottlenecks of this stack, or strict architectural constraints that must be respected.
-3. Developer/AI Notes: Key technical patterns identified. What should an AI agent know before modifying this specific codebase?
+{{
+  "frontend": {{
+      "languages": ["..."],
+      "frameworks": ["..."],
+      "libraries": ["..."],
+      "package_managers": ["..."]
+  }},
+  "backend": {{
+      "languages": ["..."],
+      "frameworks": ["..."],
+      "orms": ["..."],
+      "package_managers": ["..."]
+  }},
+  "database": {{
+      "main": ["..."],
+      "tools": ["..."] 
+  }},
+  "infrastructure": {{
+      "containerization": ["..."],
+      "orchestration": ["..."] 
+  }},
+  "dev_tools": ["..."],
+  "testing": ["..."],
+  "security": ["..."]
+}}
 
-FORMAT: Use a structured, technical format (e.g., Markdown Headers). 
-GOAL: Create a "Technical Memory" that makes future tasks more accurate. Do not explain basic concepts; focus on integration and constraints.
+RULES:
+- ONLY return the JSON object. No markdown formatting.
+- Place package managers (npm, yarn, pip, poetry) INSIDE their respective ecosystem (frontend or backend).
+- If you are unsure if a tool is frontend or backend (e.g. build tools), use context to decide or place in dev_tools.
+- If a category is empty, return an empty list [] or null.

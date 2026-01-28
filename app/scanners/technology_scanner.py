@@ -57,6 +57,7 @@ class TechnologyScanner:
     def format_for_llm(self, results: List[Dict[str, Any]]) -> str:
         """
         Transforms raw scanner results into a structured string for AI reasoning.
+        Removes file paths and focuses on technology names.
         """
         logger.debug(f"Formatting {len(results)} scanner results for LLM context.")
         if not results:
@@ -72,12 +73,27 @@ class TechnologyScanner:
                 if key in ["type", "name"]:
                     continue
                 if isinstance(val, dict) and val.get("detected"):
-                    # Extract identifying info (files, items, or paths)
-                    details = val.get("items") or val.get("files") or val.get("paths")
-                    if details:
-                        formatted_output.append(
-                            f"  - {key.replace('_', ' ').capitalize()}: {', '.join(details[:10])}"
-                        )
+                    # 1. Get raw items/files
+                    raw_items = val.get("items") or val.get("files") or val.get("paths")
+                    if not raw_items:
+                        continue
+
+                    # 2. Cleanup: If they are paths, take only the name/concept
+                    clean_items = []
+                    for item in raw_items:
+                        # If it's a path (contains /), we take the filename or the category
+                        if "/" in str(item) or "\\" in str(item):
+                            # For Docker and DB, we prefer the category name if it's a path
+                            path_obj = Path(item)
+                            clean_items.append(path_obj.name)
+                        else:
+                            clean_items.append(str(item))
+
+                    # 3. Handle duplicates and format
+                    unique_items = sorted(list(set(clean_items)))
+                    formatted_output.append(
+                        f"  - {key.replace('_', ' ').capitalize()}: {', '.join(unique_items[:15])}"
+                    )
 
         logger.debug("LLM tech data formatting completed.")
         return "\n".join(formatted_output)
