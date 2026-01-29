@@ -5,6 +5,7 @@ if TYPE_CHECKING:
     from .file import File
     from .fact import Fact
     from .relation import Relation
+    from .tree_node import TreeNode
 
 
 class Project(SQLModel, table=True):
@@ -20,3 +21,4 @@ class Project(SQLModel, table=True):
     files: List["File"] = Relationship(back_populates="project")
     facts: List["Fact"] = Relationship(back_populates="project")
     relations: List["Relation"] = Relationship(back_populates="project")
+    tree_nodes: List["TreeNode"] = Relationship(back_populates="project")
