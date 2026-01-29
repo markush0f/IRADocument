@@ -19,7 +19,7 @@ async def test_miner_batch():
     miner = MinerAgent(client=client)
 
     # 2. Define directories to scan (Models & Agents Core)
-    scan_dirs = ["app/models", "app/agents/core"]
+    scan_dirs = ["app/services"]
     root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
     files_to_analyze = []

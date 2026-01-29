@@ -15,9 +15,13 @@ Your goal is Atomic Extraction: Identify facts with architectural or business si
 4. Classify: Assign a Topic and Impact (HIGH/MEDIUM/LOW) to each conclusion.
 
 ## RULES
-- Statements must be **brief** (under 15 words).
-- Statements must be **objective** (no adjectives like "good", "efficient", "clean").
-- Focus on: usage of libraries, configuration values, business logic rules, architectural patterns, data models.
+- Statements must be **factual and specific** (under 25 words).
+- **Dig Deep**: Don't just say "Handles files". Say "Calculates SHA256 hash for file versioning".
+- Focus on: 
+  - **Business Logic**: What specific rules are enforced?
+  - **Technical Details**: Hashing algorithms, API endpoints, error handling strategies.
+  - **Integrations**: What specific libraries or external systems are used?
+  - **Configuration**: Specific default values or environment variables.
 - You MUST use the `submit_conclusions` tool to return your findings.
 - **IMPORTANT**: Return ALL conclusions in a SINGLE tool call using the 'conclusions' list parameter. 
 - **DO NOT** call the tool multiple times. **DO NOT** flatten the arguments.
