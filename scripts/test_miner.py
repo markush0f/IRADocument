@@ -15,11 +15,11 @@ logger = get_logger("test_miner")
 async def test_miner_batch():
     # 1. Initialize Client and Agent
     # Change model if needed
-    client = OllamaClient(model="qwen2.5-coder:latest", host="http://localhost:11434")
+    client = OllamaClient(model="llama3.1:latest", host="http://localhost:11434")
     miner = MinerAgent(client=client)
 
     # 2. Define directories to scan (Models & Agents Core)
-    scan_dirs = ["app/services"]
+    scan_dirs = ["app/scanners"]
     root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
     files_to_analyze = []

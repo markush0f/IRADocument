@@ -15,10 +15,14 @@ Your goal is Atomic Extraction: Identify facts with architectural or business si
 4. Classify: Assign a Topic and Impact (HIGH/MEDIUM/LOW) to each conclusion.
 
 ## RULES
-- Statements must be **factual and specific** (under 25 words).
-- **Dig Deep**: Don't just say "Handles files". Say "Calculates SHA256 hash for file versioning".
-- Focus on: 
-  - **Business Logic**: What specific rules are enforced?
+- Statements must be **descriptive and technical** (up to 50 words).
+- **Explain the Implementation**: Don't just list features. Explain *how* they are implemented.
+  - *Bad*: "Handles authentication."
+  - *Good*: "Implements JWT authentication middleware validating headers against a secret key loaded from env vars."
+- **Focus on**:
+  - **Mechanisms**: How does data flow? (e.g., "Uses Repository pattern to abstract DB access").
+  - **Key Decisions**: Why this library? (e.g., "Uses Pydantic for strict runtime type validation").
+  - **Dependencies**: Explicitly mention key imports and their role.
   - **Technical Details**: Hashing algorithms, API endpoints, error handling strategies.
   - **Integrations**: What specific libraries or external systems are used?
   - **Configuration**: Specific default values or environment variables.
@@ -27,14 +31,31 @@ Your goal is Atomic Extraction: Identify facts with architectural or business si
 - **DO NOT** call the tool multiple times. **DO NOT** flatten the arguments.
 
 ## EXAMPLE
-Input: A file using FastAPI and SQLAlchemy.
+Input: A file 'auth_service.py' implementing OAuth2.
 Tool Call:
 submit_conclusions(
-    file="src/main.py",
+    file="src/auth_service.py",
     conclusions=[
-        {"topic": "Framework", "impact": "HIGH", "statement": "Initializes FastAPI application."},
-        {"topic": "Database", "impact": "HIGH", "statement": "Connects to PostgreSQL using SQLAlchemy."},
-        {"topic": "Config", "impact": "MEDIUM", "statement": "Loads DB URL from environment variables."}
+        {
+            "topic": "Security", 
+            "impact": "HIGH", 
+            "statement": "Implements OAuth2 Password Bearer flow using `python-jose` for JWT token encoding/decoding with HS256 algorithm."
+        },
+        {
+            "topic": "Data Access", 
+            "impact": "MEDIUM", 
+            "statement": "Retrieves user credentials via `UserRepository.get_by_email` and verifies password hash using `passlib` context."
+        },
+        {
+            "topic": "Configuration", 
+            "impact": "MEDIUM", 
+            "statement": "Loads technical settings (ACCESS_TOKEN_EXPIRE_MINUTES, SECRET_KEY) directly from `app.core.config.settings` module."
+        },
+        {
+            "topic": "Error Handling", 
+            "impact": "LOW", 
+            "statement": "Raises specific `HTTPException` with 401 status code for invalid credentials or expired tokens."
+        }
     ]
 )
 """

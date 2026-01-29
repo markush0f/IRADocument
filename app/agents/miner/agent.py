@@ -102,9 +102,13 @@ class MinerAgent:
                         data = json.loads(json_str)
 
                         # HANDLE RAW TOOL CALL STRUCTURE
-                        # If the model returned {"name": "submit_conclusions", "arguments": {...}}
+                        # If the model returned {"name": "...", "arguments": {...}} or {"parameters": {...}}
                         if "arguments" in data and isinstance(data["arguments"], dict):
                             data = data["arguments"]
+                        elif "parameters" in data and isinstance(
+                            data["parameters"], dict
+                        ):
+                            data = data["parameters"]
 
                         # Normalize data
                         if "file" not in data:
