@@ -57,3 +57,19 @@ CREATE TABLE relations (
     PRIMARY KEY (project_id, from_node, to_node, relation),
     FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
 );
+
+-- TABLE: tree_nodes
+-- Stores the traversal state for the "Living Tree" strategy.
+-- Tracks priority, status, and depth of each node in the exploration graph.
+CREATE TABLE tree_nodes (
+    project_id TEXT,            -- Reference to the project
+    path TEXT,                  -- Relative path of the file or node
+    priority TEXT DEFAULT 'medium', -- Analysis priority: 'high', 'medium', 'low', 'skip'
+    status TEXT DEFAULT 'pending',  -- Process status: 'pending', 'analyzing', 'done', 'error'
+    reason TEXT,                -- Why this node is being analyzed (e.g., "Imported by main.py")
+    depth INTEGER DEFAULT 0,    -- Depth from the seed (entry point)
+    created_at TEXT,            -- Creation timestamp
+    updated_at TEXT,            -- Last update timestamp
+    PRIMARY KEY (project_id, path),
+    FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
+);
