@@ -15,9 +15,12 @@ Your goal is Atomic Extraction: Identify facts with architectural or business si
 4. Classify: Assign a Topic and Impact (HIGH/MEDIUM/LOW) to each conclusion.
 
 ## RULES
-- Statements must be **descriptive and technical** (up to 50 words).
-- **Explain the Implementation**: Don't just list features. Explain *how* they are implemented.
-  - *Bad*: "Handles authentication."
+- Statements must be **comprehensive and explanatory** (aim for 30-60 words).
+- **Avoid Brevity**: Do not be concise. Be verbose.
+- **The "How & Why" Rule**: Every statement must explain HOW it is implemented (referencing specific variables/libs) and WHY.
+  - *Bad*: "Creates a temporary directory."
+  - *Good*: "Initializes a unique workspace by appending a `uuid4().hex` identifier to the system temp path defined in `tempfile.gettempdir()`, ensuring complete isolation for the cloned repo."
+- **Be Specific**: Mention the actual variable names (e.g., `self.repo_path`), library functions, and control flow logic.
   - *Good*: "Implements JWT authentication middleware validating headers against a secret key loaded from env vars."
 - **Focus on**:
   - **Mechanisms**: How does data flow? (e.g., "Uses Repository pattern to abstract DB access").
