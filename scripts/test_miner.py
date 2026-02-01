@@ -2,31 +2,69 @@ import asyncio
 import os
 import sys
 import json
+import time
+from dotenv import load_dotenv
+
+# Load env vars from .env file
+load_dotenv()
 
 # Add project root to path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from app.agents.core.ollama_client import OllamaClient
+from app.agents.core.openai_client import OpenAIClient
 from app.agents.miner.agent import MinerAgent
 from app.core.logger import get_logger
 
 logger = get_logger("test_miner")
 
-BATCH_SIZE = 5
+# CONFIGURATION
+MODEL = "gpt-4o-mini"
+CONCURRENCY_LIMIT = 20  # Process 20 files in parallel (OpenAI handles this easily)
 
 
-async def test_miner_batch_scan():
-    # 1. Initialize Client and Agent
-    client = OllamaClient(model="llama3.1:latest", host="http://localhost:11434")
+async def scan_file(miner, semaphore, abs_path, rel_path):
+    """Analyze a single file with concurrency control."""
+    async with semaphore:
+        start_t = time.time()
+        try:
+            with open(abs_path, "r") as f:
+                content = f.read()
+
+            if not content.strip():
+                return None
+
+            result = await miner.analyze_file(file_path=rel_path, file_content=content)
+            duration = time.time() - start_t
+
+            if result:
+                res_dict = result.model_dump()
+                res_dict["analysis_duration_seconds"] = round(duration, 2)
+                # print(f"✅ {rel_path} ({duration:.2f}s)")
+                return res_dict
+            else:
+                print(f"⚠️ {rel_path} - No results")
+                return None
+
+        except Exception as e:
+            print(f"❌ {rel_path} - Failed: {e}")
+            return None
+
+
+async def test_miner_openai_concurrent():
+    api_key = os.getenv("OPENAI_API_KEY")
+    if not api_key:
+        print("❌ ERROR: OPENAI_API_KEY environment variable is not set.")
+        return
+
+    # 1. Initialize Client
+    client = OpenAIClient(model=MODEL, api_key=api_key)
     miner = MinerAgent(client=client)
 
-    # 2. Define directories
+    # 2. Collect Files
     scan_dirs = ["app"]
     root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-
     files_to_analyze = []
 
-    # Collect files
     print("--- Collecting files... ---")
     for d in scan_dirs:
         abs_d = os.path.join(root_dir, d)
@@ -38,52 +76,45 @@ async def test_miner_batch_scan():
                     files_to_analyze.append(os.path.join(root, file))
 
     print(
-        f"--- Batch Scan: Found {len(files_to_analyze)} files. Batch Size: {BATCH_SIZE} ---"
+        f"--- 🚀 OpenAI Scan: {len(files_to_analyze)} files. Concurrency: {CONCURRENCY_LIMIT} ---"
     )
 
-    all_results = []
+    total_start = time.time()
+    semaphore = asyncio.Semaphore(CONCURRENCY_LIMIT)
+    tasks = []
 
-    # 3. Process in batches
-    for i in range(0, len(files_to_analyze), BATCH_SIZE):
-        chunk_paths = files_to_analyze[i : i + BATCH_SIZE]
-        print(f"\nProcessing Batch {i//BATCH_SIZE + 1} ({len(chunk_paths)} files)...")
+    # 3. Launch Tasks
+    for abs_path in files_to_analyze:
+        rel_path = os.path.relpath(abs_path, root_dir)
+        tasks.append(scan_file(miner, semaphore, abs_path, rel_path))
 
-        # Prepare batch data (path, content)
-        batch_data = []
-        for abs_path in chunk_paths:
-            rel_path = os.path.relpath(abs_path, root_dir)
-            try:
-                with open(abs_path, "r") as f:
-                    content = f.read()
-                if content.strip():
-                    batch_data.append((rel_path, content))
-            except Exception as e:
-                print(f"Skipping {rel_path}: {e}")
+    # 4. Wait for all
+    print("Processing...")
+    results = await asyncio.gather(*tasks)
 
-        if not batch_data:
-            continue
+    # Filter Nones
+    valid_results = [r for r in results if r is not None]
 
-        # Call Agent
-        result = await miner.analyze_batch(files=batch_data)
+    total_duration = time.time() - total_start
 
-        if result and result.results:
-            print(f"✅ Batch Success: Got {len(result.results)} analyses.")
-            for r in result.results:
-                all_results.append(result.model_dump())  # Store raw dict
-                # Print sample
-                if r.conclusions:
-                    print(f"   -> {r.file}: {r.conclusions[0].statement[:50]}...")
-        else:
-            print("⚠️  Batch returned no results.")
+    # 5. Save Output
+    output_file = "miner_output.json"
+    meta = {
+        "total_files": len(files_to_analyze),
+        "total_duration_seconds": round(total_duration, 2),
+        "concurrency": CONCURRENCY_LIMIT,
+        "results": valid_results,
+    }
 
-    # 4. Save output
-    output_file = "miner_output_batch.json"
     with open(output_file, "w") as f:
-        json.dump(all_results, f, indent=2)
+        json.dump(meta, f, indent=2)
 
     print(f"\n--- Analysis Complete ---")
-    print(f"Saved {len(all_results)} total file analyses to {output_file}")
+    print(
+        f"Total Time: {total_duration:.2f}s (Avg: {total_duration/len(files_to_analyze):.2f}s/file)"
+    )
+    print(f"Saved {len(valid_results)} analyses to {output_file}")
 
 
 if __name__ == "__main__":
-    asyncio.run(test_miner_batch_scan())
+    asyncio.run(test_miner_openai_concurrent())

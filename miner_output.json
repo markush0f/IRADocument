@@ -1,247 +1,106 @@
-[
-  {
-    "file": "/app/main.py",
-    "conclusions": [
-      {
-        "topic": "Architecture",
-        "impact": "HIGH",
-        "statement": "Uses FastAPI for web framework with async context manager lifespan"
-      },
-      {
-        "topic": "Security",
-        "impact": "MEDIUM",
-        "statement": "Deploys HTTPException with 500 status code on pipeline errors"
-      },
-      {
-        "topic": "Database",
-        "impact": "HIGH",
-        "statement": "Utilizes SQLAlchemy and SQLModel for database operations"
-      },
-      {
-        "topic": "Data Access",
-        "impact": "MEDIUM",
-        "statement": "Imports all models from app.models to register them with the ORM"
-      },
-      {
-        "topic": "Error Handling",
-        "impact": "LOW",
-        "statement": "Catches and handles exceptions in clone_project endpoint"
-      }
-    ]
-  },
-  {
-    "file": "/app/infra/git_client.py",
-    "conclusions": [
-      {
-        "topic": "Git API Client",
-        "impact": "HIGH",
-        "statement": "Uses pygit2 library for Git operations"
-      },
-      {
-        "topic": "Authentication",
-        "impact": "MEDIUM",
-        "statement": "Supports token-based authentication with GitHub API"
-      },
-      {
-        "topic": "Error Handling",
-        "impact": "LOW",
-        "statement": "Raises RuntimeError on GitCommandError exceptions"
-      }
-    ]
-  },
-  {
-    "file": "/app/infra/workspace.py",
-    "conclusions": [
-      {
-        "topic": "Workspace Management",
-        "impact": "MEDIUM",
-        "statement": "Creates a temporary directory with UUID-based path"
-      },
-      {
-        "topic": "Repository Path",
-        "impact": "LOW",
-        "statement": "Defines repository path as repo_path attribute of Workspace class"
-      }
-    ]
-  },
-  {
-    "file": "/app/services/analysis_service.py",
-    "conclusions": [
-      {
-        "topic": "Project Analysis Service",
-        "impact": "HIGH",
-        "statement": "Uses ProjectDiscoveryPipeline class to execute dynamic discovery"
-      },
-      {
-        "topic": "AI Agent Setup",
-        "impact": "MEDIUM",
-        "statement": "Sets up AI agent with LLM client and system prompt using PromptLoader"
-      },
-      {
-        "topic": "Database Operations",
-        "impact": "LOW",
-        "statement": "Uses AsyncSession for database operations in AnalysisService class"
-      }
-    ]
-  },
-  {
-    "file": "/app/services/project_service.py",
-    "conclusions": [
-      {
-        "topic": "Project Management",
-        "impact": "HIGH",
-        "statement": "Uses ProjectRepository class to interact with project database"
-      },
-      {
-        "topic": "Database Operations",
-        "impact": "MEDIUM",
-        "statement": "Executes CRUD operations on projects using AsyncSession and SQLModel"
-      },
-      {
-        "topic": "Data Storage",
-        "impact": "LOW",
-        "statement": "Stores project metadata in database with created_at and updated_at timestamps"
-      }
-    ]
-  },
-  {
-    "file": "/app/services/relation_service.py",
-    "conclusions": [
-      {
-        "topic": "Project Relations",
-        "impact": "MEDIUM",
-        "statement": "Uses RelationRepository class to store and retrieve project relations"
-      },
-      {
-        "topic": "Database Operations",
-        "impact": "LOW",
-        "statement": "Executes CRUD operations on relations using AsyncSession and SQLModel"
-      }
-    ]
-  },
-  {
-    "file": "/app/services/file_service.py",
-    "conclusions": [
-      {
-        "topic": "File Management",
-        "impact": "MEDIUM",
-        "statement": "Registers a file in the project."
-      },
-      {
-        "topic": "File Management",
-        "impact": "LOW",
-        "statement": "Gets all files belonging to a project."
-      },
-      {
-        "topic": "File Analysis",
-        "impact": "MEDIUM",
-        "statement": "Updates file analysis status."
-      }
-    ]
-  },
-  {
-    "file": "app/services/fact_service.py",
-    "conclusions": [
-      {
-        "topic": "Data",
-        "impact": "HIGH",
-        "statement": "Registers a new fact in the database."
-      },
-      {
-        "topic": "Data",
-        "impact": "MEDIUM",
-        "statement": "Retrieves all facts for a project."
-      },
-      {
-        "topic": "Data",
-        "impact": "LOW",
-        "statement": "Registers multiple technology facts at once."
-      }
-    ]
-  },
-  {
-    "file": "/app/services/example.py",
-    "conclusions": [
-      {
-        "topic": "Scanning",
-        "impact": "MEDIUM",
-        "statement": "Uses JavaScriptScanner to scan the project directory."
-      }
-    ]
-  },
-  {
-    "file": "/app/pipeline/orchestrator.py",
-    "conclusions": [
-      {
-        "topic": "State Management",
-        "impact": "MEDIUM",
-        "statement": "Shared state between pipeline steps is managed using a PipelineContext dataclass."
-      },
-      {
-        "topic": "Logging",
-        "impact": "LOW",
-        "statement": "Error logging is handled by the get_logger function from app.core.logger module."
-      },
-      {
-        "topic": "Pipeline Execution",
-        "impact": "MEDIUM",
-        "statement": "AnalysisPipeline executes steps in sequence, handling errors and logging along the way."
-      }
-    ]
-  },
-  {
-    "file": "/app/pipeline/steps/prepare_workspace.py",
-    "conclusions": [
-      {
-        "topic": "Workspace Management",
-        "impact": "MEDIUM",
-        "statement": "Creates an isolated workspace directory using tempfile and uuid4."
-      },
-      {
-        "topic": "Error Handling",
-        "impact": "LOW",
-        "statement": "Raises a WorkspaceError if the workspace setup fails with the path as error message."
-      }
-    ]
-  },
-  {
-    "file": "/app/pipeline/steps/analyze_project.py",
-    "conclusions": [
-      {
-        "topic": "Database Management",
-        "impact": "MEDIUM",
-        "statement": "The step uses a database session from the context for project and analysis services."
-      },
-      {
-        "topic": "Project Registration",
-        "impact": "LOW",
-        "statement": "It attempts to register a project if it does not already exist in the database."
-      },
-      {
-        "topic": "Error Handling",
-        "impact": "MEDIUM",
-        "statement": "If any step fails, it raises an AnalysisStepError with a descriptive message."
-      },
-      {
-        "topic": "AI Analysis",
-        "impact": "LOW",
-        "statement": "The analysis is run in two steps: project creation and report generation."
-      }
-    ]
-  },
-  {
-    "file": "/app/pipeline/steps/clone_repo.py",
-    "conclusions": [
-      {
-        "topic": "Git Integration",
-        "impact": "MEDIUM",
-        "statement": "The clone_repo function uses the GitClient class to clone a repository from a given URL."
-      },
-      {
-        "topic": "Error Handling",
-        "impact": "LOW",
-        "statement": "The function raises a CloneRepositoryError if it fails to clone the repository."
-      }
-    ]
-  }
-]
+{
+  "total_files": 55,
+  "total_duration_seconds": 727.52,
+  "results": [
+    {
+      "file": "/path/to/app/main.py",
+      "conclusions": [
+        {
+          "topic": "Data Access",
+          "impact": "MEDIUM",
+          "statement": "The FastAPI application uses `SQLModel` to interact with the database, mapping models to tables."
+        },
+        {
+          "topic": "Architecture",
+          "impact": "HIGH",
+          "statement": "The application utilizes `asynccontextmanager` for asynchronous context management and `pydantic` for robust data validation and parsing."
+        },
+        {
+          "topic": "API Endpoints",
+          "impact": "LOW",
+          "statement": "The HTTP health check endpoint is defined to return a simple 'ok' status."
+        }
+      ]
+    },
+    {
+      "file": "/path/to/app/infra/git_client.py",
+      "conclusions": [
+        {
+          "topic": "Infrastructure",
+          "impact": "HIGH",
+          "statement": "The GitClient class utilizes `httpx` for GitHub API interactions and `git` library to manage local repositories."
+        },
+        {
+          "topic": "APIs and Services",
+          "impact": "MEDIUM",
+          "statement": "The class provides methods for cloning, opening, listing branches, checking out branches, pulling from remote repositories, retrieving the latest commit, and fetching information about GitHub repositories."
+        }
+      ]
+    },
+    {
+      "file": "/path/to/app/infra/workspace.py",
+      "conclusions": [
+        {
+          "topic": "Infrastructure",
+          "impact": "MEDIUM",
+          "statement": "The Workspace class initializes a unique workspace by appending a UUID identifier to the system temp path, ensuring isolation for the cloned repo."
+        },
+        {
+          "topic": "File Management",
+          "impact": "LOW",
+          "statement": "The create method creates a directory at the specified repository path using `pathlib.Path.mkdir` with parents=True and exist_ok=False."
+        },
+        {
+          "topic": "Error Handling",
+          "impact": "MEDIUM",
+          "statement": "The cleanup method removes the entire workspace directory using `shutil.rmtree` with ignore_errors=True, when the path exists."
+        }
+      ]
+    },
+    {
+      "file": "/path/to/app/services/analysis_service.py",
+      "conclusions": [
+        {
+          "topic": "Infrastructure",
+          "impact": "MEDIUM",
+          "statement": "The AnalysisService class initializes a FactService instance to fetch facts and a ProjectService instance to retrieve project metadata."
+        },
+        {
+          "topic": "Data Processing",
+          "impact": "HIGH",
+          "statement": "The generate_analysis_report method executes a dynamic discovery pipeline using the LLMFactory to set up an AI agent, which then creates and executes a ProjectDiscoveryPipeline with various scanners, tools, and stages."
+        }
+      ]
+    },
+    {
+      "file": "/path/to/app/services/project_service.py",
+      "conclusions": [
+        {
+          "topic": "Infrastructure",
+          "impact": "MEDIUM",
+          "statement": "The ProjectService class initializes a ProjectRepository instance to interact with project data in the database."
+        },
+        {
+          "topic": "Data Management",
+          "impact": "HIGH",
+          "statement": "The create_project method creates a new project record in the database, setting created_at and updated_at timestamps to UTC time using datetime.now(timezone.utc).isoformat()."
+        }
+      ]
+    },
+    {
+      "file": "app/pipeline/steps/prepare_workspace.py",
+      "conclusions": [
+        {
+          "topic": "Data Access",
+          "impact": "MEDIUM",
+          "statement": "Uses `pathlib` to create a temporary directory at `/tmp/ira-docgen/${workspace_id}` with path attributes attached to the context."
+        },
+        {
+          "topic": "Error Handling",
+          "impact": "LOW",
+          "statement": "Raises a custom `WorkspaceError` exception when workspace creation fails, providing a detailed error message."
+        }
+      ]
+    }
+  ]
+}

@@ -2,27 +2,22 @@
   {
     "results": [
       {
-        "file": "/path/to/analysis/report1.json",
+        "file": "/path/to/file1.py",
         "conclusions": [
           {
             "topic": "Auth",
             "impact": "HIGH",
-            "statement": "This code has high security impact."
+            "statement": "This is a critical fact."
           }
         ]
       },
       {
-        "file": "/path/to/analysis/report2.json",
+        "file": "/path/to/file2.py",
         "conclusions": [
           {
-            "topic": "Data",
-            "impact": "MEDIUM",
-            "statement": "This data storage is moderate in size."
-          },
-          {
             "topic": "UI",
-            "impact": "LOW",
-            "statement": "The user interface is minimalistic."
+            "impact": "MEDIUM",
+            "statement": "This is an important fact."
           }
         ]
       }
@@ -31,628 +26,22 @@
   {
     "results": [
       {
-        "file": "/path/to/analysis/report1.json",
+        "file": "/path/to/file1.py",
         "conclusions": [
           {
             "topic": "Auth",
             "impact": "HIGH",
-            "statement": "This code has high security impact."
+            "statement": "This is a critical fact."
           }
         ]
       },
       {
-        "file": "/path/to/analysis/report2.json",
+        "file": "/path/to/file2.py",
         "conclusions": [
-          {
-            "topic": "Data",
-            "impact": "MEDIUM",
-            "statement": "This data storage is moderate in size."
-          },
           {
             "topic": "UI",
-            "impact": "LOW",
-            "statement": "The user interface is minimalistic."
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "results": [
-      {
-        "file": "/app/services/relation_service.py",
-        "conclusions": [
-          {
-            "topic": "Data Access",
             "impact": "MEDIUM",
-            "statement": "Uses Repository pattern to abstract DB access, utilizing `RelationRepository` class for CRUD operations."
-          },
-          {
-            "topic": "Error Handling",
-            "impact": "LOW",
-            "statement": "Does not explicitly handle errors in relation creation and retrieval methods."
-          }
-        ]
-      },
-      {
-        "file": "/app/services/file_service.py",
-        "conclusions": [
-          {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Uses Repository pattern to abstract DB access, utilizing `FileRepository` class for CRUD operations."
-          },
-          {
-            "topic": "Error Handling",
-            "impact": "LOW",
-            "statement": "Does not explicitly handle errors in file registration and retrieval methods."
-          }
-        ]
-      },
-      {
-        "file": "/app/services/fact_service.py",
-        "conclusions": [
-          {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Uses Repository pattern to abstract DB access, utilizing `FactRepository` class for CRUD operations."
-          },
-          {
-            "topic": "Error Handling",
-            "impact": "LOW",
-            "statement": "Does not explicitly handle errors in fact creation and retrieval methods."
-          }
-        ]
-      },
-      {
-        "file": "/app/services/example.py",
-        "conclusions": [
-          {
-            "topic": "Error Handling",
-            "impact": "MEDIUM",
-            "statement": "Uses a try-except block to handle potential exceptions when running the JavaScript scanner."
-          }
-        ]
-      },
-      {
-        "file": "/app/pipeline/orchestrator.py",
-        "conclusions": [
-          {
-            "topic": "Error Handling",
-            "impact": "MEDIUM",
-            "statement": "Uses a try-except block to handle potential exceptions when executing pipeline steps."
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "results": [
-      {
-        "file": "/app/services/relation_service.py",
-        "conclusions": [
-          {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Uses Repository pattern to abstract DB access, utilizing `RelationRepository` class for CRUD operations."
-          },
-          {
-            "topic": "Error Handling",
-            "impact": "LOW",
-            "statement": "Does not explicitly handle errors in relation creation and retrieval methods."
-          }
-        ]
-      },
-      {
-        "file": "/app/services/file_service.py",
-        "conclusions": [
-          {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Uses Repository pattern to abstract DB access, utilizing `FileRepository` class for CRUD operations."
-          },
-          {
-            "topic": "Error Handling",
-            "impact": "LOW",
-            "statement": "Does not explicitly handle errors in file registration and retrieval methods."
-          }
-        ]
-      },
-      {
-        "file": "/app/services/fact_service.py",
-        "conclusions": [
-          {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Uses Repository pattern to abstract DB access, utilizing `FactRepository` class for CRUD operations."
-          },
-          {
-            "topic": "Error Handling",
-            "impact": "LOW",
-            "statement": "Does not explicitly handle errors in fact creation and retrieval methods."
-          }
-        ]
-      },
-      {
-        "file": "/app/services/example.py",
-        "conclusions": [
-          {
-            "topic": "Error Handling",
-            "impact": "MEDIUM",
-            "statement": "Uses a try-except block to handle potential exceptions when running the JavaScript scanner."
-          }
-        ]
-      },
-      {
-        "file": "/app/pipeline/orchestrator.py",
-        "conclusions": [
-          {
-            "topic": "Error Handling",
-            "impact": "MEDIUM",
-            "statement": "Uses a try-except block to handle potential exceptions when executing pipeline steps."
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "results": [
-      {
-        "file": "/app/services/relation_service.py",
-        "conclusions": [
-          {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Uses Repository pattern to abstract DB access, utilizing `RelationRepository` class for CRUD operations."
-          },
-          {
-            "topic": "Error Handling",
-            "impact": "LOW",
-            "statement": "Does not explicitly handle errors in relation creation and retrieval methods."
-          }
-        ]
-      },
-      {
-        "file": "/app/services/file_service.py",
-        "conclusions": [
-          {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Uses Repository pattern to abstract DB access, utilizing `FileRepository` class for CRUD operations."
-          },
-          {
-            "topic": "Error Handling",
-            "impact": "LOW",
-            "statement": "Does not explicitly handle errors in file registration and retrieval methods."
-          }
-        ]
-      },
-      {
-        "file": "/app/services/fact_service.py",
-        "conclusions": [
-          {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Uses Repository pattern to abstract DB access, utilizing `FactRepository` class for CRUD operations."
-          },
-          {
-            "topic": "Error Handling",
-            "impact": "LOW",
-            "statement": "Does not explicitly handle errors in fact creation and retrieval methods."
-          }
-        ]
-      },
-      {
-        "file": "/app/services/example.py",
-        "conclusions": [
-          {
-            "topic": "Error Handling",
-            "impact": "MEDIUM",
-            "statement": "Uses a try-except block to handle potential exceptions when running the JavaScript scanner."
-          }
-        ]
-      },
-      {
-        "file": "/app/pipeline/orchestrator.py",
-        "conclusions": [
-          {
-            "topic": "Error Handling",
-            "impact": "MEDIUM",
-            "statement": "Uses a try-except block to handle potential exceptions when executing pipeline steps."
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "results": [
-      {
-        "file": "/app/services/relation_service.py",
-        "conclusions": [
-          {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Uses Repository pattern to abstract DB access, utilizing `RelationRepository` class for CRUD operations."
-          },
-          {
-            "topic": "Error Handling",
-            "impact": "LOW",
-            "statement": "Does not explicitly handle errors in relation creation and retrieval methods."
-          }
-        ]
-      },
-      {
-        "file": "/app/services/file_service.py",
-        "conclusions": [
-          {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Uses Repository pattern to abstract DB access, utilizing `FileRepository` class for CRUD operations."
-          },
-          {
-            "topic": "Error Handling",
-            "impact": "LOW",
-            "statement": "Does not explicitly handle errors in file registration and retrieval methods."
-          }
-        ]
-      },
-      {
-        "file": "/app/services/fact_service.py",
-        "conclusions": [
-          {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Uses Repository pattern to abstract DB access, utilizing `FactRepository` class for CRUD operations."
-          },
-          {
-            "topic": "Error Handling",
-            "impact": "LOW",
-            "statement": "Does not explicitly handle errors in fact creation and retrieval methods."
-          }
-        ]
-      },
-      {
-        "file": "/app/services/example.py",
-        "conclusions": [
-          {
-            "topic": "Error Handling",
-            "impact": "MEDIUM",
-            "statement": "Uses a try-except block to handle potential exceptions when running the JavaScript scanner."
-          }
-        ]
-      },
-      {
-        "file": "/app/pipeline/orchestrator.py",
-        "conclusions": [
-          {
-            "topic": "Error Handling",
-            "impact": "MEDIUM",
-            "statement": "Uses a try-except block to handle potential exceptions when executing pipeline steps."
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "results": [
-      {
-        "file": "/app/services/relation_service.py",
-        "conclusions": [
-          {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Uses Repository pattern to abstract DB access, utilizing `RelationRepository` class for CRUD operations."
-          },
-          {
-            "topic": "Error Handling",
-            "impact": "LOW",
-            "statement": "Does not explicitly handle errors in relation creation and retrieval methods."
-          }
-        ]
-      },
-      {
-        "file": "/app/services/file_service.py",
-        "conclusions": [
-          {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Uses Repository pattern to abstract DB access, utilizing `FileRepository` class for CRUD operations."
-          },
-          {
-            "topic": "Error Handling",
-            "impact": "LOW",
-            "statement": "Does not explicitly handle errors in file registration and retrieval methods."
-          }
-        ]
-      },
-      {
-        "file": "/app/services/fact_service.py",
-        "conclusions": [
-          {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Uses Repository pattern to abstract DB access, utilizing `FactRepository` class for CRUD operations."
-          },
-          {
-            "topic": "Error Handling",
-            "impact": "LOW",
-            "statement": "Does not explicitly handle errors in fact creation and retrieval methods."
-          }
-        ]
-      },
-      {
-        "file": "/app/services/example.py",
-        "conclusions": [
-          {
-            "topic": "Error Handling",
-            "impact": "MEDIUM",
-            "statement": "Uses a try-except block to handle potential exceptions when running the JavaScript scanner."
-          }
-        ]
-      },
-      {
-        "file": "/app/pipeline/orchestrator.py",
-        "conclusions": [
-          {
-            "topic": "Error Handling",
-            "impact": "MEDIUM",
-            "statement": "Uses a try-except block to handle potential exceptions when executing pipeline steps."
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "results": [
-      {
-        "file": "/app/agents/tools/project_tools.py",
-        "conclusions": [
-          {
-            "topic": "project",
-            "impact": "MEDIUM",
-            "statement": "This tool creates a new project record in the system."
-          },
-          {
-            "topic": "file",
-            "impact": "HIGH",
-            "statement": "This tool lists all files that have been registered for a project."
-          }
-        ]
-      },
-      {
-        "file": "/app/agents/tools/file_tools.py",
-        "conclusions": [
-          {
-            "topic": "file",
-            "impact": "LOW",
-            "statement": "This tool registers a new file in the project database."
-          },
-          {
-            "topic": "file",
-            "impact": "MEDIUM",
-            "statement": "This tool reads the full content of a file from the local filesystem."
-          }
-        ]
-      },
-      {
-        "file": "/app/agents/tools/relation_tools.py",
-        "conclusions": [
-          {
-            "topic": "relation",
-            "impact": "HIGH",
-            "statement": "This tool registers a relationship between two components of the project."
-          },
-          {
-            "topic": "relation",
-            "impact": "MEDIUM",
-            "statement": "This tool lists all architectural relations discovered in the project."
-          }
-        ]
-      },
-      {
-        "file": "/app/agents/tools/fact_tools.py",
-        "conclusions": [
-          {
-            "topic": "fact",
-            "impact": "LOW",
-            "statement": "This tool registers a new finding or fact discovered about the project."
-          },
-          {
-            "topic": "fact",
-            "impact": "MEDIUM",
-            "statement": "This tool lists all facts discovered for a specific project."
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "results": [
-      {
-        "file": "/app/agents/tools/project_tools.py",
-        "conclusions": [
-          {
-            "topic": "project",
-            "impact": "MEDIUM",
-            "statement": "This tool creates a new project record in the system."
-          },
-          {
-            "topic": "file",
-            "impact": "HIGH",
-            "statement": "This tool lists all files that have been registered for a project."
-          }
-        ]
-      },
-      {
-        "file": "/app/agents/tools/file_tools.py",
-        "conclusions": [
-          {
-            "topic": "file",
-            "impact": "LOW",
-            "statement": "This tool registers a new file in the project database."
-          },
-          {
-            "topic": "file",
-            "impact": "MEDIUM",
-            "statement": "This tool reads the full content of a file from the local filesystem."
-          }
-        ]
-      },
-      {
-        "file": "/app/agents/tools/relation_tools.py",
-        "conclusions": [
-          {
-            "topic": "relation",
-            "impact": "HIGH",
-            "statement": "This tool registers a relationship between two components of the project."
-          },
-          {
-            "topic": "relation",
-            "impact": "MEDIUM",
-            "statement": "This tool lists all architectural relations discovered in the project."
-          }
-        ]
-      },
-      {
-        "file": "/app/agents/tools/fact_tools.py",
-        "conclusions": [
-          {
-            "topic": "fact",
-            "impact": "LOW",
-            "statement": "This tool registers a new finding or fact discovered about the project."
-          },
-          {
-            "topic": "fact",
-            "impact": "MEDIUM",
-            "statement": "This tool lists all facts discovered for a specific project."
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "results": [
-      {
-        "file": "/app/agents/tools/project_tools.py",
-        "conclusions": [
-          {
-            "topic": "project",
-            "impact": "MEDIUM",
-            "statement": "This tool creates a new project record in the system."
-          },
-          {
-            "topic": "file",
-            "impact": "HIGH",
-            "statement": "This tool lists all files that have been registered for a project."
-          }
-        ]
-      },
-      {
-        "file": "/app/agents/tools/file_tools.py",
-        "conclusions": [
-          {
-            "topic": "file",
-            "impact": "LOW",
-            "statement": "This tool registers a new file in the project database."
-          },
-          {
-            "topic": "file",
-            "impact": "MEDIUM",
-            "statement": "This tool reads the full content of a file from the local filesystem."
-          }
-        ]
-      },
-      {
-        "file": "/app/agents/tools/relation_tools.py",
-        "conclusions": [
-          {
-            "topic": "relation",
-            "impact": "HIGH",
-            "statement": "This tool registers a relationship between two components of the project."
-          },
-          {
-            "topic": "relation",
-            "impact": "MEDIUM",
-            "statement": "This tool lists all architectural relations discovered in the project."
-          }
-        ]
-      },
-      {
-        "file": "/app/agents/tools/fact_tools.py",
-        "conclusions": [
-          {
-            "topic": "fact",
-            "impact": "LOW",
-            "statement": "This tool registers a new finding or fact discovered about the project."
-          },
-          {
-            "topic": "fact",
-            "impact": "MEDIUM",
-            "statement": "This tool lists all facts discovered for a specific project."
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "results": [
-      {
-        "file": "/app/agents/tools/project_tools.py",
-        "conclusions": [
-          {
-            "topic": "project",
-            "impact": "MEDIUM",
-            "statement": "This tool creates a new project record in the system."
-          },
-          {
-            "topic": "file",
-            "impact": "HIGH",
-            "statement": "This tool lists all files that have been registered for a project."
-          }
-        ]
-      },
-      {
-        "file": "/app/agents/tools/file_tools.py",
-        "conclusions": [
-          {
-            "topic": "file",
-            "impact": "LOW",
-            "statement": "This tool registers a new file in the project database."
-          },
-          {
-            "topic": "file",
-            "impact": "MEDIUM",
-            "statement": "This tool reads the full content of a file from the local filesystem."
-          }
-        ]
-      },
-      {
-        "file": "/app/agents/tools/relation_tools.py",
-        "conclusions": [
-          {
-            "topic": "relation",
-            "impact": "HIGH",
-            "statement": "This tool registers a relationship between two components of the project."
-          },
-          {
-            "topic": "relation",
-            "impact": "MEDIUM",
-            "statement": "This tool lists all architectural relations discovered in the project."
-          }
-        ]
-      },
-      {
-        "file": "/app/agents/tools/fact_tools.py",
-        "conclusions": [
-          {
-            "topic": "fact",
-            "impact": "LOW",
-            "statement": "This tool registers a new finding or fact discovered about the project."
-          },
-          {
-            "topic": "fact",
-            "impact": "MEDIUM",
-            "statement": "This tool lists all facts discovered for a specific project."
+            "statement": "This is an important fact."
           }
         ]
       }
@@ -664,9 +53,9 @@
         "file": "app/agents/core/prompt_loader.py",
         "conclusions": [
           {
-            "topic": "Data Access",
+            "topic": "Data Loading",
             "impact": "MEDIUM",
-            "statement": "Loads prompts from text files in the PROMPTS_DIR directory, ensuring file existence and proper encoding."
+            "statement": "Loads prompts from text files within the `prompts` directory by reading and formatting file content using `Path` object for path manipulation and `open` function in read mode with UTF-8 encoding."
           }
         ]
       },
@@ -674,9 +63,9 @@
         "file": "app/agents/core/factory.py",
         "conclusions": [
           {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Uses OllamaClient to interact with the LLM service, relying on configuration settings for host and model parameters."
+            "topic": "LLM Client Factory",
+            "impact": "HIGH",
+            "statement": "Provides a factory to get the appropriate LLM client based on the specified provider (currently supporting Ollama) by utilizing environment variables for settings initialization."
           }
         ]
       },
@@ -684,29 +73,9 @@
         "file": "app/agents/core/base.py",
         "conclusions": [
           {
-            "topic": "Security",
+            "topic": "Base LLM Client Interface",
             "impact": "HIGH",
-            "statement": "Defines an abstract BaseLLMClient class with methods for generating responses, processing messages, and streaming generation, ensuring secure interactions with the LLM service."
-          }
-        ]
-      },
-      {
-        "file": "app/agents/core/pipeline.py",
-        "conclusions": [
-          {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Manages a sequential flow of analysis stages using AgentExecutor to build upon previous findings, facilitating data access and processing."
-          }
-        ]
-      },
-      {
-        "file": "app/agents/core/pipeline.py",
-        "conclusions": [
-          {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Executes a single stage of the ladder, limiting tools if specified and injecting stage instructions into the agent's memory."
+            "statement": "Defines the base interface for all LLM clients with abstract methods for generating responses, processing messages, and streaming generation using asynchronous operations."
           }
         ]
       },
@@ -714,9 +83,19 @@
         "file": "app/agents/core/ollama_client.py",
         "conclusions": [
           {
-            "topic": "Data Access",
+            "topic": "Ollama Client Implementation",
+            "impact": "HIGH",
+            "statement": "Implements the Ollama client using the ollama library for asynchronous generation, chat, and streaming operations based on environment settings."
+          }
+        ]
+      },
+      {
+        "file": "app/agents/core/pipeline.py",
+        "conclusions": [
+          {
+            "topic": "Pipeline Management",
             "impact": "MEDIUM",
-            "statement": "Interacts with the Ollama library to generate responses, process messages, and stream generation, relying on configuration settings for host and model parameters."
+            "statement": "Manages a sequential flow of analysis stages using stateful AgentExecutor to build upon previous findings and handle tool support for each stage."
           }
         ]
       }
@@ -728,9 +107,9 @@
         "file": "app/agents/core/prompt_loader.py",
         "conclusions": [
           {
-            "topic": "Data Access",
+            "topic": "Data Loading",
             "impact": "MEDIUM",
-            "statement": "Loads prompts from text files in the PROMPTS_DIR directory, ensuring file existence and proper encoding."
+            "statement": "Loads prompts from text files within the `prompts` directory by reading and formatting file content using `Path` object for path manipulation and `open` function in read mode with UTF-8 encoding."
           }
         ]
       },
@@ -738,9 +117,9 @@
         "file": "app/agents/core/factory.py",
         "conclusions": [
           {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Uses OllamaClient to interact with the LLM service, relying on configuration settings for host and model parameters."
+            "topic": "LLM Client Factory",
+            "impact": "HIGH",
+            "statement": "Provides a factory to get the appropriate LLM client based on the specified provider (currently supporting Ollama) by utilizing environment variables for settings initialization."
           }
         ]
       },
@@ -748,29 +127,9 @@
         "file": "app/agents/core/base.py",
         "conclusions": [
           {
-            "topic": "Security",
+            "topic": "Base LLM Client Interface",
             "impact": "HIGH",
-            "statement": "Defines an abstract BaseLLMClient class with methods for generating responses, processing messages, and streaming generation, ensuring secure interactions with the LLM service."
-          }
-        ]
-      },
-      {
-        "file": "app/agents/core/pipeline.py",
-        "conclusions": [
-          {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Manages a sequential flow of analysis stages using AgentExecutor to build upon previous findings, facilitating data access and processing."
-          }
-        ]
-      },
-      {
-        "file": "app/agents/core/pipeline.py",
-        "conclusions": [
-          {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Executes a single stage of the ladder, limiting tools if specified and injecting stage instructions into the agent's memory."
+            "statement": "Defines the base interface for all LLM clients with abstract methods for generating responses, processing messages, and streaming generation using asynchronous operations."
           }
         ]
       },
@@ -778,9 +137,19 @@
         "file": "app/agents/core/ollama_client.py",
         "conclusions": [
           {
-            "topic": "Data Access",
+            "topic": "Ollama Client Implementation",
+            "impact": "HIGH",
+            "statement": "Implements the Ollama client using the ollama library for asynchronous generation, chat, and streaming operations based on environment settings."
+          }
+        ]
+      },
+      {
+        "file": "app/agents/core/pipeline.py",
+        "conclusions": [
+          {
+            "topic": "Pipeline Management",
             "impact": "MEDIUM",
-            "statement": "Interacts with the Ollama library to generate responses, process messages, and stream generation, relying on configuration settings for host and model parameters."
+            "statement": "Manages a sequential flow of analysis stages using stateful AgentExecutor to build upon previous findings and handle tool support for each stage."
           }
         ]
       }
@@ -792,9 +161,9 @@
         "file": "app/agents/core/prompt_loader.py",
         "conclusions": [
           {
-            "topic": "Data Access",
+            "topic": "Data Loading",
             "impact": "MEDIUM",
-            "statement": "Loads prompts from text files in the PROMPTS_DIR directory, ensuring file existence and proper encoding."
+            "statement": "Loads prompts from text files within the `prompts` directory by reading and formatting file content using `Path` object for path manipulation and `open` function in read mode with UTF-8 encoding."
           }
         ]
       },
@@ -802,9 +171,9 @@
         "file": "app/agents/core/factory.py",
         "conclusions": [
           {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Uses OllamaClient to interact with the LLM service, relying on configuration settings for host and model parameters."
+            "topic": "LLM Client Factory",
+            "impact": "HIGH",
+            "statement": "Provides a factory to get the appropriate LLM client based on the specified provider (currently supporting Ollama) by utilizing environment variables for settings initialization."
           }
         ]
       },
@@ -812,29 +181,9 @@
         "file": "app/agents/core/base.py",
         "conclusions": [
           {
-            "topic": "Security",
+            "topic": "Base LLM Client Interface",
             "impact": "HIGH",
-            "statement": "Defines an abstract BaseLLMClient class with methods for generating responses, processing messages, and streaming generation, ensuring secure interactions with the LLM service."
-          }
-        ]
-      },
-      {
-        "file": "app/agents/core/pipeline.py",
-        "conclusions": [
-          {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Manages a sequential flow of analysis stages using AgentExecutor to build upon previous findings, facilitating data access and processing."
-          }
-        ]
-      },
-      {
-        "file": "app/agents/core/pipeline.py",
-        "conclusions": [
-          {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Executes a single stage of the ladder, limiting tools if specified and injecting stage instructions into the agent's memory."
+            "statement": "Defines the base interface for all LLM clients with abstract methods for generating responses, processing messages, and streaming generation using asynchronous operations."
           }
         ]
       },
@@ -842,9 +191,19 @@
         "file": "app/agents/core/ollama_client.py",
         "conclusions": [
           {
-            "topic": "Data Access",
+            "topic": "Ollama Client Implementation",
+            "impact": "HIGH",
+            "statement": "Implements the Ollama client using the ollama library for asynchronous generation, chat, and streaming operations based on environment settings."
+          }
+        ]
+      },
+      {
+        "file": "app/agents/core/pipeline.py",
+        "conclusions": [
+          {
+            "topic": "Pipeline Management",
             "impact": "MEDIUM",
-            "statement": "Interacts with the Ollama library to generate responses, process messages, and stream generation, relying on configuration settings for host and model parameters."
+            "statement": "Manages a sequential flow of analysis stages using stateful AgentExecutor to build upon previous findings and handle tool support for each stage."
           }
         ]
       }
@@ -856,9 +215,9 @@
         "file": "app/agents/core/prompt_loader.py",
         "conclusions": [
           {
-            "topic": "Data Access",
+            "topic": "Data Loading",
             "impact": "MEDIUM",
-            "statement": "Loads prompts from text files in the PROMPTS_DIR directory, ensuring file existence and proper encoding."
+            "statement": "Loads prompts from text files within the `prompts` directory by reading and formatting file content using `Path` object for path manipulation and `open` function in read mode with UTF-8 encoding."
           }
         ]
       },
@@ -866,9 +225,9 @@
         "file": "app/agents/core/factory.py",
         "conclusions": [
           {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Uses OllamaClient to interact with the LLM service, relying on configuration settings for host and model parameters."
+            "topic": "LLM Client Factory",
+            "impact": "HIGH",
+            "statement": "Provides a factory to get the appropriate LLM client based on the specified provider (currently supporting Ollama) by utilizing environment variables for settings initialization."
           }
         ]
       },
@@ -876,29 +235,9 @@
         "file": "app/agents/core/base.py",
         "conclusions": [
           {
-            "topic": "Security",
+            "topic": "Base LLM Client Interface",
             "impact": "HIGH",
-            "statement": "Defines an abstract BaseLLMClient class with methods for generating responses, processing messages, and streaming generation, ensuring secure interactions with the LLM service."
-          }
-        ]
-      },
-      {
-        "file": "app/agents/core/pipeline.py",
-        "conclusions": [
-          {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Manages a sequential flow of analysis stages using AgentExecutor to build upon previous findings, facilitating data access and processing."
-          }
-        ]
-      },
-      {
-        "file": "app/agents/core/pipeline.py",
-        "conclusions": [
-          {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Executes a single stage of the ladder, limiting tools if specified and injecting stage instructions into the agent's memory."
+            "statement": "Defines the base interface for all LLM clients with abstract methods for generating responses, processing messages, and streaming generation using asynchronous operations."
           }
         ]
       },
@@ -906,9 +245,19 @@
         "file": "app/agents/core/ollama_client.py",
         "conclusions": [
           {
-            "topic": "Data Access",
+            "topic": "Ollama Client Implementation",
+            "impact": "HIGH",
+            "statement": "Implements the Ollama client using the ollama library for asynchronous generation, chat, and streaming operations based on environment settings."
+          }
+        ]
+      },
+      {
+        "file": "app/agents/core/pipeline.py",
+        "conclusions": [
+          {
+            "topic": "Pipeline Management",
             "impact": "MEDIUM",
-            "statement": "Interacts with the Ollama library to generate responses, process messages, and stream generation, relying on configuration settings for host and model parameters."
+            "statement": "Manages a sequential flow of analysis stages using stateful AgentExecutor to build upon previous findings and handle tool support for each stage."
           }
         ]
       }
@@ -920,9 +269,9 @@
         "file": "app/agents/core/prompt_loader.py",
         "conclusions": [
           {
-            "topic": "Data Access",
+            "topic": "Data Loading",
             "impact": "MEDIUM",
-            "statement": "Loads prompts from text files in the PROMPTS_DIR directory, ensuring file existence and proper encoding."
+            "statement": "Loads prompts from text files within the `prompts` directory by reading and formatting file content using `Path` object for path manipulation and `open` function in read mode with UTF-8 encoding."
           }
         ]
       },
@@ -930,9 +279,9 @@
         "file": "app/agents/core/factory.py",
         "conclusions": [
           {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Uses OllamaClient to interact with the LLM service, relying on configuration settings for host and model parameters."
+            "topic": "LLM Client Factory",
+            "impact": "HIGH",
+            "statement": "Provides a factory to get the appropriate LLM client based on the specified provider (currently supporting Ollama) by utilizing environment variables for settings initialization."
           }
         ]
       },
@@ -940,29 +289,9 @@
         "file": "app/agents/core/base.py",
         "conclusions": [
           {
-            "topic": "Security",
+            "topic": "Base LLM Client Interface",
             "impact": "HIGH",
-            "statement": "Defines an abstract BaseLLMClient class with methods for generating responses, processing messages, and streaming generation, ensuring secure interactions with the LLM service."
-          }
-        ]
-      },
-      {
-        "file": "app/agents/core/pipeline.py",
-        "conclusions": [
-          {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Manages a sequential flow of analysis stages using AgentExecutor to build upon previous findings, facilitating data access and processing."
-          }
-        ]
-      },
-      {
-        "file": "app/agents/core/pipeline.py",
-        "conclusions": [
-          {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Executes a single stage of the ladder, limiting tools if specified and injecting stage instructions into the agent's memory."
+            "statement": "Defines the base interface for all LLM clients with abstract methods for generating responses, processing messages, and streaming generation using asynchronous operations."
           }
         ]
       },
@@ -970,43 +299,9 @@
         "file": "app/agents/core/ollama_client.py",
         "conclusions": [
           {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Interacts with the Ollama library to generate responses, process messages, and stream generation, relying on configuration settings for host and model parameters."
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "results": [
-      {
-        "file": "app/agents/core/prompt_loader.py",
-        "conclusions": [
-          {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Loads prompts from text files in the PROMPTS_DIR directory, ensuring file existence and proper encoding."
-          }
-        ]
-      },
-      {
-        "file": "app/agents/core/factory.py",
-        "conclusions": [
-          {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Uses OllamaClient to interact with the LLM service, relying on configuration settings for host and model parameters."
-          }
-        ]
-      },
-      {
-        "file": "app/agents/core/base.py",
-        "conclusions": [
-          {
-            "topic": "Security",
+            "topic": "Ollama Client Implementation",
             "impact": "HIGH",
-            "statement": "Defines an abstract BaseLLMClient class with methods for generating responses, processing messages, and streaming generation, ensuring secure interactions with the LLM service."
+            "statement": "Implements the Ollama client using the ollama library for asynchronous generation, chat, and streaming operations based on environment settings."
           }
         ]
       },
@@ -1014,29 +309,9 @@
         "file": "app/agents/core/pipeline.py",
         "conclusions": [
           {
-            "topic": "Data Access",
+            "topic": "Pipeline Management",
             "impact": "MEDIUM",
-            "statement": "Manages a sequential flow of analysis stages using AgentExecutor to build upon previous findings, facilitating data access and processing."
-          }
-        ]
-      },
-      {
-        "file": "app/agents/core/pipeline.py",
-        "conclusions": [
-          {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Executes a single stage of the ladder, limiting tools if specified and injecting stage instructions into the agent's memory."
-          }
-        ]
-      },
-      {
-        "file": "app/agents/core/ollama_client.py",
-        "conclusions": [
-          {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Interacts with the Ollama library to generate responses, process messages, and stream generation, relying on configuration settings for host and model parameters."
+            "statement": "Manages a sequential flow of analysis stages using stateful AgentExecutor to build upon previous findings and handle tool support for each stage."
           }
         ]
       }
@@ -1048,29 +323,14 @@
         "file": "app/models/file.py",
         "conclusions": [
           {
-            "topic": "Data Model",
+            "topic": "Database Schema Design",
             "impact": "MEDIUM",
-            "statement": "Defines a database table 'files' with columns project_id, path, hash, language, analyzed, summary, and last_analyzed_at. The relationship between File and Project is established through the project_id foreign key."
+            "statement": "Establishes a many-to-one relationship between `files`, `tree_nodes`, `facts`, and `relations` tables and the `projects` table."
           },
           {
-            "topic": "Relationships",
-            "impact": "MEDIUM",
-            "statement": "Establishes a one-to-many relationship between Project and File using the back_populates parameter."
-          }
-        ]
-      },
-      {
-        "file": "app/models/tree_node.py",
-        "conclusions": [
-          {
-            "topic": "Data Model",
-            "impact": "MEDIUM",
-            "statement": "Defines a database table 'tree_nodes' with columns project_id, path, priority, status, reason, and depth. The relationship between TreeNode and Project is established through the project_id foreign key."
-          },
-          {
-            "topic": "Relationships",
-            "impact": "MEDIUM",
-            "statement": "Establishes a one-to-many relationship between Project and TreeNode using the back_populates parameter."
+            "topic": "Data Modeling",
+            "impact": "LOW",
+            "statement": "Uses SQLModel for database modeling with attributes for various data types (strings, integers, floats, optional values)."
           }
         ]
       },
@@ -1078,14 +338,29 @@
         "file": "app/models/project.py",
         "conclusions": [
           {
-            "topic": "Data Model",
-            "impact": "HIGH",
-            "statement": "Defines a database table 'projects' with columns id, name, root_path, created_at, and updated_at. It also establishes relationships between Project and other tables (File, Fact, Relation, TreeNode) using the back_populates parameter."
+            "topic": "Database Schema Design",
+            "impact": "MEDIUM",
+            "statement": "Defines the `projects` table as a central hub for all project-related data, referencing its own primary key in foreign keys."
           },
           {
             "topic": "Relationships",
-            "impact": "HIGH",
-            "statement": "Establishes one-to-many relationships between Project and various tables (File, Fact, Relation, TreeNode)."
+            "impact": "LOW",
+            "statement": "Uses back-populated relationships to establish connections between models (e.g., `Project.files`)."
+          }
+        ]
+      },
+      {
+        "file": "app/models/tree_node.py",
+        "conclusions": [
+          {
+            "topic": "Database Schema Design",
+            "impact": "MEDIUM",
+            "statement": "Establishes a many-to-one relationship between the `tree_nodes` table and the `projects` table."
+          },
+          {
+            "topic": "Data Modeling",
+            "impact": "LOW",
+            "statement": "Uses default values for fields like priority and status."
           }
         ]
       },
@@ -1093,14 +368,14 @@
         "file": "app/models/fact.py",
         "conclusions": [
           {
-            "topic": "Data Model",
+            "topic": "Database Schema Design",
             "impact": "MEDIUM",
-            "statement": "Defines a database table 'facts' with columns id, project_id, type, source, payload, confidence, and created_at. The relationship between Fact and Project is established through the project_id foreign key."
+            "statement": "Establishes a many-to-one relationship between the `facts` table and the `projects` table."
           },
           {
-            "topic": "Relationships",
-            "impact": "MEDIUM",
-            "statement": "Establishes a one-to-many relationship between Project and Fact using the back_populates parameter."
+            "topic": "Data Modeling",
+            "impact": "LOW",
+            "statement": "Uses attributes for optional values like type, source, payload, confidence, and created_at."
           }
         ]
       },
@@ -1108,14 +383,14 @@
         "file": "app/models/relation.py",
         "conclusions": [
           {
-            "topic": "Data Model",
+            "topic": "Database Schema Design",
             "impact": "MEDIUM",
-            "statement": "Defines a database table 'relations' with columns project_id, from_node, to_node, relation, and source. The relationship between Relation and Project is established through the project_id foreign key."
+            "statement": "Establishes a many-to-one relationship between the `relations` table and the `projects` table."
           },
           {
-            "topic": "Relationships",
-            "impact": "MEDIUM",
-            "statement": "Establishes a one-to-many relationship between Project and Relation using the back_populates parameter."
+            "topic": "Data Modeling",
+            "impact": "LOW",
+            "statement": "Uses attributes for optional values like source."
           }
         ]
       }
@@ -1127,29 +402,14 @@
         "file": "app/models/file.py",
         "conclusions": [
           {
-            "topic": "Data Model",
+            "topic": "Database Schema Design",
             "impact": "MEDIUM",
-            "statement": "Defines a database table 'files' with columns project_id, path, hash, language, analyzed, summary, and last_analyzed_at. The relationship between File and Project is established through the project_id foreign key."
+            "statement": "Establishes a many-to-one relationship between `files`, `tree_nodes`, `facts`, and `relations` tables and the `projects` table."
           },
           {
-            "topic": "Relationships",
-            "impact": "MEDIUM",
-            "statement": "Establishes a one-to-many relationship between Project and File using the back_populates parameter."
-          }
-        ]
-      },
-      {
-        "file": "app/models/tree_node.py",
-        "conclusions": [
-          {
-            "topic": "Data Model",
-            "impact": "MEDIUM",
-            "statement": "Defines a database table 'tree_nodes' with columns project_id, path, priority, status, reason, and depth. The relationship between TreeNode and Project is established through the project_id foreign key."
-          },
-          {
-            "topic": "Relationships",
-            "impact": "MEDIUM",
-            "statement": "Establishes a one-to-many relationship between Project and TreeNode using the back_populates parameter."
+            "topic": "Data Modeling",
+            "impact": "LOW",
+            "statement": "Uses SQLModel for database modeling with attributes for various data types (strings, integers, floats, optional values)."
           }
         ]
       },
@@ -1157,14 +417,29 @@
         "file": "app/models/project.py",
         "conclusions": [
           {
-            "topic": "Data Model",
-            "impact": "HIGH",
-            "statement": "Defines a database table 'projects' with columns id, name, root_path, created_at, and updated_at. It also establishes relationships between Project and other tables (File, Fact, Relation, TreeNode) using the back_populates parameter."
+            "topic": "Database Schema Design",
+            "impact": "MEDIUM",
+            "statement": "Defines the `projects` table as a central hub for all project-related data, referencing its own primary key in foreign keys."
           },
           {
             "topic": "Relationships",
-            "impact": "HIGH",
-            "statement": "Establishes one-to-many relationships between Project and various tables (File, Fact, Relation, TreeNode)."
+            "impact": "LOW",
+            "statement": "Uses back-populated relationships to establish connections between models (e.g., `Project.files`)."
+          }
+        ]
+      },
+      {
+        "file": "app/models/tree_node.py",
+        "conclusions": [
+          {
+            "topic": "Database Schema Design",
+            "impact": "MEDIUM",
+            "statement": "Establishes a many-to-one relationship between the `tree_nodes` table and the `projects` table."
+          },
+          {
+            "topic": "Data Modeling",
+            "impact": "LOW",
+            "statement": "Uses default values for fields like priority and status."
           }
         ]
       },
@@ -1172,14 +447,14 @@
         "file": "app/models/fact.py",
         "conclusions": [
           {
-            "topic": "Data Model",
+            "topic": "Database Schema Design",
             "impact": "MEDIUM",
-            "statement": "Defines a database table 'facts' with columns id, project_id, type, source, payload, confidence, and created_at. The relationship between Fact and Project is established through the project_id foreign key."
+            "statement": "Establishes a many-to-one relationship between the `facts` table and the `projects` table."
           },
           {
-            "topic": "Relationships",
-            "impact": "MEDIUM",
-            "statement": "Establishes a one-to-many relationship between Project and Fact using the back_populates parameter."
+            "topic": "Data Modeling",
+            "impact": "LOW",
+            "statement": "Uses attributes for optional values like type, source, payload, confidence, and created_at."
           }
         ]
       },
@@ -1187,14 +462,14 @@
         "file": "app/models/relation.py",
         "conclusions": [
           {
-            "topic": "Data Model",
+            "topic": "Database Schema Design",
             "impact": "MEDIUM",
-            "statement": "Defines a database table 'relations' with columns project_id, from_node, to_node, relation, and source. The relationship between Relation and Project is established through the project_id foreign key."
+            "statement": "Establishes a many-to-one relationship between the `relations` table and the `projects` table."
           },
           {
-            "topic": "Relationships",
-            "impact": "MEDIUM",
-            "statement": "Establishes a one-to-many relationship between Project and Relation using the back_populates parameter."
+            "topic": "Data Modeling",
+            "impact": "LOW",
+            "statement": "Uses attributes for optional values like source."
           }
         ]
       }
@@ -1206,29 +481,14 @@
         "file": "app/models/file.py",
         "conclusions": [
           {
-            "topic": "Data Model",
+            "topic": "Database Schema Design",
             "impact": "MEDIUM",
-            "statement": "Defines a database table 'files' with columns project_id, path, hash, language, analyzed, summary, and last_analyzed_at. The relationship between File and Project is established through the project_id foreign key."
+            "statement": "Establishes a many-to-one relationship between `files`, `tree_nodes`, `facts`, and `relations` tables and the `projects` table."
           },
           {
-            "topic": "Relationships",
-            "impact": "MEDIUM",
-            "statement": "Establishes a one-to-many relationship between Project and File using the back_populates parameter."
-          }
-        ]
-      },
-      {
-        "file": "app/models/tree_node.py",
-        "conclusions": [
-          {
-            "topic": "Data Model",
-            "impact": "MEDIUM",
-            "statement": "Defines a database table 'tree_nodes' with columns project_id, path, priority, status, reason, and depth. The relationship between TreeNode and Project is established through the project_id foreign key."
-          },
-          {
-            "topic": "Relationships",
-            "impact": "MEDIUM",
-            "statement": "Establishes a one-to-many relationship between Project and TreeNode using the back_populates parameter."
+            "topic": "Data Modeling",
+            "impact": "LOW",
+            "statement": "Uses SQLModel for database modeling with attributes for various data types (strings, integers, floats, optional values)."
           }
         ]
       },
@@ -1236,14 +496,29 @@
         "file": "app/models/project.py",
         "conclusions": [
           {
-            "topic": "Data Model",
-            "impact": "HIGH",
-            "statement": "Defines a database table 'projects' with columns id, name, root_path, created_at, and updated_at. It also establishes relationships between Project and other tables (File, Fact, Relation, TreeNode) using the back_populates parameter."
+            "topic": "Database Schema Design",
+            "impact": "MEDIUM",
+            "statement": "Defines the `projects` table as a central hub for all project-related data, referencing its own primary key in foreign keys."
           },
           {
             "topic": "Relationships",
-            "impact": "HIGH",
-            "statement": "Establishes one-to-many relationships between Project and various tables (File, Fact, Relation, TreeNode)."
+            "impact": "LOW",
+            "statement": "Uses back-populated relationships to establish connections between models (e.g., `Project.files`)."
+          }
+        ]
+      },
+      {
+        "file": "app/models/tree_node.py",
+        "conclusions": [
+          {
+            "topic": "Database Schema Design",
+            "impact": "MEDIUM",
+            "statement": "Establishes a many-to-one relationship between the `tree_nodes` table and the `projects` table."
+          },
+          {
+            "topic": "Data Modeling",
+            "impact": "LOW",
+            "statement": "Uses default values for fields like priority and status."
           }
         ]
       },
@@ -1251,14 +526,14 @@
         "file": "app/models/fact.py",
         "conclusions": [
           {
-            "topic": "Data Model",
+            "topic": "Database Schema Design",
             "impact": "MEDIUM",
-            "statement": "Defines a database table 'facts' with columns id, project_id, type, source, payload, confidence, and created_at. The relationship between Fact and Project is established through the project_id foreign key."
+            "statement": "Establishes a many-to-one relationship between the `facts` table and the `projects` table."
           },
           {
-            "topic": "Relationships",
-            "impact": "MEDIUM",
-            "statement": "Establishes a one-to-many relationship between Project and Fact using the back_populates parameter."
+            "topic": "Data Modeling",
+            "impact": "LOW",
+            "statement": "Uses attributes for optional values like type, source, payload, confidence, and created_at."
           }
         ]
       },
@@ -1266,14 +541,14 @@
         "file": "app/models/relation.py",
         "conclusions": [
           {
-            "topic": "Data Model",
+            "topic": "Database Schema Design",
             "impact": "MEDIUM",
-            "statement": "Defines a database table 'relations' with columns project_id, from_node, to_node, relation, and source. The relationship between Relation and Project is established through the project_id foreign key."
+            "statement": "Establishes a many-to-one relationship between the `relations` table and the `projects` table."
           },
           {
-            "topic": "Relationships",
-            "impact": "MEDIUM",
-            "statement": "Establishes a one-to-many relationship between Project and Relation using the back_populates parameter."
+            "topic": "Data Modeling",
+            "impact": "LOW",
+            "statement": "Uses attributes for optional values like source."
           }
         ]
       }
@@ -1285,29 +560,14 @@
         "file": "app/models/file.py",
         "conclusions": [
           {
-            "topic": "Data Model",
+            "topic": "Database Schema Design",
             "impact": "MEDIUM",
-            "statement": "Defines a database table 'files' with columns project_id, path, hash, language, analyzed, summary, and last_analyzed_at. The relationship between File and Project is established through the project_id foreign key."
+            "statement": "Establishes a many-to-one relationship between `files`, `tree_nodes`, `facts`, and `relations` tables and the `projects` table."
           },
           {
-            "topic": "Relationships",
-            "impact": "MEDIUM",
-            "statement": "Establishes a one-to-many relationship between Project and File using the back_populates parameter."
-          }
-        ]
-      },
-      {
-        "file": "app/models/tree_node.py",
-        "conclusions": [
-          {
-            "topic": "Data Model",
-            "impact": "MEDIUM",
-            "statement": "Defines a database table 'tree_nodes' with columns project_id, path, priority, status, reason, and depth. The relationship between TreeNode and Project is established through the project_id foreign key."
-          },
-          {
-            "topic": "Relationships",
-            "impact": "MEDIUM",
-            "statement": "Establishes a one-to-many relationship between Project and TreeNode using the back_populates parameter."
+            "topic": "Data Modeling",
+            "impact": "LOW",
+            "statement": "Uses SQLModel for database modeling with attributes for various data types (strings, integers, floats, optional values)."
           }
         ]
       },
@@ -1315,14 +575,29 @@
         "file": "app/models/project.py",
         "conclusions": [
           {
-            "topic": "Data Model",
-            "impact": "HIGH",
-            "statement": "Defines a database table 'projects' with columns id, name, root_path, created_at, and updated_at. It also establishes relationships between Project and other tables (File, Fact, Relation, TreeNode) using the back_populates parameter."
+            "topic": "Database Schema Design",
+            "impact": "MEDIUM",
+            "statement": "Defines the `projects` table as a central hub for all project-related data, referencing its own primary key in foreign keys."
           },
           {
             "topic": "Relationships",
-            "impact": "HIGH",
-            "statement": "Establishes one-to-many relationships between Project and various tables (File, Fact, Relation, TreeNode)."
+            "impact": "LOW",
+            "statement": "Uses back-populated relationships to establish connections between models (e.g., `Project.files`)."
+          }
+        ]
+      },
+      {
+        "file": "app/models/tree_node.py",
+        "conclusions": [
+          {
+            "topic": "Database Schema Design",
+            "impact": "MEDIUM",
+            "statement": "Establishes a many-to-one relationship between the `tree_nodes` table and the `projects` table."
+          },
+          {
+            "topic": "Data Modeling",
+            "impact": "LOW",
+            "statement": "Uses default values for fields like priority and status."
           }
         ]
       },
@@ -1330,14 +605,14 @@
         "file": "app/models/fact.py",
         "conclusions": [
           {
-            "topic": "Data Model",
+            "topic": "Database Schema Design",
             "impact": "MEDIUM",
-            "statement": "Defines a database table 'facts' with columns id, project_id, type, source, payload, confidence, and created_at. The relationship between Fact and Project is established through the project_id foreign key."
+            "statement": "Establishes a many-to-one relationship between the `facts` table and the `projects` table."
           },
           {
-            "topic": "Relationships",
-            "impact": "MEDIUM",
-            "statement": "Establishes a one-to-many relationship between Project and Fact using the back_populates parameter."
+            "topic": "Data Modeling",
+            "impact": "LOW",
+            "statement": "Uses attributes for optional values like type, source, payload, confidence, and created_at."
           }
         ]
       },
@@ -1345,14 +620,14 @@
         "file": "app/models/relation.py",
         "conclusions": [
           {
-            "topic": "Data Model",
+            "topic": "Database Schema Design",
             "impact": "MEDIUM",
-            "statement": "Defines a database table 'relations' with columns project_id, from_node, to_node, relation, and source. The relationship between Relation and Project is established through the project_id foreign key."
+            "statement": "Establishes a many-to-one relationship between the `relations` table and the `projects` table."
           },
           {
-            "topic": "Relationships",
-            "impact": "MEDIUM",
-            "statement": "Establishes a one-to-many relationship between Project and Relation using the back_populates parameter."
+            "topic": "Data Modeling",
+            "impact": "LOW",
+            "statement": "Uses attributes for optional values like source."
           }
         ]
       }
@@ -1364,29 +639,14 @@
         "file": "app/models/file.py",
         "conclusions": [
           {
-            "topic": "Data Model",
+            "topic": "Database Schema Design",
             "impact": "MEDIUM",
-            "statement": "Defines a database table 'files' with columns project_id, path, hash, language, analyzed, summary, and last_analyzed_at. The relationship between File and Project is established through the project_id foreign key."
+            "statement": "Establishes a many-to-one relationship between `files`, `tree_nodes`, `facts`, and `relations` tables and the `projects` table."
           },
           {
-            "topic": "Relationships",
-            "impact": "MEDIUM",
-            "statement": "Establishes a one-to-many relationship between Project and File using the back_populates parameter."
-          }
-        ]
-      },
-      {
-        "file": "app/models/tree_node.py",
-        "conclusions": [
-          {
-            "topic": "Data Model",
-            "impact": "MEDIUM",
-            "statement": "Defines a database table 'tree_nodes' with columns project_id, path, priority, status, reason, and depth. The relationship between TreeNode and Project is established through the project_id foreign key."
-          },
-          {
-            "topic": "Relationships",
-            "impact": "MEDIUM",
-            "statement": "Establishes a one-to-many relationship between Project and TreeNode using the back_populates parameter."
+            "topic": "Data Modeling",
+            "impact": "LOW",
+            "statement": "Uses SQLModel for database modeling with attributes for various data types (strings, integers, floats, optional values)."
           }
         ]
       },
@@ -1394,14 +654,29 @@
         "file": "app/models/project.py",
         "conclusions": [
           {
-            "topic": "Data Model",
-            "impact": "HIGH",
-            "statement": "Defines a database table 'projects' with columns id, name, root_path, created_at, and updated_at. It also establishes relationships between Project and other tables (File, Fact, Relation, TreeNode) using the back_populates parameter."
+            "topic": "Database Schema Design",
+            "impact": "MEDIUM",
+            "statement": "Defines the `projects` table as a central hub for all project-related data, referencing its own primary key in foreign keys."
           },
           {
             "topic": "Relationships",
-            "impact": "HIGH",
-            "statement": "Establishes one-to-many relationships between Project and various tables (File, Fact, Relation, TreeNode)."
+            "impact": "LOW",
+            "statement": "Uses back-populated relationships to establish connections between models (e.g., `Project.files`)."
+          }
+        ]
+      },
+      {
+        "file": "app/models/tree_node.py",
+        "conclusions": [
+          {
+            "topic": "Database Schema Design",
+            "impact": "MEDIUM",
+            "statement": "Establishes a many-to-one relationship between the `tree_nodes` table and the `projects` table."
+          },
+          {
+            "topic": "Data Modeling",
+            "impact": "LOW",
+            "statement": "Uses default values for fields like priority and status."
           }
         ]
       },
@@ -1409,14 +684,14 @@
         "file": "app/models/fact.py",
         "conclusions": [
           {
-            "topic": "Data Model",
+            "topic": "Database Schema Design",
             "impact": "MEDIUM",
-            "statement": "Defines a database table 'facts' with columns id, project_id, type, source, payload, confidence, and created_at. The relationship between Fact and Project is established through the project_id foreign key."
+            "statement": "Establishes a many-to-one relationship between the `facts` table and the `projects` table."
           },
           {
-            "topic": "Relationships",
-            "impact": "MEDIUM",
-            "statement": "Establishes a one-to-many relationship between Project and Fact using the back_populates parameter."
+            "topic": "Data Modeling",
+            "impact": "LOW",
+            "statement": "Uses attributes for optional values like type, source, payload, confidence, and created_at."
           }
         ]
       },
@@ -1424,434 +699,14 @@
         "file": "app/models/relation.py",
         "conclusions": [
           {
-            "topic": "Data Model",
+            "topic": "Database Schema Design",
             "impact": "MEDIUM",
-            "statement": "Defines a database table 'relations' with columns project_id, from_node, to_node, relation, and source. The relationship between Relation and Project is established through the project_id foreign key."
+            "statement": "Establishes a many-to-one relationship between the `relations` table and the `projects` table."
           },
           {
-            "topic": "Relationships",
-            "impact": "MEDIUM",
-            "statement": "Establishes a one-to-many relationship between Project and Relation using the back_populates parameter."
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "results": [
-      {
-        "file": "app/storage/project_repository.py",
-        "conclusions": [
-          {
-            "topic": "Data Access",
-            "impact": "HIGH",
-            "statement": "Uses SQLModel with asyncio session for database interactions, implementing CRUD operations for project entities."
-          },
-          {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Executes SQL queries using the session object to fetch project and file data, utilizing relationships for eager loading."
-          },
-          {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Utilizes SELECT statements with WHERE clauses to filter data by project ID and status (pending), implementing priority ordering via CASE statement."
-          }
-        ]
-      },
-      {
-        "file": "app/storage/fact_repository.py",
-        "conclusions": [
-          {
-            "topic": "Data Access",
-            "impact": "HIGH",
-            "statement": "Uses SQLModel with asyncio session for database interactions, implementing CRUD operations for fact entities."
-          },
-          {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Executes SQL queries using the session object to fetch fact data, utilizing relationships for eager loading."
-          }
-        ]
-      },
-      {
-        "file": "app/storage/relation_repository.py",
-        "conclusions": [
-          {
-            "topic": "Data Access",
-            "impact": "HIGH",
-            "statement": "Uses SQLModel with asyncio session for database interactions, implementing CRUD operations for relation entities."
-          },
-          {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Executes SQL queries using the session object to fetch relation data, utilizing relationships for eager loading."
-          }
-        ]
-      },
-      {
-        "file": "app/storage/tree_node_repository.py",
-        "conclusions": [
-          {
-            "topic": "Data Access",
-            "impact": "HIGH",
-            "statement": "Uses SQLModel with asyncio session for database interactions, implementing CRUD operations for tree node entities."
-          },
-          {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Executes SQL queries using the session object to fetch tree node data, utilizing relationships for eager loading and prioritization."
-          }
-        ]
-      },
-      {
-        "file": "app/storage/file_repository.py",
-        "conclusions": [
-          {
-            "topic": "Data Access",
-            "impact": "HIGH",
-            "statement": "Uses SQLModel with asyncio session for database interactions, implementing CRUD operations for file entities."
-          },
-          {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Executes SQL queries using the session object to fetch file data, utilizing relationships for eager loading."
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "results": [
-      {
-        "file": "app/storage/project_repository.py",
-        "conclusions": [
-          {
-            "topic": "Data Access",
-            "impact": "HIGH",
-            "statement": "Uses SQLModel with asyncio session for database interactions, implementing CRUD operations for project entities."
-          },
-          {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Executes SQL queries using the session object to fetch project and file data, utilizing relationships for eager loading."
-          },
-          {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Utilizes SELECT statements with WHERE clauses to filter data by project ID and status (pending), implementing priority ordering via CASE statement."
-          }
-        ]
-      },
-      {
-        "file": "app/storage/fact_repository.py",
-        "conclusions": [
-          {
-            "topic": "Data Access",
-            "impact": "HIGH",
-            "statement": "Uses SQLModel with asyncio session for database interactions, implementing CRUD operations for fact entities."
-          },
-          {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Executes SQL queries using the session object to fetch fact data, utilizing relationships for eager loading."
-          }
-        ]
-      },
-      {
-        "file": "app/storage/relation_repository.py",
-        "conclusions": [
-          {
-            "topic": "Data Access",
-            "impact": "HIGH",
-            "statement": "Uses SQLModel with asyncio session for database interactions, implementing CRUD operations for relation entities."
-          },
-          {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Executes SQL queries using the session object to fetch relation data, utilizing relationships for eager loading."
-          }
-        ]
-      },
-      {
-        "file": "app/storage/tree_node_repository.py",
-        "conclusions": [
-          {
-            "topic": "Data Access",
-            "impact": "HIGH",
-            "statement": "Uses SQLModel with asyncio session for database interactions, implementing CRUD operations for tree node entities."
-          },
-          {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Executes SQL queries using the session object to fetch tree node data, utilizing relationships for eager loading and prioritization."
-          }
-        ]
-      },
-      {
-        "file": "app/storage/file_repository.py",
-        "conclusions": [
-          {
-            "topic": "Data Access",
-            "impact": "HIGH",
-            "statement": "Uses SQLModel with asyncio session for database interactions, implementing CRUD operations for file entities."
-          },
-          {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Executes SQL queries using the session object to fetch file data, utilizing relationships for eager loading."
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "results": [
-      {
-        "file": "app/storage/project_repository.py",
-        "conclusions": [
-          {
-            "topic": "Data Access",
-            "impact": "HIGH",
-            "statement": "Uses SQLModel with asyncio session for database interactions, implementing CRUD operations for project entities."
-          },
-          {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Executes SQL queries using the session object to fetch project and file data, utilizing relationships for eager loading."
-          },
-          {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Utilizes SELECT statements with WHERE clauses to filter data by project ID and status (pending), implementing priority ordering via CASE statement."
-          }
-        ]
-      },
-      {
-        "file": "app/storage/fact_repository.py",
-        "conclusions": [
-          {
-            "topic": "Data Access",
-            "impact": "HIGH",
-            "statement": "Uses SQLModel with asyncio session for database interactions, implementing CRUD operations for fact entities."
-          },
-          {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Executes SQL queries using the session object to fetch fact data, utilizing relationships for eager loading."
-          }
-        ]
-      },
-      {
-        "file": "app/storage/relation_repository.py",
-        "conclusions": [
-          {
-            "topic": "Data Access",
-            "impact": "HIGH",
-            "statement": "Uses SQLModel with asyncio session for database interactions, implementing CRUD operations for relation entities."
-          },
-          {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Executes SQL queries using the session object to fetch relation data, utilizing relationships for eager loading."
-          }
-        ]
-      },
-      {
-        "file": "app/storage/tree_node_repository.py",
-        "conclusions": [
-          {
-            "topic": "Data Access",
-            "impact": "HIGH",
-            "statement": "Uses SQLModel with asyncio session for database interactions, implementing CRUD operations for tree node entities."
-          },
-          {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Executes SQL queries using the session object to fetch tree node data, utilizing relationships for eager loading and prioritization."
-          }
-        ]
-      },
-      {
-        "file": "app/storage/file_repository.py",
-        "conclusions": [
-          {
-            "topic": "Data Access",
-            "impact": "HIGH",
-            "statement": "Uses SQLModel with asyncio session for database interactions, implementing CRUD operations for file entities."
-          },
-          {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Executes SQL queries using the session object to fetch file data, utilizing relationships for eager loading."
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "results": [
-      {
-        "file": "app/storage/project_repository.py",
-        "conclusions": [
-          {
-            "topic": "Data Access",
-            "impact": "HIGH",
-            "statement": "Uses SQLModel with asyncio session for database interactions, implementing CRUD operations for project entities."
-          },
-          {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Executes SQL queries using the session object to fetch project and file data, utilizing relationships for eager loading."
-          },
-          {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Utilizes SELECT statements with WHERE clauses to filter data by project ID and status (pending), implementing priority ordering via CASE statement."
-          }
-        ]
-      },
-      {
-        "file": "app/storage/fact_repository.py",
-        "conclusions": [
-          {
-            "topic": "Data Access",
-            "impact": "HIGH",
-            "statement": "Uses SQLModel with asyncio session for database interactions, implementing CRUD operations for fact entities."
-          },
-          {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Executes SQL queries using the session object to fetch fact data, utilizing relationships for eager loading."
-          }
-        ]
-      },
-      {
-        "file": "app/storage/relation_repository.py",
-        "conclusions": [
-          {
-            "topic": "Data Access",
-            "impact": "HIGH",
-            "statement": "Uses SQLModel with asyncio session for database interactions, implementing CRUD operations for relation entities."
-          },
-          {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Executes SQL queries using the session object to fetch relation data, utilizing relationships for eager loading."
-          }
-        ]
-      },
-      {
-        "file": "app/storage/tree_node_repository.py",
-        "conclusions": [
-          {
-            "topic": "Data Access",
-            "impact": "HIGH",
-            "statement": "Uses SQLModel with asyncio session for database interactions, implementing CRUD operations for tree node entities."
-          },
-          {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Executes SQL queries using the session object to fetch tree node data, utilizing relationships for eager loading and prioritization."
-          }
-        ]
-      },
-      {
-        "file": "app/storage/file_repository.py",
-        "conclusions": [
-          {
-            "topic": "Data Access",
-            "impact": "HIGH",
-            "statement": "Uses SQLModel with asyncio session for database interactions, implementing CRUD operations for file entities."
-          },
-          {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Executes SQL queries using the session object to fetch file data, utilizing relationships for eager loading."
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "results": [
-      {
-        "file": "app/storage/project_repository.py",
-        "conclusions": [
-          {
-            "topic": "Data Access",
-            "impact": "HIGH",
-            "statement": "Uses SQLModel with asyncio session for database interactions, implementing CRUD operations for project entities."
-          },
-          {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Executes SQL queries using the session object to fetch project and file data, utilizing relationships for eager loading."
-          },
-          {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Utilizes SELECT statements with WHERE clauses to filter data by project ID and status (pending), implementing priority ordering via CASE statement."
-          }
-        ]
-      },
-      {
-        "file": "app/storage/fact_repository.py",
-        "conclusions": [
-          {
-            "topic": "Data Access",
-            "impact": "HIGH",
-            "statement": "Uses SQLModel with asyncio session for database interactions, implementing CRUD operations for fact entities."
-          },
-          {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Executes SQL queries using the session object to fetch fact data, utilizing relationships for eager loading."
-          }
-        ]
-      },
-      {
-        "file": "app/storage/relation_repository.py",
-        "conclusions": [
-          {
-            "topic": "Data Access",
-            "impact": "HIGH",
-            "statement": "Uses SQLModel with asyncio session for database interactions, implementing CRUD operations for relation entities."
-          },
-          {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Executes SQL queries using the session object to fetch relation data, utilizing relationships for eager loading."
-          }
-        ]
-      },
-      {
-        "file": "app/storage/tree_node_repository.py",
-        "conclusions": [
-          {
-            "topic": "Data Access",
-            "impact": "HIGH",
-            "statement": "Uses SQLModel with asyncio session for database interactions, implementing CRUD operations for tree node entities."
-          },
-          {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Executes SQL queries using the session object to fetch tree node data, utilizing relationships for eager loading and prioritization."
-          }
-        ]
-      },
-      {
-        "file": "app/storage/file_repository.py",
-        "conclusions": [
-          {
-            "topic": "Data Access",
-            "impact": "HIGH",
-            "statement": "Uses SQLModel with asyncio session for database interactions, implementing CRUD operations for file entities."
-          },
-          {
-            "topic": "Data Access",
-            "impact": "MEDIUM",
-            "statement": "Executes SQL queries using the session object to fetch file data, utilizing relationships for eager loading."
+            "topic": "Data Modeling",
+            "impact": "LOW",
+            "statement": "Uses attributes for optional values like source."
           }
         ]
       }
@@ -1863,9 +718,9 @@
         "file": "/path/to/app/storage/base_repository.py",
         "conclusions": [
           {
-            "topic": "Code Review",
+            "topic": "Database",
             "impact": "MEDIUM",
-            "statement": "The code is well-structured and follows best practices."
+            "statement": "This is a comprehensive, objective statement of the fact."
           }
         ]
       },
@@ -1874,8 +729,8 @@
         "conclusions": [
           {
             "topic": "Logging",
-            "impact": "LOW",
-            "statement": "The logging configuration is adequate for the application."
+            "impact": "HIGH",
+            "statement": "This is another comprehensive, objective statement of the fact."
           }
         ]
       },
@@ -1883,29 +738,9 @@
         "file": "/path/to/app/core/database.py",
         "conclusions": [
           {
-            "topic": "Database",
-            "impact": "MEDIUM",
-            "statement": "The database connection is properly configured and secured."
-          }
-        ]
-      },
-      {
-        "file": "/path/to/app/core/config.py",
-        "conclusions": [
-          {
-            "topic": "Configuration",
+            "topic": "Database Connection",
             "impact": "LOW",
-            "statement": "The configuration settings are consistent with the application's requirements."
-          }
-        ]
-      },
-      {
-        "file": "/path/to/app/scanners/scan_readme.py",
-        "conclusions": [
-          {
-            "topic": "Scanning",
-            "impact": "MEDIUM",
-            "statement": "The README scanner is correctly implemented and scans for README files recursively."
+            "statement": "This is a third comprehensive, objective statement of the fact."
           }
         ]
       }
@@ -1917,9 +752,9 @@
         "file": "/path/to/app/storage/base_repository.py",
         "conclusions": [
           {
-            "topic": "Code Review",
+            "topic": "Database",
             "impact": "MEDIUM",
-            "statement": "The code is well-structured and follows best practices."
+            "statement": "This is a comprehensive, objective statement of the fact."
           }
         ]
       },
@@ -1928,8 +763,8 @@
         "conclusions": [
           {
             "topic": "Logging",
-            "impact": "LOW",
-            "statement": "The logging configuration is adequate for the application."
+            "impact": "HIGH",
+            "statement": "This is another comprehensive, objective statement of the fact."
           }
         ]
       },
@@ -1937,29 +772,9 @@
         "file": "/path/to/app/core/database.py",
         "conclusions": [
           {
-            "topic": "Database",
-            "impact": "MEDIUM",
-            "statement": "The database connection is properly configured and secured."
-          }
-        ]
-      },
-      {
-        "file": "/path/to/app/core/config.py",
-        "conclusions": [
-          {
-            "topic": "Configuration",
+            "topic": "Database Connection",
             "impact": "LOW",
-            "statement": "The configuration settings are consistent with the application's requirements."
-          }
-        ]
-      },
-      {
-        "file": "/path/to/app/scanners/scan_readme.py",
-        "conclusions": [
-          {
-            "topic": "Scanning",
-            "impact": "MEDIUM",
-            "statement": "The README scanner is correctly implemented and scans for README files recursively."
+            "statement": "This is a third comprehensive, objective statement of the fact."
           }
         ]
       }
@@ -1971,9 +786,9 @@
         "file": "/path/to/app/storage/base_repository.py",
         "conclusions": [
           {
-            "topic": "Code Review",
+            "topic": "Database",
             "impact": "MEDIUM",
-            "statement": "The code is well-structured and follows best practices."
+            "statement": "This is a comprehensive, objective statement of the fact."
           }
         ]
       },
@@ -1982,8 +797,8 @@
         "conclusions": [
           {
             "topic": "Logging",
-            "impact": "LOW",
-            "statement": "The logging configuration is adequate for the application."
+            "impact": "HIGH",
+            "statement": "This is another comprehensive, objective statement of the fact."
           }
         ]
       },
@@ -1991,137 +806,9 @@
         "file": "/path/to/app/core/database.py",
         "conclusions": [
           {
-            "topic": "Database",
-            "impact": "MEDIUM",
-            "statement": "The database connection is properly configured and secured."
-          }
-        ]
-      },
-      {
-        "file": "/path/to/app/core/config.py",
-        "conclusions": [
-          {
-            "topic": "Configuration",
+            "topic": "Database Connection",
             "impact": "LOW",
-            "statement": "The configuration settings are consistent with the application's requirements."
-          }
-        ]
-      },
-      {
-        "file": "/path/to/app/scanners/scan_readme.py",
-        "conclusions": [
-          {
-            "topic": "Scanning",
-            "impact": "MEDIUM",
-            "statement": "The README scanner is correctly implemented and scans for README files recursively."
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "results": [
-      {
-        "file": "/path/to/app/storage/base_repository.py",
-        "conclusions": [
-          {
-            "topic": "Code Review",
-            "impact": "MEDIUM",
-            "statement": "The code is well-structured and follows best practices."
-          }
-        ]
-      },
-      {
-        "file": "/path/to/app/core/logger.py",
-        "conclusions": [
-          {
-            "topic": "Logging",
-            "impact": "LOW",
-            "statement": "The logging configuration is adequate for the application."
-          }
-        ]
-      },
-      {
-        "file": "/path/to/app/core/database.py",
-        "conclusions": [
-          {
-            "topic": "Database",
-            "impact": "MEDIUM",
-            "statement": "The database connection is properly configured and secured."
-          }
-        ]
-      },
-      {
-        "file": "/path/to/app/core/config.py",
-        "conclusions": [
-          {
-            "topic": "Configuration",
-            "impact": "LOW",
-            "statement": "The configuration settings are consistent with the application's requirements."
-          }
-        ]
-      },
-      {
-        "file": "/path/to/app/scanners/scan_readme.py",
-        "conclusions": [
-          {
-            "topic": "Scanning",
-            "impact": "MEDIUM",
-            "statement": "The README scanner is correctly implemented and scans for README files recursively."
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "results": [
-      {
-        "file": "/path/to/app/storage/base_repository.py",
-        "conclusions": [
-          {
-            "topic": "Code Review",
-            "impact": "MEDIUM",
-            "statement": "The code is well-structured and follows best practices."
-          }
-        ]
-      },
-      {
-        "file": "/path/to/app/core/logger.py",
-        "conclusions": [
-          {
-            "topic": "Logging",
-            "impact": "LOW",
-            "statement": "The logging configuration is adequate for the application."
-          }
-        ]
-      },
-      {
-        "file": "/path/to/app/core/database.py",
-        "conclusions": [
-          {
-            "topic": "Database",
-            "impact": "MEDIUM",
-            "statement": "The database connection is properly configured and secured."
-          }
-        ]
-      },
-      {
-        "file": "/path/to/app/core/config.py",
-        "conclusions": [
-          {
-            "topic": "Configuration",
-            "impact": "LOW",
-            "statement": "The configuration settings are consistent with the application's requirements."
-          }
-        ]
-      },
-      {
-        "file": "/path/to/app/scanners/scan_readme.py",
-        "conclusions": [
-          {
-            "topic": "Scanning",
-            "impact": "MEDIUM",
-            "statement": "The README scanner is correctly implemented and scans for README files recursively."
+            "statement": "This is a third comprehensive, objective statement of the fact."
           }
         ]
       }
