@@ -11,7 +11,7 @@ class OpenAIClient(BaseLLMClient):
     def __init__(self, model: str = "gpt-4o-mini", api_key: Optional[str] = None):
         self.model = model
         # If api_key is not provided, AsyncOpenAI will look for 'OPENAI_API_KEY' env var
-        self.client = AsyncOpenAI(api_key=api_key)
+        self.client = AsyncOpenAI(api_key=api_key, max_retries=5)
 
     async def generate(self, prompt: str, system: Optional[str] = None) -> str:
         messages = []

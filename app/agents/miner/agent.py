@@ -26,7 +26,12 @@ class MinerAgent:
         )
         self.executor.add_user_message(user_message)
 
-        # 1. Define the tool definition schema (OpenAI/Ollama format)
+        # 1. Add instruction to force standardized output
+        self.executor.add_user_message(
+            "Analyze the code above and submit your conclusions immediately using the 'submit_conclusions' tool."
+        )
+
+        # 2. Define the tool definition schema (OpenAI/Ollama format)
         submit_tool_def = {
             "type": "function",
             "function": {
@@ -36,21 +41,18 @@ class MinerAgent:
             },
         }
 
-        # 2. Define the callback - acts as a simpler data capturer
-        # We use a Future or a simple container to "catch" the result
+        # 3. Define the callback
         extraction_result = {"data": None}
 
         def submit_conclusions(**kwargs):
-            # Flexible argument handling to robustly capture data from LLM
-            # The LLM might pass arguments flattened or nested
-
+            # Flexible argument handling
             # Extract file path
             file_val = kwargs.get("file", file_path)
 
             # Extract conclusions
             conclusions_val = kwargs.get("conclusions", [])
 
-            # If the LLM passed a single conclusion flattened (common mistake), wrap it
+            # Wrap single conclusion if necessary
             if not conclusions_val and "topic" in kwargs:
                 conclusions_val = [
                     {
@@ -67,19 +69,19 @@ class MinerAgent:
             }
             return "Conclusions successfully submitted."
 
-        # 3. Register the tool
+        # 4. Register the tool
         self.executor.register_tool(submit_tool_def, submit_conclusions)
 
         try:
-            # 4. Run the Agent - expecting it to call our tool
+            # 5. Run the Agent
             last_response = await self.executor.run_until_complete()
             logger.info(f"DEBUG - Raw Response: {last_response}")
 
-            # 5. Retrieve the captured data
+            # 6. Retrieve the captured data
             if extraction_result["data"]:
                 return MinerOutput(**extraction_result["data"])
 
-            # 6. Fallback: Check if the model just wrote the JSON in the text
+            # 7. Fallback Logic
             logger.warning(
                 f"Miner finished but did not call submit_conclusions for {file_path}. Attempting fallback."
             )
@@ -92,8 +94,7 @@ class MinerAgent:
             if content:
                 import re
 
-                # Try to find JSON block: either purely { ... } or ```json { ... } ```
-                # We look for the "conclusions" key as a strong signal
+                # Try to find JSON block
                 match = re.search(r"(\{.*\})", content.replace("\n", " "), re.DOTALL)
 
                 if match:
@@ -101,8 +102,7 @@ class MinerAgent:
                         json_str = match.group(1)
                         data = json.loads(json_str)
 
-                        # HANDLE RAW TOOL CALL STRUCTURE
-                        # If the model returned {"name": "...", "arguments": {...}} or {"parameters": {...}}
+                        # Handle raw tool call structure wrapper
                         if "arguments" in data and isinstance(data["arguments"], dict):
                             data = data["arguments"]
                         elif "parameters" in data and isinstance(
@@ -114,7 +114,6 @@ class MinerAgent:
                         if "file" not in data:
                             data["file"] = file_path
 
-                        # Validate via Pydantic
                         return MinerOutput(**data)
                     except Exception as parse_err:
                         logger.error(f"Fallback parse failed: {parse_err}")

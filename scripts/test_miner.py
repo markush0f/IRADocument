@@ -19,7 +19,7 @@ logger = get_logger("test_miner")
 
 # CONFIGURATION
 MODEL = "gpt-4o-mini"
-CONCURRENCY_LIMIT = 20  # Process 20 files in parallel (OpenAI handles this easily)
+CONCURRENCY_LIMIT = 5  # Reduced to avoid 429 Rate Limits
 
 
 async def scan_file(miner, semaphore, abs_path, rel_path):

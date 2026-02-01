@@ -86,12 +86,14 @@ class AgentExecutor:
 
                 # IMPORTANT: We add the result back to history with role='tool'.
                 # This 'closes the loop', providing the LLM with the data it requested.
-                self.messages.append(
-                    {
-                        "role": "tool",
-                        "content": json.dumps(result),
-                    }
-                )
+                tool_msg = {
+                    "role": "tool",
+                    "content": json.dumps(result),
+                }
+                if "id" in tool_call:
+                    tool_msg["tool_call_id"] = tool_call["id"]
+
+                self.messages.append(tool_msg)
 
         return response_message
 
@@ -117,6 +119,16 @@ class AgentExecutor:
         """Executes a single tool and returns its result."""
         function_name = tool_call["function"]["name"]
         arguments = tool_call["function"]["arguments"]
+
+        # If arguments is a JSON string (OpenAI standard), parse it.
+        if isinstance(arguments, str):
+            try:
+                arguments = json.loads(arguments)
+            except json.JSONDecodeError:
+                # If parsing fails, pass as is (or handle error), but likely it's raw text
+                # We could try to pass it as a single arg if we knew the function signature,
+                # but for now let's log warning and try.
+                logger.warning(f"Could not parse tool arguments as JSON: {arguments}")
 
         logger.info(f"Executing tool: {function_name} with args: {arguments}")
 

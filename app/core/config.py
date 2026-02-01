@@ -14,7 +14,12 @@ class Settings(BaseSettings):
     ollama_base_url: str = "http://localhost:11434"
     ollama_model: str = "mistral:7b-instruct"
 
-    model_config = SettingsConfigDict(env_file=".env", env_prefix="IRA_")
+    # OpenAI Configuration
+    openai_api_key: str | None = None
+
+    model_config = SettingsConfigDict(
+        env_file=".env", env_prefix="IRA_", extra="ignore"
+    )
 
 
 settings = Settings()
