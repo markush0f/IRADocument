@@ -5,7 +5,7 @@ import json
 import time
 from dotenv import load_dotenv
 
-# Load env vars from .env file
+# Load env vars
 load_dotenv()
 
 # Add project root to path
@@ -19,49 +19,132 @@ logger = get_logger("test_miner")
 
 # CONFIGURATION
 MODEL = "gpt-4o-mini"
-CONCURRENCY_LIMIT = 5  # Reduced to avoid 429 Rate Limits
+BATCH_SIZE = 5  # Batch size
+DELAY_BETWEEN_BATCHES = 2.0  # Seconds to wait between batches to respect TPM
+MAX_RETRIES = 2
 
 
-async def scan_file(miner, semaphore, abs_path, rel_path):
-    """Analyze a single file with concurrency control."""
-    async with semaphore:
-        start_t = time.time()
+async def analyze_single_file_safe(miner, abs_path, root_dir):
+    """Fallback: Analyze a single file safely."""
+    rel_path = os.path.relpath(abs_path, root_dir)
+    try:
+        with open(abs_path, "r") as f:
+            content = f.read()
+        if not content.strip():
+            return None
+
+        # Retry logic for single checking
+        for attempt in range(MAX_RETRIES):
+            try:
+                result = await miner.analyze_file(
+                    file_path=rel_path, file_content=content
+                )
+                if result:
+                    res_dict = result.model_dump()
+                    res_dict["analysis_duration_seconds"] = 0  # Placeholder
+                    res_dict["method"] = "single_fallback"
+                    print(f"   ✅ Single Recovery: {rel_path}")
+                    return res_dict
+            except Exception as e:
+                print(f"   ⚠️ Single Attempt {attempt+1} failed for {rel_path}: {e}")
+                await asyncio.sleep(1)
+
+        print(f"   ❌ Failed to recover {rel_path} after retries.")
+        return None
+
+    except Exception as e:
+        print(f"   ❌ Error reading/processing {rel_path}: {e}")
+        return None
+
+
+async def process_batch_robust(miner, batch_files, root_dir):
+    """Process a batch. If it fails or is incomplete, fallback to single file processing."""
+
+    # Prepare content
+    files_data = []
+    for abs_path in batch_files:
         try:
             with open(abs_path, "r") as f:
                 content = f.read()
+            if content.strip():
+                rel_path = os.path.relpath(abs_path, root_dir)
+                files_data.append((rel_path, content))
+        except Exception:
+            pass
 
-            if not content.strip():
-                return None
+    if not files_data:
+        return []
 
-            result = await miner.analyze_file(file_path=rel_path, file_content=content)
+    files_map = {p: c for p, c in files_data}
+    target_files = set(files_map.keys())
+
+    start_t = time.time()
+
+    # 1. Try Batch
+    try:
+        print(f"📦 Batch of {len(files_data)}...")
+        batch_result = await miner.analyze_batch(files=files_data)
+
+        if batch_result and batch_result.results:
             duration = time.time() - start_t
 
-            if result:
-                res_dict = result.model_dump()
-                res_dict["analysis_duration_seconds"] = round(duration, 2)
-                # print(f"✅ {rel_path} ({duration:.2f}s)")
-                return res_dict
+            # Check coverage
+            returned_results = []
+            returned_filenames = set()
+
+            for r in batch_result.results:
+                d = r.model_dump()
+                d["analysis_duration_seconds"] = round(
+                    duration / len(batch_result.results), 2
+                )
+                d["method"] = "batch"
+                returned_results.append(d)
+                returned_filenames.add(r.file)
+
+            missing = target_files - returned_filenames
+
+            if not missing:
+                print(f"   ✅ Batch Perfect ({duration:.2f}s)")
+                return returned_results
             else:
-                print(f"⚠️ {rel_path} - No results")
-                return None
+                print(f"   ⚠️ Batch Partial. Missing: {len(missing)}. Recovering...")
+                # Recover missing only
+                for missing_file in missing:
+                    # Find absolute path
+                    abs_p = os.path.join(root_dir, missing_file)
+                    single_res = await analyze_single_file_safe(miner, abs_p, root_dir)
+                    if single_res:
+                        returned_results.append(single_res)
+                return returned_results
+        else:
+            print("   ⚠️ Batch returned empty. Fallback to sequential.")
+            # Fallback below
 
-        except Exception as e:
-            print(f"❌ {rel_path} - Failed: {e}")
-            return None
+    except Exception as e:
+        print(f"   ⚠️ Batch Failed ({e}). Fallback to sequential.")
+
+    # 2. Fallback: Process ALL files in batch individually
+    results = []
+    for abs_path in batch_files:
+        res = await analyze_single_file_safe(miner, abs_path, root_dir)
+        if res:
+            results.append(res)
+    return results
 
 
-async def test_miner_openai_concurrent():
+async def test_miner_robust():
     api_key = os.getenv("OPENAI_API_KEY")
     if not api_key:
-        print("❌ ERROR: OPENAI_API_KEY environment variable is not set.")
+        print("❌ ERROR: OPENAI_API_KEY not set.")
         return
 
-    # 1. Initialize Client
     client = OpenAIClient(model=MODEL, api_key=api_key)
     miner = MinerAgent(client=client)
 
-    # 2. Collect Files
-    scan_dirs = ["app"]
+    # Collect Files
+    scan_dirs = ["app"]  # Full scan
+    # For testing, you can limit this list
+
     root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
     files_to_analyze = []
 
@@ -76,45 +159,41 @@ async def test_miner_openai_concurrent():
                     files_to_analyze.append(os.path.join(root, file))
 
     print(
-        f"--- 🚀 OpenAI Scan: {len(files_to_analyze)} files. Concurrency: {CONCURRENCY_LIMIT} ---"
+        f"--- 🛡️  Robust Miner: {len(files_to_analyze)} files. Batch: {BATCH_SIZE}. ---"
     )
 
     total_start = time.time()
-    semaphore = asyncio.Semaphore(CONCURRENCY_LIMIT)
-    tasks = []
+    all_results = []
 
-    # 3. Launch Tasks
-    for abs_path in files_to_analyze:
-        rel_path = os.path.relpath(abs_path, root_dir)
-        tasks.append(scan_file(miner, semaphore, abs_path, rel_path))
+    # Process sequentially (Batch by Batch)
+    for i in range(0, len(files_to_analyze), BATCH_SIZE):
+        chunk = files_to_analyze[i : i + BATCH_SIZE]
 
-    # 4. Wait for all
-    print("Processing...")
-    results = await asyncio.gather(*tasks)
+        batch_results = await process_batch_robust(miner, chunk, root_dir)
+        all_results.extend(batch_results)
 
-    # Filter Nones
-    valid_results = [r for r in results if r is not None]
+        # Rate Limit Sleep
+        await asyncio.sleep(DELAY_BETWEEN_BATCHES)
 
     total_duration = time.time() - total_start
 
-    # 5. Save Output
+    # Save
     output_file = "miner_output.json"
     meta = {
         "total_files": len(files_to_analyze),
         "total_duration_seconds": round(total_duration, 2),
-        "concurrency": CONCURRENCY_LIMIT,
-        "results": valid_results,
+        "model": MODEL,
+        "mode": "robust_batch",
+        "results": all_results,
     }
 
     with open(output_file, "w") as f:
         json.dump(meta, f, indent=2)
 
     print(f"\n--- Analysis Complete ---")
-    print(
-        f"Total Time: {total_duration:.2f}s (Avg: {total_duration/len(files_to_analyze):.2f}s/file)"
-    )
-    print(f"Saved {len(valid_results)} analyses to {output_file}")
+    print(f"Total Time: {total_duration:.2f}s")
+    print(f"Saved {len(all_results)} analyses to {output_file}")
 
 
 if __name__ == "__main__":
-    asyncio.run(test_miner_openai_concurrent())
+    asyncio.run(test_miner_robust())
