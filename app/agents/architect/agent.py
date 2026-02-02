@@ -116,49 +116,69 @@ class ArchitectAgent:
         raw_results = miner_output.get("results", [])
         modules_map = self._group_by_module(raw_results)
 
-        # Gather ALL facts relevant to this page
-        # If page_id is 'services', we want facts from 'app/services'
-        # Heuristic: Match page_id/title keywords against module names
         relevant_facts = ""
-
-        # Simple heuristic mapping for now (can be improved)
-        # We pass ALL module summaries if unsure, or specific ones.
-        # For 'Deep Dive', let's pass specific module content if matched, or everything if 'Overview'.
-
-        # Better approach: We pass the page_id and let the heuristic find data.
-        # For this prototype, I will dump relevant modules.
-
         target_modules = []
-        for mod in modules_map.keys():
-            # If the module name is in the page_id (e.g. 'services' in 'services-overview')
-            # Or if it's a generic page, we might need broader context.
-            if mod in page_id or page_id in mod or page_id == "architecture":
-                target_modules.append(mod)
 
-        # If no specific match, maybe it's a high level page, send core summaries?
-        if not target_modules:
-            target_modules = list(
-                modules_map.keys()
-            )  # All context (expensive but safe)
+        # KEYWORD MATCHING STRATEGY
+        # Match page_id/title parts against module paths
+        keywords = (
+            page_id.replace("-", " ").lower().split() + page_title.lower().split()
+        )
+        unique_keywords = set(k for k in keywords if len(k) > 2)  # Ignore short words
 
         logger.info(
-            f"Writing page '{page_title}' using context from {len(target_modules)} modules..."
+            f"Resolving context for '{page_id}' using keywords: {unique_keywords}"
         )
 
-        for mod in target_modules:
-            relevant_facts += (
-                await self._prepare_module_facts(mod, modules_map[mod]) + "\n"
+        for mod_path in modules_map.keys():
+            # Check if any keyword matches path parts (e.g. 'agents' in 'app/agents/miner')
+            if any(k in mod_path.lower() for k in unique_keywords):
+                target_modules.append(mod_path)
+            # Special case: 'app' module
+            if "app" in unique_keywords and mod_path == "app":
+                target_modules.append(mod_path)
+
+        # FALLBACK & SAFETY
+        if not target_modules:
+            logger.warning(
+                f"No modules matched for page '{page_id}'. Using 'app/core' default."
             )
+            target_modules = ["app/core"]
+
+        # Sort by relevance (heuristic: exact matches first?) and LIMIT
+        # If we have > 5 modules, we risk context overflow.
+        if len(target_modules) > 5:
+            # Sort: deeper paths first? No, maybe broader paths first?
+            # Let's just keep the first 5 found by keyword match
+            target_modules = target_modules[:5]
+            logger.warning(f"Context truncated to 5 modules: {target_modules}")
+
+        logger.info(f"Writing page '{page_id}' using module context: {target_modules}")
+
+        for mod in target_modules:
+            if mod in modules_map:
+                relevant_facts += (
+                    await self._prepare_module_facts(mod, modules_map[mod]) + "\n"
+                )
 
         # Executor
         executor = AgentExecutor(client=self.client)
-        # Inject page title into prompt
         prompt = ARCHITECT_PAGE_WRITER_PROMPT.replace("{page_title}", page_title)
         executor.set_system_prompt(prompt)
 
+        # Context safety limit
+        max_context_chars = (
+            60000  # Approx 15k tokens. Safe for gpt-4o-mini (128k) but good practice.
+        )
+        if len(relevant_facts) > max_context_chars:
+            logger.warning(
+                f"Context truncated from {len(relevant_facts)} to {max_context_chars} chars."
+            )
+            relevant_facts = relevant_facts[:max_context_chars] + "\n...(truncated)..."
+
         executor.add_user_message(
-            f"Write the page content.\n\nSOURCE MATERIAL:\n{relevant_facts[:100000]}"
-        )  # Truncate safety
+            f"Write the page content.\n\nSOURCE MATERIAL:\n{relevant_facts}"
+        )
 
         # Tool
         submit_tool = {

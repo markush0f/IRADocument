@@ -1,0 +1,120 @@
+{
+  "project": "IRADocument",
+  "generated_at": "2026-02-02T17:50:12.987752",
+  "total_duration": 640.9610393047333,
+  "pages": [
+    {
+      "id": "core-app",
+      "label": "App",
+      "status": "success",
+      "duration": 29.069225311279297,
+      "chars": 7057,
+      "error": null
+    },
+    {
+      "id": "core-services",
+      "label": "Services",
+      "status": "success",
+      "duration": 38.72463607788086,
+      "chars": 8173,
+      "error": null
+    },
+    {
+      "id": "core-infra",
+      "label": "Infrastructure",
+      "status": "success",
+      "duration": 36.12146830558777,
+      "chars": 8435,
+      "error": null
+    },
+    {
+      "id": "core-core",
+      "label": "Core Components",
+      "status": "success",
+      "duration": 32.16410517692566,
+      "chars": 6759,
+      "error": null
+    },
+    {
+      "id": "core-models",
+      "label": "Models",
+      "status": "success",
+      "duration": 63.06288409233093,
+      "chars": 6312,
+      "error": null
+    },
+    {
+      "id": "core-storage",
+      "label": "Storage",
+      "status": "failed",
+      "duration": 28.38697600364685,
+      "chars": 0,
+      "error": null
+    },
+    {
+      "id": "core-agents-tools",
+      "label": "Tools",
+      "status": "success",
+      "duration": 30.4179208278656,
+      "chars": 5358,
+      "error": null
+    },
+    {
+      "id": "core-agents-miner",
+      "label": "Miner",
+      "status": "success",
+      "duration": 47.46275591850281,
+      "chars": 5896,
+      "error": null
+    },
+    {
+      "id": "core-agents-core",
+      "label": "Core Agents",
+      "status": "failed",
+      "duration": 24.458232641220093,
+      "chars": 0,
+      "error": null
+    },
+    {
+      "id": "core-pipeline-main",
+      "label": "Main Pipeline",
+      "status": "success",
+      "duration": 36.13448691368103,
+      "chars": 5949,
+      "error": null
+    },
+    {
+      "id": "core-pipeline-steps",
+      "label": "Pipeline Steps",
+      "status": "success",
+      "duration": 49.68658185005188,
+      "chars": 5990,
+      "error": null
+    },
+    {
+      "id": "core-scanners-main",
+      "label": "Main Scanners",
+      "status": "success",
+      "duration": 84.80158066749573,
+      "chars": 7353,
+      "error": null
+    },
+    {
+      "id": "core-scanners-technologies-main",
+      "label": "Technologies Overview",
+      "status": "failed",
+      "duration": 28.06372594833374,
+      "chars": 0,
+      "error": null
+    },
+    {
+      "id": "core-scanners-technologies-metadata",
+      "label": "Metadata",
+      "status": "success",
+      "duration": 30.363009691238403,
+      "chars": 5635,
+      "error": null
+    }
+  ],
+  "navigation_duration": 11.466593265533447
+}
