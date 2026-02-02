@@ -1,0 +1,144 @@
+{
+  "project_name": "Your Project Name",
+  "tree": [
+    {
+      "id": "core-module",
+      "label": "Core",
+      "type": "category",
+      "children": [
+        {
+          "id": "core-agents",
+          "label": "Agents",
+          "type": "category",
+          "children": [
+            {
+              "id": "agents-overview",
+              "label": "Overview",
+              "type": "page",
+              "children": []
+            },
+            {
+              "id": "agents-tools",
+              "label": "Tools",
+              "type": "page",
+              "children": []
+            },
+            {
+              "id": "agents-miner",
+              "label": "Miner",
+              "type": "page",
+              "children": []
+            },
+            {
+              "id": "agents-core",
+              "label": "Core Components",
+              "type": "page",
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "core-pipeline",
+          "label": "Pipeline",
+          "type": "category",
+          "children": [
+            {
+              "id": "pipeline-overview",
+              "label": "Overview",
+              "type": "page",
+              "children": []
+            },
+            {
+              "id": "pipeline-steps",
+              "label": "Steps",
+              "type": "page",
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "core-scanners",
+          "label": "Scanners",
+          "type": "category",
+          "children": [
+            {
+              "id": "scanners-overview",
+              "label": "Overview",
+              "type": "page",
+              "children": []
+            },
+            {
+              "id": "scanners-technologies",
+              "label": "Technologies",
+              "type": "category",
+              "children": [
+                {
+                  "id": "technologies-overview",
+                  "label": "Overview",
+                  "type": "page",
+                  "children": []
+                },
+                {
+                  "id": "technologies-metadata",
+                  "label": "Metadata",
+                  "type": "page",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "core-models",
+          "label": "Models",
+          "type": "page",
+          "children": []
+        },
+        {
+          "id": "core-storage",
+          "label": "Storage",
+          "type": "page",
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "app-module",
+      "label": "Application",
+      "type": "category",
+      "children": [
+        {
+          "id": "app-overview",
+          "label": "Overview",
+          "type": "page",
+          "children": []
+        },
+        {
+          "id": "app-services",
+          "label": "Services",
+          "type": "page",
+          "children": []
+        },
+        {
+          "id": "app-infra",
+          "label": "Infrastructure",
+          "type": "page",
+          "children": []
+        },
+        {
+          "id": "app-core",
+          "label": "Core",
+          "type": "category",
+          "children": [
+            {
+              "id": "core-overview",
+              "label": "Overview",
+              "type": "page",
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

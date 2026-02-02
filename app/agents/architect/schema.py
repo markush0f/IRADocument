@@ -2,45 +2,38 @@ from typing import List, Optional, Dict, Any
 from pydantic import BaseModel, Field
 
 
-class WikiPage(BaseModel):
+# --- NAVIGATION STRUCTURE (Sidebar) ---
+class NavigationNode(BaseModel):
     id: str = Field(
-        ..., description="Unique slug for the page (e.g., 'services-overview')."
+        ..., description="Unique slug for the page/section (e.g., 'services-module')."
     )
-    title: str = Field(..., description="Human-readable title.")
-    category: str = Field(
-        ...,
-        description="Category: 'Overview', 'Guide', 'Architecture', 'API', 'Module'.",
+    label: str = Field(..., description="Display label for the sidebar.")
+    type: str = Field(
+        ..., description="'category' (grouping only) or 'page' (has content)."
     )
+    children: List["NavigationNode"] = Field(
+        default_factory=list, description="Sub-items."
+    )
+
+
+class WikiNavigation(BaseModel):
+    project_name: str
+    tree: List[NavigationNode]
+
+
+# Recursive reference
+NavigationNode.model_rebuild()
+
+
+# --- PAGE DETAIL (Content) ---
+class WikiPageDetail(BaseModel):
+    id: str = Field(..., description="Must match the ID in the navigation tree.")
+    title: str
+    description: str = Field(..., description="Brief meta-description.")
     content_markdown: str = Field(
-        ...,
-        description="The rich markdown content of the page. Should be extensive and technical.",
-    )
-    related_files: List[str] = Field(
-        default_factory=list, description="List of source files related to this page."
+        ..., description="Extremely detailed, technical markdown content."
     )
     diagram_mermaid: Optional[str] = Field(
-        None, description="Optional Mermaid diagram definition for this page."
+        None, description="Mermaid chart definition."
     )
-
-
-class NavigationItem(BaseModel):
-    label: str
-    page_id: Optional[str] = None
-    children: List["NavigationItem"] = Field(default_factory=list)
-
-
-class WikiStructure(BaseModel):
-    project_name: str
-    landing_page_summary: str = Field(
-        ..., description="Short summary for the home page hero section."
-    )
-    navigation: List[NavigationItem] = Field(
-        ..., description="The hierarchical navigation tree."
-    )
-    pages: List[WikiPage] = Field(
-        ..., description="All the generated documentation pages."
-    )
-
-
-# Recursive model reference update
-NavigationItem.model_rebuild()
+    related_files: List[str] = Field(default_factory=list)
