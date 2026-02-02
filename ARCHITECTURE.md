@@ -1,63 +1,67 @@
-# IRA Document Generation and Analysis
+# IRADocument API
 
 ## Overview
+The IRADocument API project is an asynchronous FastAPI application designed to facilitate project management and analysis through repository interactions. It integrates various modular components that encompass project orchestration, repository management, technology stack detection, and dynamic analysis workflows, all working in tandem to deliver robust performance and transparent output. The architecture employs SQLModel with AsyncSession to ensure efficient database operations, while leveraging Pydantic for request validation and structured error handling throughout the system. Furthermore, the integration of AI capabilities fosters advanced analysis and decision-making processes, positioning it as a powerful tool for software project assessments.
 
-The IRA Document Generation and Analysis project is designed to streamline project analysis and documentation through a modular architecture leveraging asynchronous programming. The system integrates various components, including data management, analysis pipelines, and technology detection across multiple programming ecosystems. By combining FastAPI for API services, SQLModel for data interactions, and a suite of scanners for technology identification, the application facilitates dynamic and efficient project lifecycle management, ensuring robust error handling and clear documentation of process steps.
-
-The architecture emphasizes asynchronous operations for improved scalability, and utilizes an extensive set of services to support various functionalities like file management, project relation handling, and usage of machine learning models for analysis purposes. Aiming for extensibility and maintainability, the project employs a microservices approach, ensuring that components can be individually developed, tested, and scaled.
-
-## Technology Stack
-
-- **Language**: Python  
-- **Frameworks**: FastAPI, SQLModel  
-- **Databases**: SQLite  
-- **Libraries**: httpx, Pydantic, aiofiles  
+## Tech Stack
+- **Language**: Python
+- **Frameworks**: FastAPI, SQLModel, Pydantic
+- **Databases**: SQLite, PostgreSQL
+- **Libraries**: httpx, aiofiles, git
 
 ## High-Level Architecture
-
 ```mermaid
 graph TD
-    API[API Layer] -->|request| SERVICE[Service Layer]
-    SERVICE -->|access| REPO[Repository Layer]
-    REPO --> DB[(Database)]
-    SERVICE -->|invoke| AGENTS[Scan & Other Agents]
-    AGENTS -->|return data| SERVICE
-    SERVICE -->|response| API
+    A[API Layer] --> B[Service Layer]
+    B --> C[Repository Layer]
+    C --> D[Database Layer]
 ```
 
-The architecture follows a clean separation of concerns, allowing for independent scaling and management of each layer. The API Layer handles requests and responses, while services encapsulate business logic, and repositories manage database interactions.
+In this high-level architecture, incoming requests are first handled by the API Layer (FastAPI), which communicates with the Service Layer to orchestrate logic and data processing. The Service Layer interacts with the Repository Layer for database operations, culminating in data persistence within the Database Layer (SQLite/PostgreSQL).
 
 ## Key Components
+1. **Project Services**  
+   - **Type**: Service  
+   - **Description**: Handles project orchestration and management utilizing asynchronous database operations with advanced AI analysis capabilities.  
+   - **Dependencies**: SQLModel, AsyncSession, AgentExecutor, LLMFactory
 
-### API Layer
-- **Type**: API  
-- **Description**: Serves as the entry point for the application, handling client requests and routing them to appropriate services. Built using FastAPI with endpoints for various operations like project management and analysis.  
-- **Dependencies**: ProjectService, AnalysisService
+2. **Infrastructure Module**  
+   - **Type**: Service  
+   - **Description**: Manages Git repository interactions, including cloning and workspace management, ensuring configurations are securely handled through environment variables.
+   - **Dependencies**: git, httpx
 
-### Service Layer
-- **Type**: Service  
-- **Description**: Contains business logic for project handling, analysis execution, and data interactions. Services like ProjectService, AnalysisService, and FileService manage specific functionalities and utilize repositories for data access.  
-- **Dependencies**: ProjectRepository, AnalysisPipeline
+3. **Pipeline Execution**  
+   - **Type**: Service  
+   - **Description**: Orchestrates the analysis workflow of projects, ensuring smooth execution of analysis steps and maintaining shared state across the pipeline.
+   - **Dependencies**: AnalysisPipeline, PipelineContext
 
-### Repository Layer
-- **Type**: Repository  
-- **Description**: Provides data access methods for various entities such as projects, files, and facts using SQLModel's asynchronous session management. Ensures safe and efficient CRUD operations in a relational database context.  
-- **Dependencies**: SQLModel
+4. **Agents Module**  
+   - **Type**: Service  
+   - **Description**: Performs dynamic project assessment through tailored analysis stages using various AI tools, ensuring operational transparency throughout the process.
+   - **Dependencies**: TechnologyScanner, AgentExecutor
 
-### Scanner Layer
-- **Type**: Scanner  
-- **Description**: Consists of technology scanners evaluating repositories for various technologies (e.g., Python, JavaScript, Docker). It orchestrates data extraction about project technologies and dependencies, returning structured results.  
-- **Dependencies**: TechnologyScanner, PythonScanner, JavaScriptScanner
+5. **Data Models**  
+   - **Type**: Model  
+   - **Description**: Defines the structural representation of projects and their relational components using SQLModel to ensure data integrity across entities.
+   - **Dependencies**: SQLModel
 
-### Infrastructure Layer
-- **Type**: Infrastructure  
-- **Description**: Manages background tasks like project cloning, workspace preparation, and API integrations, including error handling to ensure robust execution of tasks.  
-- **Dependencies**: GitClient, WorkspaceManager
+6. **Storage Management**  
+   - **Type**: Repository  
+   - **Description**: Facilitates CRUD operations and specific retrieval tailored for project-related entities, enhancing asynchronous data handling with SQLModel.
+   - **Dependencies**: BaseRepository
+
+7. **Core Functionality**  
+   - **Type**: Utility  
+   - **Description**: Provides foundational features for logging, database connections, and application configuration management to support efficient operations.
+   - **Dependencies**: logging, SQLModel, Pydantic
+
+8. **Scanning Utilities**  
+   - **Type**: Utility  
+   - **Description**: Identifies and analyzes project metadata and technology stacks through dedicated scanner classes, promoting extensibility for future additions.
+   - **Dependencies**: TechnologyScanner
 
 ## Data Flow
-
-The system initiates with an API request from a client, which is routed through the API layer to the corresponding service (e.g., ProjectService or AnalysisService). This service processes the request, potentially invoking one or more repositories to interact with the database, using SQLModel to perform CRUD operations asynchronously. If analysis is required, the AnalysisService coordinates the execution of the AnalysisPipeline, which may leverage different tools and services, including technology scanners. Scanners gather metadata about the project’s structure and technologies, returning the collected data back through the flow. This ensures the client receives timely and structured responses based on their requests.
+In the IRADocument API, a request begins at the FastAPI layer, which routes it to the respective service in the app/services module. The service orchestrates the call to the appropriate agent or pipeline, which may involve asynchronous database interactions via SQLModel for data retrieval/manipulation. During processing, the data may flow into the storage layer for persistence and is subsequently analyzed within different stages of the pipeline. Error handling is implemented at multiple levels to ensure robust workflows, while logging provides tracking throughout the request lifecycle.
 
 ## Infrastructure
-
-The project is packaged using Docker for consistent deployment across environments. It uses a SQLite database for persisting data in a lightweight manner, and adheres to asynchronous practices to improve responsiveness and scalability, making it suitable for cloud or containerized environments.
+The application is designed to be containerized using Docker for efficient deployment, offering isolated environments tailored for different stages of project analysis and management.
