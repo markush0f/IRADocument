@@ -1,0 +1,25 @@
+{
+  "id": "core-module-files",
+  "title": "Core Services",
+  "description": "Documentation for the Core Services Module, detailing its files and functionalities.",
+  "content_markdown": "# Core Services Module\n\nThe Core Services Module provides essential functionalities for project lifecycle management, data analysis, and integration with AI capabilities.\n\n## Files Analysis\n\n### File: project_service.py\n- **Purpose**: Orchestrates project lifecycle management using the `ProjectRepository`, facilitating CRUD operations with persistent storage via SQLModel's AsyncSession.\n- **Key Functionalities**:\n  - Data Management: Handles the creation, retrieval, updating, and deletion of projects.\n  - Data Validation: Manages metadata including timestamps for project records, ensuring UTC consistency.\n\n### File: analysis_service.py\n- **Purpose**: Manages project analysis through the `AnalysisService` class, integrating various analysis stages.\n- **Key Functionalities**:\n  - Pipeline Integration: Leverages `AgentExecutor` for dynamic execution of the analysis pipeline.\n  - Error Handling: Logs exceptions and returns structured JSON for client-side management in `generate_analysis_report`.\n  - AI Integration: Interfaces with `LLMFactory` for AI capabilities, enhancing project analysis.\n  - Data Management: Fetches project details through `ProjectService`, ensuring valid analysis execution.\n  - Configuration: Extracts AI client settings from `app.core.config.settings` for flexibility.\n\n### File: relation_service.py\n- **Purpose**: Manages project relationships using the `RelationRepository`.\n- **Key Functionalities**:\n  - Data Access: Asynchronously creates relationships between nodes via `create_relation`.\n  - Data Retrieval: Retrieves relationships for a specific project using `get_project_relations`.\n\n### File: file_service.py\n- **Purpose**: Facilitates file management for projects via the `FileRepository`.\n- **Key Functionalities**:\n  - Data Management: Registers files with `register_file`, storing them via `FileRepository`.\n  - Data Retrieval: Obtains project files with `get_project_files` method.\n  - Data Update: Updates file analysis status and timestamps with `mark_as_analyzed`.\n\n### File: fact_service.py\n- **Purpose**: Handles fact management related to projects through `FactRepository`.\n- **Key Functionalities**:\n  - Data Creation: Registers new facts using `create_fact`, generating unique IDs with `uuid.uuid4()`.\n  - Data Retrieval: Accesses facts via `get_facts_by_project`.\n  - Batch Processing: Registers technology stack facts efficiently.\n\n### File: example.py\n- **Purpose**: Demonstrates dependency management for technology scanning.\n- **Key Functionalities**:\n  - Scans JavaScript technologies using `JavaScriptScanner` integrated with project paths.\n\n## Dependencies\nThis module communicates with the following modules:\n- `app.core`:\n  - Utilizes logging configuration (`logger.py`), database access (`database.py`), and application settings (`config.py`).\n- `app.agents.core`:\n  - Integrates client management (`factory.py`), pipeline management (`pipeline.py`), and concrete client implementations like `OllamaClient` and `OpenAI` for AI capabilities.\n\nOverall, the Core Services module encapsulates critical functionalities necessary for managing projects, analyzing them effectively, and leveraging AI technologies to enhance project insights.",
+  "diagram_mermaid": null,
+  "related_files": [
+    "project_service.py",
+    "analysis_service.py",
+    "relation_service.py",
+    "file_service.py",
+    "fact_service.py",
+    "example.py",
+    "logger.py",
+    "database.py",
+    "config.py",
+    "types.py",
+    "prompt_loader.py",
+    "factory.py",
+    "base.py",
+    "ollama_client.py",
+    "pipeline.py",
+    "openai_client.py"
+  ]
+}
