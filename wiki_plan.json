@@ -1,0 +1,271 @@
+{
+  "project_name": "Project Wiki Navigation",
+  "detected_subsystems": [
+    "Backend API",
+    "Analysis Pipeline",
+    "Scanners",
+    "Agent Executor",
+    "Data Models",
+    "Repositories",
+    "Infrastructure Setup",
+    "Core Services"
+  ],
+  "tree": [
+    {
+      "id": "project-overview",
+      "label": "Project Overview",
+      "type": "page",
+      "children": []
+    },
+    {
+      "id": "backend-api",
+      "label": "Backend API",
+      "type": "category",
+      "children": [
+        {
+          "id": "backend-api-overview",
+          "label": "Architecture Overview",
+          "type": "page",
+          "children": []
+        },
+        {
+          "id": "backend-modules",
+          "label": "Module Reference",
+          "type": "category",
+          "children": [
+            {
+              "id": "services-module",
+              "label": "Services",
+              "type": "page",
+              "children": []
+            },
+            {
+              "id": "infra-module",
+              "label": "Infrastructure",
+              "type": "page",
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "analysis-pipeline",
+      "label": "Analysis Pipeline",
+      "type": "category",
+      "children": [
+        {
+          "id": "analysis-pipeline-overview",
+          "label": "Architecture Overview",
+          "type": "page",
+          "children": []
+        },
+        {
+          "id": "pipeline-modules",
+          "label": "Module Reference",
+          "type": "category",
+          "children": [
+            {
+              "id": "pipeline-module",
+              "label": "Pipeline",
+              "type": "page",
+              "children": []
+            },
+            {
+              "id": "steps-module",
+              "label": "Pipeline Steps",
+              "type": "page",
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "scanners",
+      "label": "Scanners",
+      "type": "category",
+      "children": [
+        {
+          "id": "scanners-overview",
+          "label": "Architecture Overview",
+          "type": "page",
+          "children": []
+        },
+        {
+          "id": "scanners-modules",
+          "label": "Module Reference",
+          "type": "category",
+          "children": [
+            {
+              "id": "scanners-module",
+              "label": "Scanners",
+              "type": "page",
+              "children": []
+            },
+            {
+              "id": "technologies-module",
+              "label": "Technologies",
+              "type": "page",
+              "children": []
+            },
+            {
+              "id": "metadata-module",
+              "label": "Metadata",
+              "type": "page",
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "agent-executor",
+      "label": "Agent Executor",
+      "type": "category",
+      "children": [
+        {
+          "id": "agent-executor-overview",
+          "label": "Architecture Overview",
+          "type": "page",
+          "children": []
+        },
+        {
+          "id": "agent-modules",
+          "label": "Module Reference",
+          "type": "category",
+          "children": [
+            {
+              "id": "agents-module",
+              "label": "Agents",
+              "type": "page",
+              "children": []
+            },
+            {
+              "id": "tools-module",
+              "label": "Agent Tools",
+              "type": "page",
+              "children": []
+            },
+            {
+              "id": "miner-module",
+              "label": "Miner",
+              "type": "page",
+              "children": []
+            },
+            {
+              "id": "core-module",
+              "label": "Agent Core",
+              "type": "page",
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "data-models",
+      "label": "Data Models",
+      "type": "category",
+      "children": [
+        {
+          "id": "data-models-overview",
+          "label": "Architecture Overview",
+          "type": "page",
+          "children": []
+        },
+        {
+          "id": "models-module",
+          "label": "Module Reference",
+          "type": "category",
+          "children": [
+            {
+              "id": "models-module-files",
+              "label": "Models",
+              "type": "page",
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "repositories",
+      "label": "Repositories",
+      "type": "category",
+      "children": [
+        {
+          "id": "repositories-overview",
+          "label": "Architecture Overview",
+          "type": "page",
+          "children": []
+        },
+        {
+          "id": "repositories-modules",
+          "label": "Module Reference",
+          "type": "category",
+          "children": [
+            {
+              "id": "storage-module",
+              "label": "Storage",
+              "type": "page",
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "infrastructure-setup",
+      "label": "Infrastructure Setup",
+      "type": "category",
+      "children": [
+        {
+          "id": "infrastructure-setup-overview",
+          "label": "Architecture Overview",
+          "type": "page",
+          "children": []
+        },
+        {
+          "id": "infrastructure-modules",
+          "label": "Module Reference",
+          "type": "category",
+          "children": [
+            {
+              "id": "infra-module-files",
+              "label": "Infrastructure Files",
+              "type": "page",
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "core-services",
+      "label": "Core Services",
+      "type": "category",
+      "children": [
+        {
+          "id": "core-services-overview",
+          "label": "Architecture Overview",
+          "type": "page",
+          "children": []
+        },
+        {
+          "id": "core-modules",
+          "label": "Module Reference",
+          "type": "category",
+          "children": [
+            {
+              "id": "core-module-files",
+              "label": "Core Services",
+              "type": "page",
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

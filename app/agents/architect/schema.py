@@ -18,6 +18,10 @@ class NavigationNode(BaseModel):
 
 class WikiNavigation(BaseModel):
     project_name: str
+    detected_subsystems: List[str] = Field(
+        default_factory=list,
+        description="List of detected roles (e.g. backend, frontend).",
+    )
     tree: List[NavigationNode]
 
 

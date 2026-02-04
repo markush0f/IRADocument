@@ -8,6 +8,7 @@ from app.agents.agent_executor import AgentExecutor
 from app.core.logger import get_logger
 from .prompts import ARCHITECT_NAVIGATION_PROMPT, ARCHITECT_PAGE_WRITER_PROMPT
 from .schema import WikiNavigation, WikiPageDetail
+from .subsystems import SubsystemDetector
 
 logger = get_logger(__name__)
 
@@ -15,6 +16,7 @@ logger = get_logger(__name__)
 class ArchitectAgent:
     def __init__(self, client: BaseLLMClient):
         self.client = client
+        self.detector = SubsystemDetector(client)
 
     def _group_by_module(self, data: List[Dict[str, Any]]) -> Dict[str, List[Any]]:
         """Groups file analyses by their parent directory (module)."""
@@ -31,9 +33,6 @@ class ArchitectAgent:
         self, module_name: str, files: List[Dict[str, Any]]
     ) -> str:
         """Create a summary used for Navigation Planning."""
-        # Lightweight summary
-        prompt = f"Summarize module '{module_name}' with {len(files)} files. What is its main responsibility?"
-        # Simple concat of topics for context
         topics = set()
         for f in files:
             for c in f.get("conclusions", []):
@@ -63,17 +62,26 @@ class ArchitectAgent:
         raw_results = miner_output.get("results", [])
         modules_map = self._group_by_module(raw_results)
 
-        # Create a "System Overview" for the Architect
+        # 1. Detect Subsystems
+        detected_subsystems = await self.detector.detect(raw_results)
+
+        subsys_text = "DETECTED SUBSYSTEMS:\n"
+        for sub in detected_subsystems:
+            subsys_text += f"- {sub.name} ({sub.role}) [Root: {sub.root_path}]\n"
+            subsys_text += f"  Tech: {', '.join(sub.technologies)}\n"
+
         overview_text = "Project Modules:\n"
         for mod, files in modules_map.items():
             overview_text += f"- {mod} ({len(files)} files)\n"
 
-        logger.info("Architect is planning navigation tree...")
+        logger.info(
+            f"Architect is planning navigation. Subsystems: {[s.name for s in detected_subsystems]}"
+        )
 
         executor = AgentExecutor(client=self.client)
         executor.set_system_prompt(ARCHITECT_NAVIGATION_PROMPT)
         executor.add_user_message(
-            f"Here is the project structure. Design the Wiki Navigation.\n\n{overview_text}"
+            f"Here is the project structure. Design the Wiki Navigation.\n\n{subsys_text}\n\n{overview_text}"
         )
 
         # Tool
