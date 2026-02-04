@@ -13,7 +13,7 @@ from app.agents.core.openai_client import OpenAIClient
 from app.agents.architect.agent import ArchitectAgent
 from app.core.logger import get_logger
 
-logger = get_logger("run_architect")
+logger = get_logger("test_architect_v3")
 MODEL = "gpt-4o-mini"
 OUTPUT_DIR = "wiki_docs"
 
