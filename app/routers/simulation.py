@@ -4,6 +4,9 @@ import random
 from fastapi import APIRouter
 from app.core.socket_manager import manager
 from pydantic import BaseModel
+from app.core.logger import get_logger
+
+logger = get_logger(__name__)
 
 router = APIRouter()
 
@@ -19,12 +22,14 @@ async def simulate_documentation(request: SimulationRequest):
     Useful for frontend testing without running the expensive AI pipeline.
     """
     project_id = request.project_id
+    logger.info(f"Starting simulation for project {project_id}")
 
     asyncio.create_task(_run_simulation(project_id))
     return {"status": "simulation_started", "project_id": project_id}
 
 
 async def _run_simulation(project_id: str):
+    logger.info(f"[Sim] Started pipeline for {project_id}")
     # 1. Pipeline Started
     await manager.broadcast(
         project_id,
@@ -37,6 +42,7 @@ async def _run_simulation(project_id: str):
     await asyncio.sleep(1)
 
     # 2. Mining Phase
+    logger.info(f"[Sim] Phase: Mining for {project_id}")
     await manager.broadcast(
         project_id,
         {
@@ -85,6 +91,7 @@ async def _run_simulation(project_id: str):
             )
 
     # 3. Architect Phase
+    logger.info(f"[Sim] Phase: Architecting for {project_id}")
     await manager.broadcast(
         project_id,
         {
@@ -134,10 +141,12 @@ async def _run_simulation(project_id: str):
         ],
     }
 
+    logger.info(f"[Sim] Sending Generated Plan for {project_id}")
     await manager.broadcast(project_id, {"type": "plan_generated", "plan": fake_plan})
     await asyncio.sleep(1)
 
     # 4. Writing Phase
+    logger.info(f"[Sim] Phase: Writing for {project_id}")
     await manager.broadcast(
         project_id,
         {
@@ -156,6 +165,7 @@ async def _run_simulation(project_id: str):
     ]
 
     for i, page in enumerate(pages):
+        logger.info(f"[Sim] Writing page '{page}' ({i+1}/{len(pages)})")
         # Notify start of page
         await manager.broadcast(
             project_id,
@@ -208,6 +218,7 @@ async def _run_simulation(project_id: str):
         )
 
     # 5. Completed
+    logger.info(f"[Sim] Pipeline Completed for {project_id}")
     await manager.broadcast(
         project_id,
         {
