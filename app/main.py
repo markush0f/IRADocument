@@ -5,7 +5,7 @@ from typing import List, Optional
 import json
 import os
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel, Field
 from sqlmodel import SQLModel
 
@@ -267,3 +267,19 @@ async def get_project_tree(payload: CloneRepoRequest):
         return {"project_id": url_hash, "repo_url": payload.repo_url, "tree": tree}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to build tree: {str(e)}")
+
+
+@app.websocket("/ws/{project_id}")
+async def websocket_endpoint(websocket: WebSocket, project_id: str):
+    from app.core.socket_manager import manager
+
+    await manager.connect(websocket, project_id)
+    try:
+        while True:
+            # Keep connection alive looking for messages or disconnects
+            await websocket.receive_text()
+    except WebSocketDisconnect:
+        manager.disconnect(websocket, project_id)
+    except Exception as e:
+        # Handle other weird connection drops
+        manager.disconnect(websocket, project_id)

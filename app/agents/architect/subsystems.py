@@ -1,4 +1,4 @@
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Callable, Optional
 from pydantic import BaseModel, Field
 from app.agents.core.base import BaseLLMClient
 from app.agents.agent_executor import AgentExecutor
@@ -32,8 +32,9 @@ class SubsystemDetector:
     Uses LLM to analyze file structure and detect subsystems.
     """
 
-    def __init__(self, client: BaseLLMClient):
+    def __init__(self, client: BaseLLMClient, on_event: Optional[Callable] = None):
         self.client = client
+        self.on_event = on_event
 
     async def detect(self, files: List[Dict[str, Any]]) -> List[Subsystem]:
         logger.info("Detecting subsystems using AI...")
@@ -54,7 +55,7 @@ class SubsystemDetector:
         MAX_DETECTOR_TOKENS = 50_000  # Subsystem detection keeps it lighter
         context_str = Tokenizer.truncate(context_str, MAX_DETECTOR_TOKENS)
 
-        executor = AgentExecutor(client=self.client)
+        executor = AgentExecutor(client=self.client, on_event=self.on_event)
         executor.set_system_prompt(SUBSYSTEM_DETECTION_PROMPT)
         executor.add_user_message(f"Analyze this codebase structure:\n\n{context_str}")
 
@@ -79,10 +80,7 @@ class SubsystemDetector:
             await executor.run_until_complete(max_iterations=1)
             if result["data"]:
                 data = SubsystemsList(**result["data"])
-                # Add 'related_files' logic?
-                # The LLM doesn't return full file lists to save tokens.
-                # We can deduce related_files by root_path later or ask LLM for it if needed.
-                # For now, let's keep the Subsystem object simple.
+
                 return data.subsystems
         except Exception as e:
             logger.error(f"Subsystem detection failed: {e}")

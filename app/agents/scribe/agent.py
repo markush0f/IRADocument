@@ -1,6 +1,6 @@
 import os
 from collections import defaultdict
-from typing import Dict, Any, Optional, List
+from typing import Dict, Any, Optional, List, Callable
 
 from app.agents.core.base import BaseLLMClient
 from app.agents.agent_executor import AgentExecutor
@@ -13,8 +13,9 @@ logger = get_logger(__name__)
 
 
 class ScribeAgent:
-    def __init__(self, client: BaseLLMClient):
+    def __init__(self, client: BaseLLMClient, on_event: Optional[Callable] = None):
         self.client = client
+        self.on_event = on_event
 
     def _group_by_module(self, data: List[Dict[str, Any]]) -> Dict[str, List[Any]]:
         """Groups file analyses by their parent directory (module)."""
@@ -77,7 +78,7 @@ class ScribeAgent:
         else:
             system_prompt = SCRIBE_REFERENCE_PROMPT
 
-        executor = AgentExecutor(client=self.client)
+        executor = AgentExecutor(client=self.client, on_event=self.on_event)
         executor.set_system_prompt(system_prompt)
 
         user_msg = f"Page Title: {page_title}\n\nTECHNICAL FACTS:\n{relevant_facts}"

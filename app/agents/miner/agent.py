@@ -9,10 +9,13 @@ from .schema import MinerOutput, MinerBatchOutput
 logger = get_logger(__name__)
 
 
+from typing import Dict, Any, Optional, List, Tuple, Callable
+
+
 class MinerAgent:
-    def __init__(self, client: BaseLLMClient):
+    def __init__(self, client: BaseLLMClient, on_event: Optional[Callable] = None):
         self.client = client
-        self.executor = AgentExecutor(client=client)
+        self.executor = AgentExecutor(client=client, on_event=on_event)
         self.executor.set_system_prompt(MINER_SYSTEM_PROMPT)
 
     async def analyze_file(

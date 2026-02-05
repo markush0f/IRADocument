@@ -14,10 +14,12 @@ class AgentExecutor:
         client: BaseLLMClient,
         registry: Optional[ToolRegistry] = None,
         context: Optional[Dict[str, Any]] = None,
+        on_event: Optional[Callable[[Dict[str, Any]], Any]] = None,
     ):
         self.client = client
         self.registry = registry
         self.context = context or {}
+        self.on_event = on_event
         self.tools_registry: Dict[str, Callable] = {}
         self.tools_definitions: List[Dict[str, Any]] = []
         self.messages: List[Dict[str, Any]] = []
@@ -51,6 +53,14 @@ class AgentExecutor:
         """Adds a user message to the conversation history."""
         self.messages.append({"role": "user", "content": content})
 
+    async def _emit(self, event_type: str, data: Any):
+        if self.on_event:
+            event = {"type": "agent_thought", "subtype": event_type, "data": data}
+            if asyncio.iscoroutinefunction(self.on_event):
+                await self.on_event(event)
+            else:
+                self.on_event(event)
+
     async def run_step(self) -> Dict[str, Any]:
         """
         Performs a single execution step: Chat -> Tool Execution -> History Update.
@@ -58,34 +68,42 @@ class AgentExecutor:
         """
         tools = self._get_tools_definitions()
 
-        # 1. Ask the LLM: It can return a text response OR a request to call tools.
-        # We send the entire conversation history (context) and the available tools.
+        # 1. Ask the LLM
+        await self._emit(
+            "llm_request", {"messages": self.messages[-1] if self.messages else None}
+        )
+
         response_message = await self.client.process_messages(
             self.messages, tools=tools if tools else None
         )
 
-        # We save the LLM's response (text or tool call) to history.
-        # This keeps the model informed about its own previous actions.
+        await self._emit("llm_response", {"content": response_message.get("content")})
+
         self.messages.append(response_message)
 
-        # 2. Check if the LLM wants to interact with the system via tools.
         tool_calls = response_message.get("tool_calls", [])
 
-        # Fallback parsing for models that don't support native tool calling well.
         if not tool_calls and response_message.get("content"):
             tool_calls = self._parse_tool_calls_from_content(
                 response_message["content"]
             )
 
-        # 3. Execute the requested tools and feed the results back into the history.
+        # 3. Execute tools
         if tool_calls:
             logger.info(f"Agent requested {len(tool_calls)} tool calls.")
+            await self._emit("tool_calls", {"calls": tool_calls})
+
             for tool_call in tool_calls:
-                # We execute the actual Python function linked to this tool.
                 result = await self._execute_tool(tool_call)
 
-                # IMPORTANT: We add the result back to history with role='tool'.
-                # This 'closes the loop', providing the LLM with the data it requested.
+                await self._emit(
+                    "tool_result",
+                    {
+                        "tool": tool_call.get("function", {}).get("name"),
+                        "result": result,
+                    },
+                )
+
                 tool_msg = {
                     "role": "tool",
                     "content": json.dumps(result),
