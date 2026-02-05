@@ -7,6 +7,7 @@ from app.agents.agent_executor import AgentExecutor
 from app.core.logger import get_logger
 from app.agents.architect.schema import WikiPageDetail
 from .prompts import SCRIBE_ARCHITECTURE_PROMPT, SCRIBE_REFERENCE_PROMPT
+from app.core.tokenizer import Tokenizer
 
 logger = get_logger(__name__)
 
@@ -63,10 +64,12 @@ class ScribeAgent:
 
         relevant_facts = await self._prepare_facts(modules_map, target_modules)
 
-        # Safety Limit
-        max_chars = 50000
-        if len(relevant_facts) > max_chars:
-            relevant_facts = relevant_facts[:max_chars] + "\n...(truncated)"
+        # Safety Limit (Tokens)
+        # GPT-4o-mini has 128k context. Let's reserve 20k for output/system prompts.
+        # So we can safely use ~100k input tokens.
+        MAX_INPUT_TOKENS = 100_000
+
+        relevant_facts = Tokenizer.truncate(relevant_facts, MAX_INPUT_TOKENS)
 
         # 2. Select Prompt
         if "overview" in page_type.lower() or "architecture" in page_title.lower():

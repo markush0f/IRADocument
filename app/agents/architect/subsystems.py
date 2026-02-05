@@ -4,6 +4,7 @@ from app.agents.core.base import BaseLLMClient
 from app.agents.agent_executor import AgentExecutor
 from app.core.logger import get_logger
 from .prompts import SUBSYSTEM_DETECTION_PROMPT
+from app.core.tokenizer import Tokenizer
 
 logger = get_logger(__name__)
 
@@ -48,8 +49,10 @@ class SubsystemDetector:
                 context_lines.append(f"  - Fact: {c.get('statement')}")
 
         context_str = "\n".join(context_lines)
-        if len(context_str) > 50000:
-            context_str = context_str[:50000] + "\n...(truncated)"
+
+        # Safety Limit (Tokens)
+        MAX_DETECTOR_TOKENS = 50_000  # Subsystem detection keeps it lighter
+        context_str = Tokenizer.truncate(context_str, MAX_DETECTOR_TOKENS)
 
         executor = AgentExecutor(client=self.client)
         executor.set_system_prompt(SUBSYSTEM_DETECTION_PROMPT)
