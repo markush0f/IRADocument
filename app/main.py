@@ -189,3 +189,34 @@ async def generate_wiki(payload: CloneRepoRequest):
         raise HTTPException(status_code=500, detail=result.get("error"))
 
     return result
+
+
+@app.post("/analysis/endpoints")
+async def extract_endpoints(payload: CloneRepoRequest):
+    """
+    Clones a repo and extracts API endpoints using AI.
+    """
+    from app.services.endpoint_service import EndpointService
+    from app.core.database import AsyncSessionLocal
+
+    # 1. Clone
+    context = SimpleNamespace(repo_url=payload.repo_url, branch=payload.branch)
+    try:
+        prepare_workspace(context)
+        clone_repo(context)
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Clone failed: {str(exc)}")
+
+    project_id = context.workspace_id
+    repo_path = str(context.repo_path)
+
+    # 2. Extract
+    async with AsyncSessionLocal() as session:
+        service = EndpointService(session)
+        endpoints = await service.extract_and_save_endpoints(project_id, repo_path)
+
+        return {
+            "project_id": project_id,
+            "count": len(endpoints),
+            "endpoints": endpoints,
+        }
