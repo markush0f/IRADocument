@@ -159,3 +159,33 @@ async def run_full_pipeline(payload: CloneRepoRequest):
                 "repo_path": str(context.repo_path),
             },
         }
+
+
+@app.post("/documentation/generate")
+async def generate_wiki(payload: CloneRepoRequest):
+    """
+    Clones a repository and generates full wiki documentation (Miner -> Architect -> Scribe).
+    """
+    from app.services.documentation_service import DocumentationService
+
+    # 1. Setup context and Clone
+    context = SimpleNamespace(repo_url=payload.repo_url, branch=payload.branch)
+    try:
+        prepare_workspace(context)
+        clone_repo(context)
+    except (WorkspaceError, CloneRepositoryError) as exc:
+        raise HTTPException(status_code=500, detail=f"Clone failed: {str(exc)}")
+
+    project_id = context.workspace_id
+    repo_path = str(context.repo_path)
+
+    # 2. Run Documentation Pipeline
+    doc_service = DocumentationService()
+    result = await doc_service.generate_documentation(
+        project_id=project_id, root_path=repo_path
+    )
+
+    if result.get("status") == "failed":
+        raise HTTPException(status_code=500, detail=result.get("error"))
+
+    return result

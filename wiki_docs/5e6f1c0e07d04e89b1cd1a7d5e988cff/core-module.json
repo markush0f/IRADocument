@@ -1,0 +1,8 @@
+{
+  "id": "core-module",
+  "title": "Core Module Dependency Diagram",
+  "description": "Dependency diagram for the Core module.",
+  "content_markdown": "",
+  "diagram_mermaid": "graph TD;\n    A[Database Configuration] -->|uses| B[AsyncSession];\n    D[LLMFactory] -->|creates| C[OllamaClient];\n    C -->|interacts with| E[ollama.AsyncClient];\n    E -->|requires| F[Settings];\n    D -->|injected| G[AgentExecutor];\n    G -->|manages| H[BasePipeline];",
+  "related_files": []
+}

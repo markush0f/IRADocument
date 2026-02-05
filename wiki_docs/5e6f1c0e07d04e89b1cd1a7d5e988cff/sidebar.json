@@ -1,0 +1,199 @@
+{
+  "project_name": "Scanning and Analysis Application",
+  "detected_subsystems": [
+    "Backend API",
+    "Scanning and Analysis Agents",
+    "Core Data Models",
+    "Data Repositories",
+    "Database Configuration",
+    "Technology Scanners"
+  ],
+  "tree": [
+    {
+      "id": "project-overview",
+      "label": "Project Overview",
+      "type": "page",
+      "children": []
+    },
+    {
+      "id": "backend-api",
+      "label": "Backend API",
+      "type": "category",
+      "children": [
+        {
+          "id": "backend-api-overview",
+          "label": "Architecture Overview",
+          "type": "page",
+          "children": []
+        },
+        {
+          "id": "backend-modules",
+          "label": "Module Reference",
+          "type": "category",
+          "children": [
+            {
+              "id": "services-module",
+              "label": "Services",
+              "type": "page",
+              "children": []
+            },
+            {
+              "id": "agents-module",
+              "label": "Agents",
+              "type": "page",
+              "children": []
+            },
+            {
+              "id": "agents-tools-module",
+              "label": "Agents Tools",
+              "type": "page",
+              "children": []
+            },
+            {
+              "id": "agents-core-module",
+              "label": "Agents Core",
+              "type": "page",
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "scanning-agents",
+      "label": "Scanning and Analysis Agents",
+      "type": "category",
+      "children": [
+        {
+          "id": "scanning-agents-overview",
+          "label": "Architecture Overview",
+          "type": "page",
+          "children": []
+        },
+        {
+          "id": "scanning-agents-modules",
+          "label": "Module Reference",
+          "type": "category",
+          "children": [
+            {
+              "id": "agents-module",
+              "label": "Agents",
+              "type": "page",
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "core-data-models",
+      "label": "Core Data Models",
+      "type": "category",
+      "children": [
+        {
+          "id": "core-data-models-overview",
+          "label": "Architecture Overview",
+          "type": "page",
+          "children": []
+        },
+        {
+          "id": "core-data-models-modules",
+          "label": "Module Reference",
+          "type": "category",
+          "children": [
+            {
+              "id": "models-module",
+              "label": "Models",
+              "type": "page",
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "data-repositories",
+      "label": "Data Repositories",
+      "type": "category",
+      "children": [
+        {
+          "id": "data-repositories-overview",
+          "label": "Architecture Overview",
+          "type": "page",
+          "children": []
+        },
+        {
+          "id": "data-repositories-modules",
+          "label": "Module Reference",
+          "type": "category",
+          "children": [
+            {
+              "id": "storage-module",
+              "label": "Storage",
+              "type": "page",
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "database-configuration",
+      "label": "Database Configuration",
+      "type": "category",
+      "children": [
+        {
+          "id": "database-configuration-overview",
+          "label": "Architecture Overview",
+          "type": "page",
+          "children": []
+        },
+        {
+          "id": "database-configuration-modules",
+          "label": "Module Reference",
+          "type": "category",
+          "children": [
+            {
+              "id": "core-module",
+              "label": "Core",
+              "type": "page",
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "technology-scanners",
+      "label": "Technology Scanners",
+      "type": "category",
+      "children": [
+        {
+          "id": "technology-scanners-overview",
+          "label": "Architecture Overview",
+          "type": "page",
+          "children": []
+        },
+        {
+          "id": "technology-scanners-modules",
+          "label": "Module Reference",
+          "type": "category",
+          "children": [
+            {
+              "id": "technologies-module",
+              "label": "Technologies",
+              "type": "page",
+              "children": []
+            },
+            {
+              "id": "metadata-module",
+              "label": "Metadata",
+              "type": "page",
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

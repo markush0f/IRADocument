@@ -1,0 +1,8 @@
+{
+  "id": "backend-api-overview",
+  "title": "Architecture Overview Diagram",
+  "description": "Visual representation of the architecture flow for the app/core subsystem.",
+  "content_markdown": "",
+  "diagram_mermaid": "graph TD\n    A[Client Request] -->|Send Request| B[Async Function]\n    B --> C[Database Session]\n    C --> D[Async SQLite Database]\n    D --> E[Return Response]\n    E -->|Send Response| A",
+  "related_files": []
+}

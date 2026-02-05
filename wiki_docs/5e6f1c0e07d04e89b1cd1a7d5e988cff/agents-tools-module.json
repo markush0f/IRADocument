@@ -1,0 +1,14 @@
+{
+  "id": "agents-tools-module",
+  "title": "Agents Tools",
+  "description": "Module for defining and managing agent tools within a project, facilitating architecture relations and client interactions.",
+  "content_markdown": "## Overview\nThe Agents Tools module provides functionalities for managing architectural relations within a project and for interacting with various LLM clients, particularly through the Ollama API.\n\n## File: relation_tools.py\n- **Purpose**: This file defines tools for managing architectural relations within a project.\n- **Key Functions/Classes**:\n  - `register_relation`: A function to register new architectural relations in the project.\n  - `list_project_relations`: A function to list all relations associated with the project.\n  - Utilizes `RelationService` for database interactions, managing complex relationships effectively.\n\n## File: factory.py\n- **Purpose**: Contains a factory class designed for client management.\n- **Key Functions/Classes**:\n  - `LLMFactory`: This factory class is responsible for initializing and returning specific LLM clients like `OllamaClient`, thus abstracting client creation based on the supplied provider configurations.\n\n## File: ollama_client.py\n- **Purpose**: Implements the Ollama client for API integration.\n- **Key Functions/Classes**:\n  - `OllamaClient`: Extends `BaseLLMClient` for interaction with the Ollama API.\n    - **Error Handling**: Methods log errors during API interactions using an initialized logger from `get_logger`, facilitating debugging and monitoring.\n    - **Configuration**: Initializes `host` and `model` from `settings.ollama_base_url` and `settings.ollama_model`, providing configurable parameters for the Ollama API client at runtime.\n\n## File: pipeline.py\n- **Purpose**: Manages control flow and tool management in sequential analysis processes.\n- **Key Functions/Classes**:\n  - `BasePipeline`: A class responsible for managing the sequential flow of analysis stages, utilizing `AgentExecutor` for processing prompts and maintaining results across stages.\n  - Dynamically adjusts available tools for each stage based on input parameters, allowing flexibility in execution.\n\n## File: discovery_pipeline.py\n- **Purpose**: Implements a dynamic pipeline for executing various analysis stages.\n- **Key Functions/Classes**:\n  - `ProjectDiscoveryPipeline`: This class manages execution of stages in sequence, preparing context dynamically and utilizing `TechnologyScanner` for automated tech stack detection.",
+  "diagram_mermaid": null,
+  "related_files": [
+    "relation_tools.py",
+    "factory.py",
+    "ollama_client.py",
+    "pipeline.py",
+    "discovery_pipeline.py"
+  ]
+}

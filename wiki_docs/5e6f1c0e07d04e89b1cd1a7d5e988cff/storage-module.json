@@ -1,0 +1,15 @@
+{
+  "id": "storage-module",
+  "title": "Storage",
+  "description": "Module for handling various data repositories in a project management application.",
+  "content_markdown": "## Overview\nThe `app/storage` module provides a set of data repository classes for managing CRUD operations on various models related to projects, facts, relations, tree nodes, and files in an asynchronous manner.\n\n## Files Analysis\n\n### File: base_repository.py\n- **Purpose**: Implements the `BaseRepository` class as a generic repository for CRUD operations on SQLModel entities.\n- **Key Features**:\n  - Utilizes generics to support CRUD operations for any entity.\n  - Asynchronous methods for adding, committing, retrieving, and deleting records.\n\n### File: project_repository.py\n- **Purpose**: Contains the `ProjectRepository` class for CRUD operations on the `Project` model.\n- **Key Features**:\n  - Inherits from `BaseRepository`.\n  - Implements `get_with_files` method to retrieve a project with its associated files using SQLModel relationships.\n\n### File: fact_repository.py\n- **Purpose**: Defines the `FactRepository` class for managing the `Fact` model database interactions.\n- **Key Features**:\n  - Extends `BaseRepository`.\n  - Includes the `get_by_project` asynchronous method to fetch facts related to a specific project using a SQL select statement.\n\n### File: relation_repository.py\n- **Purpose**: Manages `Relation` entities through the `RelationRepository` class.\n- **Key Features**:\n  - Inherits from `BaseRepository`.\n  - Provides `get_by_project` method to execute a SQL query, fetching relations for a given project based on `project_id`.\n\n### File: tree_node_repository.py\n- **Purpose**: Implements the `TreeNodeRepository` class to manage `TreeNode` entities.\n- **Key Features**:\n  - Method `get_node` retrieves a specific node using a composite key from `project_id` and `path`.\n  - `get_pending_nodes` orders nodes by priority using a SQL `CASE` statement.\n  - Includes `get_project_tree` to fetch all tree nodes associated with a specific project by querying with `project_id`.\n\n### File: file_repository.py\n- **Purpose**: Defines the `FileRepository` class for accessing `File` model records tied to projects.\n- **Key Features**:\n  - Inherits from `BaseRepository`.\n  - Implements `get_by_project` method to retrieve all files linked to a specific project based on its `File.project_id`.  \n\n## Dependencies\n- **BaseRepository**: Serves as the foundational class for all repositories in this module, enabling common CRUD functionality.\n- The module utilizes `SQLModel` for ORM capabilities, facilitating asynchronous database interactions.",
+  "diagram_mermaid": null,
+  "related_files": [
+    "base_repository.py",
+    "project_repository.py",
+    "fact_repository.py",
+    "relation_repository.py",
+    "tree_node_repository.py",
+    "file_repository.py"
+  ]
+}

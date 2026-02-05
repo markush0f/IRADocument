@@ -12,6 +12,13 @@ class LLMFactory:
 
         if provider == "ollama":
             return OllamaClient(host=kwargs.get("host"), model=kwargs.get("model"))
+        elif provider == "openai":
+            from .openai_client import OpenAIClient
+
+            return OpenAIClient(
+                model=kwargs.get("model", "gpt-4o-mini"),
+                api_key=kwargs.get("api_key") or settings.openai_api_key,
+            )
         # More models can be added here
         else:
             raise ValueError(f"Unsupported LLM provider: {provider}")
