@@ -3,6 +3,7 @@ from types import SimpleNamespace
 from enum import Enum
 from typing import List, Optional
 import json
+import os
 
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
@@ -15,6 +16,7 @@ from app.models import (
     File,
     Fact,
     Relation,
+    Endpoint,
 )  # Import all models to register them
 from app.pipeline.steps.clone_repo import CloneRepositoryError, clone_repo
 from app.pipeline.steps.prepare_workspace import WorkspaceError, prepare_workspace
@@ -222,35 +224,34 @@ async def extract_endpoints(payload: CloneRepoRequest):
         }
 
 
-@app.get("/projects/{project_id}/tree")
-async def get_project_tree(project_id: str):
+@app.post("/analysis/tree")
+async def get_project_tree(payload: CloneRepoRequest):
     """
-    Returns the file structure of the project as a JSON tree.
-    Does NOT use AI. Pure filesystem scanning.
+    Returns the file structure of the project as a JSON tree using its repo URL.
+    Clones the repository if it's not already present.
     """
     from app.services.file_tree_service import FileTreeService
-    from app.services.project_service import ProjectService
-    from app.core.database import AsyncSessionLocal
 
-    async with AsyncSessionLocal() as session:
-        # 1. Get Project Root Path from DB
-        project_service = ProjectService(session)
-        project = await project_service.get_project(project_id)
+    # 1. Prepare Workspace (this creates the ID and path based on repo_url)
+    context = SimpleNamespace(repo_url=payload.repo_url, branch=payload.branch)
+    try:
+        prepare_workspace(context)
+        # We don't necessarily need to clone if we just want the tree of an existing folder,
+        # but if it doesn't exist, we must clone it.
+        if not os.path.exists(context.repo_path):
+            clone_repo(context)
+    except Exception as exc:
+        raise HTTPException(
+            status_code=500, detail=f"Workspace preparation failed: {str(exc)}"
+        )
 
-        if not project:
-            raise HTTPException(status_code=404, detail="Project not found")
+    root_path = str(context.repo_path)
+    project_id = context.workspace_id
 
-        root_path = project.root_path
-
-        # 2. Build Tree
-        service = FileTreeService()
-        try:
-            tree = service.get_file_tree(root_path)
-            # Remove absolute paths for security/cleanliness if needed,
-            # but usually relative paths are better for frontend.
-            # For now, let's keep it simple.
-            return {"project_id": project_id, "tree": tree}
-        except Exception as e:
-            raise HTTPException(
-                status_code=500, detail=f"Failed to build tree: {str(e)}"
-            )
+    # 2. Build Tree
+    service = FileTreeService()
+    try:
+        tree = service.get_file_tree(root_path)
+        return {"project_id": project_id, "repo_url": payload.repo_url, "tree": tree}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to build tree: {str(e)}")
