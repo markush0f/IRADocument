@@ -231,27 +231,39 @@ async def get_project_tree(payload: CloneRepoRequest):
     Clones the repository if it's not already present.
     """
     from app.services.file_tree_service import FileTreeService
+    import hashlib
+    from pathlib import Path
+    import tempfile
 
-    # 1. Prepare Workspace (this creates the ID and path based on repo_url)
-    context = SimpleNamespace(repo_url=payload.repo_url, branch=payload.branch)
+    # 1. Stable Workspace ID from URL
+    # We use a hash of the URL to stay consistent across requests
+    url_hash = hashlib.md5(payload.repo_url.encode()).hexdigest()
+
+    # We manually set up a workspace context to avoid randomness of uuid4 in prepare_workspace
+
+    base_tmp = Path(tempfile.gettempdir()) / "ira-docgen"
+    repo_path = base_tmp / url_hash / "repo"
+
+    context = SimpleNamespace(
+        repo_url=payload.repo_url,
+        branch=payload.branch,
+        workspace_id=url_hash,
+        repo_path=repo_path,
+    )
+
     try:
-        prepare_workspace(context)
-        # We don't necessarily need to clone if we just want the tree of an existing folder,
-        # but if it doesn't exist, we must clone it.
-        if not os.path.exists(context.repo_path):
+        # If repo doesn't exist or is empty, clone it
+        if not repo_path.exists() or not any(repo_path.iterdir()):
+            if not repo_path.parent.exists():
+                repo_path.parent.mkdir(parents=True, exist_ok=True)
             clone_repo(context)
     except Exception as exc:
-        raise HTTPException(
-            status_code=500, detail=f"Workspace preparation failed: {str(exc)}"
-        )
-
-    root_path = str(context.repo_path)
-    project_id = context.workspace_id
+        raise HTTPException(status_code=500, detail=f"Clone failed: {str(exc)}")
 
     # 2. Build Tree
     service = FileTreeService()
     try:
-        tree = service.get_file_tree(root_path)
-        return {"project_id": project_id, "repo_url": payload.repo_url, "tree": tree}
+        tree = service.get_file_tree(str(repo_path))
+        return {"project_id": url_hash, "repo_url": payload.repo_url, "tree": tree}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to build tree: {str(e)}")
