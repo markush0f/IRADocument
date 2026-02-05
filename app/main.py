@@ -269,6 +269,11 @@ async def get_project_tree(payload: CloneRepoRequest):
         raise HTTPException(status_code=500, detail=f"Failed to build tree: {str(e)}")
 
 
+from app.routers import simulation
+
+app.include_router(simulation.router)
+
+
 @app.websocket("/ws/{project_id}")
 async def websocket_endpoint(websocket: WebSocket, project_id: str):
     from app.core.socket_manager import manager
