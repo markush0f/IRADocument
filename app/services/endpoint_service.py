@@ -11,32 +11,10 @@ from app.agents.agent_executor import AgentExecutor
 
 logger = get_logger(__name__)
 
-ENDPOINT_EXTRACTION_PROMPT = """
-You are a Universal API Endpoint Extractor.
-Your goal is to identify ALL API endpoints/routes defined in ANY programming language or framework.
-
-## TASK
-Analyze the provided code and extract EVERY endpoint definition you find.
-
-## WHAT TO LOOK FOR
-- HTTP route decorators (e.g., @app.get, @router.post, @route, @RequestMapping)
-- Route registration calls (e.g., app.get(), router.post(), http.HandleFunc())
-- Framework-specific patterns (FastAPI, Flask, Express, Spring, Django, Rails, Phoenix, etc.)
-- ANY pattern that defines an HTTP endpoint with a method and path
-
-## OUTPUT
-For each endpoint found, extract:
-- **method**: HTTP verb (GET, POST, PUT, DELETE, PATCH, etc.)
-- **path**: The route path/pattern
-- **line_number**: Line where it's defined (if visible)
-- **description**: Brief description of what it does (optional)
-
-## RULES
-- Be comprehensive - don't miss ANY endpoints
-- Work with ANY language: Python, JavaScript, Go, Java, Ruby, PHP, C#, Rust, etc.
-- If unsure about a pattern, include it - better to over-report than miss endpoints
-- Return empty list if NO endpoints found (not all files have endpoints)
-"""
+from app.agents.extractor.prompts import (
+    ENDPOINT_EXTRACTION_PROMPT,
+    FILE_SELECTION_PROMPT,
+)
 
 
 class EndpointService:
@@ -52,14 +30,19 @@ class EndpointService:
         """
         logger.info(f"Starting endpoint extraction for project {project_id}")
 
-        # 1. Collect candidate files (routers, controllers, api)
-        candidate_files = self._collect_candidate_files(root_path)
-        logger.info(f"Found {len(candidate_files)} candidate files for endpoints.")
+        # 1. Collect ALL files first (very cheap)
+        all_files = self._collect_all_files(root_path)
+        logger.info(f"Walking tree found {len(all_files)} files.")
+
+        # 2. Let AI pick candidates from the list
+        candidate_files = await self._select_candidate_files_with_ai(
+            root_path, all_files
+        )
+        logger.info(f"AI selected {len(candidate_files)} candidate files for analysis.")
 
         all_endpoints = []
 
-        # 2. Analyze each file
-        # We can do this in parallel batches for speed
+        # 3. Analyze each candidate file
         BATCH_SIZE = 5
         for i in range(0, len(candidate_files), BATCH_SIZE):
             batch = candidate_files[i : i + BATCH_SIZE]
@@ -74,19 +57,65 @@ class EndpointService:
 
         return all_endpoints
 
-    def _collect_candidate_files(self, root_path: str) -> List[str]:
-        """
-        Collect ALL files. Zero filtering. Let AI decide EVERYTHING.
-        AI determines what's relevant, what's code, what has endpoints.
-        """
+    def _collect_all_files(self, root_path: str) -> List[str]:
+        """Collects every single file path in the project."""
         candidates = []
         full_root_path = os.path.abspath(root_path)
-
         for root, dirs, files in os.walk(full_root_path):
             for file in files:
                 candidates.append(os.path.join(root, file))
-
         return candidates
+
+    async def _select_candidate_files_with_ai(
+        self, root_path: str, file_paths: List[str]
+    ) -> List[str]:
+        """Uses AI to pick which files are worth scanning."""
+        try:
+            rel_paths = [os.path.relpath(p, root_path) for p in file_paths]
+            # Join paths into a block (truncate if too long, though file lists are usually fine)
+            file_list_str = "\n".join(rel_paths)
+
+            executor = AgentExecutor(self.llm_client)
+            executor.set_system_prompt(FILE_SELECTION_PROMPT)
+            executor.add_user_message(f"File List:\n{file_list_str}")
+
+            tool_def = {
+                "type": "function",
+                "function": {
+                    "name": "submit_selected_files",
+                    "description": "Submit list of files that likely contain endpoints",
+                    "parameters": {
+                        "type": "object",
+                        "properties": {
+                            "selected_files": {
+                                "type": "array",
+                                "items": {"type": "string"},
+                            }
+                        },
+                        "required": ["selected_files"],
+                    },
+                },
+            }
+
+            selection = {"files": []}
+
+            def submit_selected_files(selected_files):
+                selection["files"] = selected_files
+                return "Selection received"
+
+            executor.register_tool(tool_def, submit_selected_files)
+
+            await executor.run_until_complete(max_iterations=1)
+
+            # Map back to absolute paths
+            chosen_rel = selection["files"]
+            return [os.path.join(root_path, p) for p in chosen_rel]
+
+        except Exception as e:
+            logger.error(f"AI File Selection failed: {e}")
+            # Fallback: if AI fails, we might want to return a small heuristic sample
+            # or just return everything if it's small. For now, empty or basic heuristic.
+            return []
 
     async def _analyze_file(
         self, project_id: str, root_path: str, file_path: str
