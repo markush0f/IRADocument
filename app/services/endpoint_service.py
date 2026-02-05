@@ -12,13 +12,30 @@ from app.agents.agent_executor import AgentExecutor
 logger = get_logger(__name__)
 
 ENDPOINT_EXTRACTION_PROMPT = """
-You are an API Endpoint Extractor. 
-Your goal is to identify all API endpoints defined in the code.
+You are a Universal API Endpoint Extractor.
+Your goal is to identify ALL API endpoints/routes defined in ANY programming language or framework.
+
+## TASK
+Analyze the provided code and extract EVERY endpoint definition you find.
+
+## WHAT TO LOOK FOR
+- HTTP route decorators (e.g., @app.get, @router.post, @route, @RequestMapping)
+- Route registration calls (e.g., app.get(), router.post(), http.HandleFunc())
+- Framework-specific patterns (FastAPI, Flask, Express, Spring, Django, Rails, Phoenix, etc.)
+- ANY pattern that defines an HTTP endpoint with a method and path
+
+## OUTPUT
+For each endpoint found, extract:
+- **method**: HTTP verb (GET, POST, PUT, DELETE, PATCH, etc.)
+- **path**: The route path/pattern
+- **line_number**: Line where it's defined (if visible)
+- **description**: Brief description of what it does (optional)
 
 ## RULES
-- Analyze the code to find route definitions (e.g. @app.get, @router.post, app.route).
-- Extract ALL endpoints found.
-- Return a list of objects used 'submit_endpoints' tool.
+- Be comprehensive - don't miss ANY endpoints
+- Work with ANY language: Python, JavaScript, Go, Java, Ruby, PHP, C#, Rust, etc.
+- If unsure about a pattern, include it - better to over-report than miss endpoints
+- Return empty list if NO endpoints found (not all files have endpoints)
 """
 
 
@@ -59,30 +76,15 @@ class EndpointService:
 
     def _collect_candidate_files(self, root_path: str) -> List[str]:
         """
-        Heuristic filter to find files likely containing endpoints.
+        Collect ALL files. Zero filtering. Let AI decide EVERYTHING.
+        AI determines what's relevant, what's code, what has endpoints.
         """
         candidates = []
         full_root_path = os.path.abspath(root_path)
 
         for root, dirs, files in os.walk(full_root_path):
-            # Exclude common noise
-            if any(
-                x in root
-                for x in [".git", "__pycache__", "tests", "venv", "node_modules"]
-            ):
-                continue
-
             for file in files:
-                if not file.endswith((".py", ".js", ".ts", ".go", ".java")):
-                    continue
-
-                # Keyword heuristic
-                path_lower = os.path.join(root, file).lower()
-                if any(
-                    k in path_lower
-                    for k in ["route", "controller", "api", "main", "app.py", "server"]
-                ):
-                    candidates.append(os.path.join(root, file))
+                candidates.append(os.path.join(root, file))
 
         return candidates
 

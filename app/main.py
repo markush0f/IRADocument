@@ -220,3 +220,37 @@ async def extract_endpoints(payload: CloneRepoRequest):
             "count": len(endpoints),
             "endpoints": endpoints,
         }
+
+
+@app.get("/projects/{project_id}/tree")
+async def get_project_tree(project_id: str):
+    """
+    Returns the file structure of the project as a JSON tree.
+    Does NOT use AI. Pure filesystem scanning.
+    """
+    from app.services.file_tree_service import FileTreeService
+    from app.services.project_service import ProjectService
+    from app.core.database import AsyncSessionLocal
+
+    async with AsyncSessionLocal() as session:
+        # 1. Get Project Root Path from DB
+        project_service = ProjectService(session)
+        project = await project_service.get_project(project_id)
+
+        if not project:
+            raise HTTPException(status_code=404, detail="Project not found")
+
+        root_path = project.root_path
+
+        # 2. Build Tree
+        service = FileTreeService()
+        try:
+            tree = service.get_file_tree(root_path)
+            # Remove absolute paths for security/cleanliness if needed,
+            # but usually relative paths are better for frontend.
+            # For now, let's keep it simple.
+            return {"project_id": project_id, "tree": tree}
+        except Exception as e:
+            raise HTTPException(
+                status_code=500, detail=f"Failed to build tree: {str(e)}"
+            )
