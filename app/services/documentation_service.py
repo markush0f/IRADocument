@@ -13,16 +13,10 @@ from app.core.logger import get_logger
 logger = get_logger(__name__)
 
 
-class DocumentationService:
-    """
-    Service to orchestrate the documentation generation pipeline:
-    Miner -> Architect -> Scribe.
-    """
+from app.core.socket_manager import manager
 
-    def __init__(self, output_dir: str = "wiki_docs"):
-        self.output_dir = output_dir
-        # Ensure output directory exists
-        os.makedirs(self.output_dir, exist_ok=True)
+
+class DocumentationService:
 
     async def generate_documentation(
         self, project_id: str, root_path: str, model: str = "gpt-4o-mini"
@@ -34,29 +28,72 @@ class DocumentationService:
             logger.info(
                 f"Starting documentation generation for project {project_id} at {root_path}"
             )
+            await manager.broadcast(
+                project_id,
+                {
+                    "type": "pipeline_stage",
+                    "stage": "started",
+                    "message": "Initializing AI Agents...",
+                },
+            )
+
+            # Callback for agents to emit thoughts
+            async def on_agent_event(event: Dict[str, Any]):
+                # Enrich with generic info if needed
+                await manager.broadcast(project_id, event)
 
             # 1. Setup Agents
             client = LLMFactory.get_client(provider="openai", model=model)
-            miner = MinerAgent(client)
-            architect = ArchitectAgent(client)
-            scribe = ScribeAgent(client)
+            miner = MinerAgent(client, on_event=on_agent_event)
+            architect = ArchitectAgent(client, on_event=on_agent_event)
+            scribe = ScribeAgent(client, on_event=on_agent_event)
 
             # PHASE 1: MINING
-            miner_output = await self._run_miner(miner, root_path)
+            await manager.broadcast(
+                project_id,
+                {
+                    "type": "pipeline_stage",
+                    "stage": "mining",
+                    "message": "Mining project facts...",
+                },
+            )
+            miner_output = await self._run_miner(miner, root_path, project_id)
 
             # PHASE 2: PLANNING
             logger.info("Architect is planning navigation...")
+            await manager.broadcast(
+                project_id,
+                {
+                    "type": "pipeline_stage",
+                    "stage": "planning",
+                    "message": "Architect is designing documentation structure...",
+                },
+            )
             nav_plan = await architect.plan_navigation(miner_output)
             if not nav_plan:
                 raise ValueError("Architect failed to generate a navigation plan.")
 
+            await manager.broadcast(
+                project_id, {"type": "plan_generated", "plan": nav_plan.model_dump()}
+            )
+
             # PHASE 3: WRITING
             logger.info("Scribe is starting to write pages...")
+            await manager.broadcast(
+                project_id,
+                {
+                    "type": "pipeline_stage",
+                    "stage": "writing",
+                    "message": "Scribe is writing documentation pages...",
+                },
+            )
             all_modules = self._get_unique_modules(miner_output)
 
             # Collect all pages to write
             pages_to_write = []
             self._collect_pages(nav_plan.tree, pages_to_write)
+
+            total_pages = len(pages_to_write)
 
             # Ensure project-specific output directory
             project_docs_dir = os.path.join(self.output_dir, project_id)
@@ -70,7 +107,19 @@ class DocumentationService:
 
             results = []
             for i, page in enumerate(pages_to_write):
-                logger.info(f"[{i+1}/{len(pages_to_write)}] Writing page: {page.label}")
+                logger.info(f"[{i+1}/{total_pages}] Writing page: {page.label}")
+
+                await manager.broadcast(
+                    project_id,
+                    {
+                        "type": "pipeline_progress",
+                        "stage": "writing_page",
+                        "current": i + 1,
+                        "total": total_pages,
+                        "page_label": page.label,
+                        "page_id": page.id,
+                    },
+                )
 
                 target_modules = self._resolve_target_modules(
                     page.id, page.label, all_modules
@@ -96,6 +145,15 @@ class DocumentationService:
 
                 await asyncio.sleep(1)
 
+            await manager.broadcast(
+                project_id,
+                {
+                    "type": "pipeline_stage",
+                    "stage": "completed",
+                    "message": "Documentation generation finished.",
+                },
+            )
+
             return {
                 "project_id": project_id,
                 "status": "completed",
@@ -118,22 +176,57 @@ class DocumentationService:
             return "architecture_overview"
         return "module_reference"
 
-    async def _run_miner(self, miner: MinerAgent, root_path: str) -> Dict[str, Any]:
+    async def _run_miner(
+        self, miner: MinerAgent, root_path: str, project_id: str
+    ) -> Dict[str, Any]:
         """Runs the miner over the project directory."""
         logger.info("Miner is collecting facts...")
         files_to_analyze = await self._collect_files(root_path)
 
+        total_files = len(files_to_analyze)
+        await manager.broadcast(
+            project_id,
+            {
+                "type": "pipeline_progress",
+                "stage": "mining_files",
+                "current": 0,
+                "total": total_files,
+            },
+        )
+
         # Batch process
         all_results = []
         batch_size = 5
-        for i in range(0, len(files_to_analyze), batch_size):
+        for i in range(0, total_files, batch_size):
             chunk = files_to_analyze[i : i + batch_size]
+
+            await manager.broadcast(
+                project_id,
+                {
+                    "type": "pipeline_progress",
+                    "stage": "mining_files",
+                    "current": i,
+                    "total": total_files,
+                },
+            )
+
             batch_result = await miner.analyze_batch(chunk)
             if batch_result:
                 all_results.extend([r.model_dump() for r in batch_result.results])
             await asyncio.sleep(2)  # Rate limit
 
-        return {"total_files": len(files_to_analyze), "results": all_results}
+        # Final broadcast
+        await manager.broadcast(
+            project_id,
+            {
+                "type": "pipeline_progress",
+                "stage": "mining_files",
+                "current": total_files,
+                "total": total_files,
+            },
+        )
+
+        return {"total_files": total_files, "results": all_results}
 
     async def _collect_files(self, root_path: str) -> List[Tuple[str, str]]:
         """Scans directory and returns list of (rel_path, content)."""

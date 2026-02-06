@@ -223,3 +223,17 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Client
+client/node_modules/
+client/dist/
+client/.astro/
+client/.vercel/
+client/.netlify/
+client/npm-debug.log*
+client/yarn-debug.log*
+client/yarn-error.log*
+client/.pnpm-debug.log*
+client/.env
+client/.env.production
+

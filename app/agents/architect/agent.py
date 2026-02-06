@@ -1,7 +1,7 @@
 import json
 import os
 from collections import defaultdict
-from typing import Dict, Any, Optional, List
+from typing import Dict, Any, Optional, List, Callable
 
 from app.agents.core.base import BaseLLMClient
 from app.agents.agent_executor import AgentExecutor
@@ -14,9 +14,10 @@ logger = get_logger(__name__)
 
 
 class ArchitectAgent:
-    def __init__(self, client: BaseLLMClient):
+    def __init__(self, client: BaseLLMClient, on_event: Optional[Callable] = None):
         self.client = client
-        self.detector = SubsystemDetector(client)
+        self.on_event = on_event
+        self.detector = SubsystemDetector(client, on_event=on_event)
 
     def _group_by_module(self, data: List[Dict[str, Any]]) -> Dict[str, List[Any]]:
         """Groups file analyses by their parent directory (module)."""
