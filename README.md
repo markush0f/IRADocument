@@ -91,130 +91,6 @@ uvicorn app.main:app --reload
 
 The API will be available at `http://localhost:8000`
 
-## 📖 API Endpoints
-
-### Core Analysis
-
-#### **POST** `/clone`
-Clone a Git repository for analysis.
-
-```json
-{
-  "repo_url": "https://github.com/user/project",
-  "branch": "main"
-}
-```
-
-#### **POST** `/pipeline/analyze`
-Run basic analysis pipeline (tech stack, file structure).
-
-```json
-{
-  "repo_url": "https://github.com/user/project",
-  "branch": "main"
-}
-```
-
-#### **POST** `/analysis/tech-stack`
-Analyze and detect all technologies used in the project.
-
-```json
-{
-  "repo_url": "https://github.com/user/project",
-  "branch": "main"
-}
-```
-
-### Documentation Generation
-
-#### **POST** `/documentation/generate`
-Generate full AI-powered documentation using the Triad (Miner → Architect → Scribe).
-
-```json
-{
-  "repo_url": "https://github.com/user/project",
-  "branch": "main"
-}
-```
-
-**Response:**
-```json
-{
-  "project_id": "abc123",
-  "status": "completed",
-  "docs_path": "wiki_docs/abc123/",
-  "total_pages": 15,
-  "pages": [
-    {"id": "backend-overview", "status": "success"},
-    {"id": "api-reference", "status": "success"}
-  ]
-}
-```
-
-### Endpoint Extraction
-
-#### **POST** `/analysis/endpoints`
-Extract all API endpoints using AI (framework-agnostic).
-
-```json
-{
-  "repo_url": "https://github.com/user/api-project",
-  "branch": "main"
-}
-```
-
-**Response:**
-```json
-{
-  "project_id": "abc123",
-  "count": 12,
-  "endpoints": [
-    {
-      "method": "GET",
-      "path": "/users",
-      "file_path": "routes/users.py",
-      "line_number": 45,
-      "description": "Fetch all users"
-    }
-  ]
-}
-```
-
-### File Structure
-
-#### **POST** `/analysis/tree`
-Get the complete file tree structure (no AI, pure filesystem scan).
-
-```json
-{
-  "repo_url": "https://github.com/user/project",
-  "branch": "main"
-}
-```
-
-**Response:**
-```json
-{
-  "project_id": "abc123",
-  "repo_url": "https://github.com/user/project",
-  "tree": {
-    "name": "repo",
-    "type": "directory",
-    "children": [
-      {
-        "name": "src",
-        "type": "directory",
-        "children": [...]
-      },
-      {
-        "name": "README.md",
-        "type": "file"
-      }
-    ]
-  }
-}
-```
-
 ## 🎨 Agent System
 
 ### The Triad Architecture
@@ -278,11 +154,8 @@ IRADocument uses a three-agent pipeline inspired by knowledge extraction and syn
 ### Environment Variables
 
 ```bash
-# Required
 OPENAI_API_KEY=sk-...                    # OpenAI API key
 IRA_OPENAI_API_KEY=sk-...               # Alternative key name
-
-# Optional
 IRA_OLLAMA_BASE_URL=http://localhost:11434  # Ollama server (if using local LLM)
 LOG_LEVEL=INFO                           # Logging level
 DATABASE_URL=sqlite:///./ira_document.db # Database connection
@@ -296,29 +169,6 @@ Edit `app/core/config.py` to customize:
 - Logging preferences
 - Database settings
 
-## 📁 Project Structure
-
-```
-IRADocument/
-├── app/
-│   ├── agents/              # AI Agents
-│   │   ├── miner/          # Fact extraction agent
-│   │   ├── architect/      # Documentation planning agent
-│   │   ├── scribe/         # Content writing agent
-│   │   ├── extractor/      # Endpoint extraction prompts
-│   │   ├── core/           # Base classes and LLM clients
-│   │   └── tools/          # Tool registry for agents
-│   ├── models/             # Database models (SQLModel)
-│   ├── services/           # Business logic services
-│   ├── pipeline/           # Analysis pipeline steps
-│   ├── scanners/           # Technology detection scanners
-│   ├── core/               # Config, logger, database
-│   └── main.py             # FastAPI application
-├── scripts/                # Standalone scripts
-├── tests/                  # Test suite
-├── wiki_docs/              # Generated documentation output
-└── requirements.txt
-```
 
 ## 🧪 Testing
 
@@ -384,5 +234,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 Project Link: [https://github.com/markush0f/IRADocument](https://github.com/markush0f/IRADocument)
 
 ---
-
-**Made with ❤️ and AI**
