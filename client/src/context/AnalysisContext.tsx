@@ -12,8 +12,8 @@ import type {
 const API_BASE_URL = ''; // Use empty string for relative paths (proxied)
 // Calculate WS URL dynamically based on project_id
 const getWsUrl = (projectId: string) => {
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    return `${protocol}//${window.location.host}/ws/simulation/${projectId}`;
+    const protocol = globalThis.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    return `${protocol}//${globalThis.location.host}/ws/${projectId}`;
 };
 
 interface AnalysisState {

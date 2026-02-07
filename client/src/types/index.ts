@@ -84,7 +84,14 @@ export interface InternalThought extends BaseAgentThought {
     data: InternalThoughtContent;
 }
 
-export type AgentThought = LLMRequestThought | ToolCallThought | InternalThought;
+export interface LLMResponseThought extends BaseAgentThought {
+    subtype: 'llm_response';
+    data: {
+        content: string;
+    };
+}
+
+export type AgentThought = LLMRequestThought | ToolCallThought | InternalThought | LLMResponseThought;
 
 // Union of all possible socket messages
 export type SocketMessage =
