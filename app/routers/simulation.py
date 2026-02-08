@@ -1,6 +1,7 @@
 import asyncio
 import uuid
 import random
+import time
 from fastapi import APIRouter
 from app.core.socket_manager import manager
 from pydantic import BaseModel
@@ -72,6 +73,8 @@ async def _run_simulation(project_id: str):
                 {
                     "type": "agent_thought",
                     "subtype": "llm_request",
+                    "timestamp": int(time.time() * 1000),
+                    "id": str(uuid.uuid4()),
                     "data": {
                         "messages": {
                             "role": "user",
@@ -86,6 +89,8 @@ async def _run_simulation(project_id: str):
                 {
                     "type": "agent_thought",
                     "subtype": "llm_response",
+                    "timestamp": int(time.time() * 1000),
+                    "id": str(uuid.uuid4()),
                     "data": {"content": "Found 3 endpoints and a database model."},
                 },
             )
@@ -187,6 +192,8 @@ async def _run_simulation(project_id: str):
             {
                 "type": "agent_thought",
                 "subtype": "llm_request",
+                "timestamp": int(time.time() * 1000),
+                "id": str(uuid.uuid4()),
                 "data": {
                     "messages": {
                         "role": "user",
@@ -204,6 +211,8 @@ async def _run_simulation(project_id: str):
             {
                 "type": "agent_thought",
                 "subtype": "tool_calls",
+                "timestamp": int(time.time() * 1000),
+                "id": str(uuid.uuid4()),
                 "data": {
                     "calls": [
                         {

@@ -1,297 +1,475 @@
 import os
 import json
 import asyncio
+import uuid
 import aiofiles
+from pathlib import Path
 from typing import Dict, Any, List, Optional, Tuple
+
 from app.agents.core.factory import LLMFactory
 from app.agents.miner.agent import MinerAgent
 from app.agents.architect.agent import ArchitectAgent
 from app.agents.scribe.agent import ScribeAgent
-from app.core.config import settings
 from app.core.logger import get_logger
+from app.core.socket_manager import manager
 
 logger = get_logger(__name__)
 
+# [COST-SAVING] Directories to skip - CRITICAL to avoid scanning dependencies
+SKIP_DIRS = {
+    "node_modules",
+    ".git",
+    "__pycache__",
+    ".venv",
+    "venv",
+    "env",
+    "dist",
+    "build",
+    ".next",
+    ".cache",
+    "coverage",
+    ".pytest_cache",
+    ".idea",
+    ".vscode",
+    "tmp",
+    "temp",
+    "logs",
+    "public",
+    "assets",
+}
 
-from app.core.socket_manager import manager
+# [COST-SAVING] Extensions to ignore (Binary, lockfiles, maps, logs)
+IGNORE_EXTENSIONS = {
+    ".lock",
+    ".json-lock",
+    ".map",
+    ".log",
+    ".png",
+    ".jpg",
+    ".jpeg",
+    ".gif",
+    ".svg",
+    ".ico",
+    ".woff",
+    ".woff2",
+    ".ttf",
+    ".eot",
+    ".mp4",
+    ".mp3",
+    ".zip",
+    ".tar",
+    ".gz",
+    ".pyc",
+    ".class",
+    ".o",
+    ".obj",
+    ".dll",
+    ".exe",
+    ".so",
+    ".dylib",
+    ".pdf",
+    ".doc",
+    ".docx",
+    ".xls",
+    ".xlsx",
+    ".ppt",
+    ".pptx",
+    ".min.js",
+    ".min.css",
+}
 
 
 class DocumentationService:
+    def __init__(self):
+        self.output_dir = Path("output/docs")
 
     async def generate_documentation(
-        self, project_id: str, root_path: str, model: str = "gpt-4o-mini"
+        self,
+        project_id: str,
+        repo_path: str,
+        provider: str = "openai",
+        model: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
         Executes the full Triad pipeline (Miner -> Architect -> Scribe) for a project.
+        Includes caching logic to resume from previous steps if output files exist.
         """
+        logger.info(f"[Service] Starting documentation generation for {project_id}")
+
         try:
-            logger.info(
-                f"Starting documentation generation for project {project_id} at {root_path}"
+            # Initialize
+            await self._broadcast_stage(
+                project_id, "started", "Initializing documentation pipeline..."
             )
-            await manager.broadcast(
-                project_id,
-                {
-                    "type": "pipeline_stage",
-                    "stage": "started",
-                    "message": "Initializing AI Agents...",
-                },
-            )
+            await asyncio.sleep(0.5)
 
-            # Callback for agents to emit thoughts
-            async def on_agent_event(event: Dict[str, Any]):
-                # Enrich with generic info if needed
-                await manager.broadcast(project_id, event)
+            # Create output directory
+            project_output_path = self.output_dir / project_id
+            project_output_path.mkdir(parents=True, exist_ok=True)
 
-            # 1. Setup Agents
-            client = LLMFactory.get_client(provider="openai", model=model)
-            miner = MinerAgent(client, on_event=on_agent_event)
-            architect = ArchitectAgent(client, on_event=on_agent_event)
-            scribe = ScribeAgent(client, on_event=on_agent_event)
+            # Get LLM client
+            client = LLMFactory.get_client(provider=provider, model=model)
+            event_handler = self._create_event_handler(project_id)
 
-            # PHASE 1: MINING
-            await manager.broadcast(
-                project_id,
-                {
-                    "type": "pipeline_stage",
-                    "stage": "mining",
-                    "message": "Mining project facts...",
-                },
-            )
-            miner_output = await self._run_miner(miner, root_path, project_id)
+            # ============== PHASE 1: MINER ==============
+            miner_output_file = project_output_path / "miner_output.json"
+            miner_output = None
 
-            # PHASE 2: PLANNING
-            logger.info("Architect is planning navigation...")
-            await manager.broadcast(
-                project_id,
-                {
-                    "type": "pipeline_stage",
-                    "stage": "planning",
-                    "message": "Architect is designing documentation structure...",
-                },
-            )
-            nav_plan = await architect.plan_navigation(miner_output)
-            if not nav_plan:
-                raise ValueError("Architect failed to generate a navigation plan.")
+            # [COST-SAVING] Check if miner output exists (Cache)
+            if miner_output_file.exists():
+                logger.info(
+                    f"[Service] Loading existing miner output from {miner_output_file}"
+                )
+                await self._broadcast_stage(
+                    project_id,
+                    "mining",
+                    "Loading cached project analysis... (Skipping expensive mining)",
+                )
+                async with aiofiles.open(miner_output_file, "r", encoding="utf-8") as f:
+                    content = await f.read()
+                    miner_output = json.loads(content)
+            else:
+                await self._broadcast_stage(
+                    project_id, "mining", "Analyzing source code..."
+                )
 
-            await manager.broadcast(
-                project_id, {"type": "plan_generated", "plan": nav_plan.model_dump()}
-            )
+                # Collect source files
+                files = await self._collect_source_files(repo_path)
+                logger.info(f"[Service] Found {len(files)} source files to analyze")
 
-            # PHASE 3: WRITING
-            logger.info("Scribe is starting to write pages...")
-            await manager.broadcast(
-                project_id,
-                {
-                    "type": "pipeline_stage",
-                    "stage": "writing",
-                    "message": "Scribe is writing documentation pages...",
-                },
-            )
-            all_modules = self._get_unique_modules(miner_output)
+                if not files:
+                    await self._broadcast_stage(
+                        project_id, "error", "No source files found in repository"
+                    )
+                    return {"status": "error", "message": "No source files found"}
 
-            # Collect all pages to write
-            pages_to_write = []
-            self._collect_pages(nav_plan.tree, pages_to_write)
+                # Run Miner on each file
+                miner = MinerAgent(client, on_event=event_handler)
+                miner_results = []
 
-            total_pages = len(pages_to_write)
+                # [PERFORMANCE] Analyze files with controlled concurrency
+                CONCURRENCY_LIMIT = 20
+                semaphore = asyncio.Semaphore(CONCURRENCY_LIMIT)
+                total_files = len(files)
 
-            # Ensure project-specific output directory
-            project_docs_dir = os.path.join(self.output_dir, project_id)
-            os.makedirs(project_docs_dir, exist_ok=True)
+                async def analyze_with_limit(idx, file_path, content):
+                    async with semaphore:
+                        await self._broadcast_progress(
+                            project_id,
+                            idx + 1,
+                            total_files,
+                            file_path,
+                            f"Analyzing: {file_path}",
+                        )
+                        return await miner.analyze_file(file_path, content)
 
-            # Save Sidebar
-            plan_data = nav_plan.model_dump()
-            await self._save_json(
-                os.path.join(project_docs_dir, "sidebar.json"), plan_data
-            )
+                tasks = [analyze_with_limit(i, f[0], f[1]) for i, f in enumerate(files)]
 
-            results = []
-            for i, page in enumerate(pages_to_write):
-                logger.info(f"[{i+1}/{total_pages}] Writing page: {page.label}")
+                # Run all tasks
+                results = await asyncio.gather(*tasks)
 
+                # Filter None results and format
+                for res in results:
+                    if res:
+                        miner_results.append(res.model_dump())
+
+                miner_output = {"results": miner_results}
+                logger.info(
+                    f"[Service] Miner completed. Analyzed {len(miner_results)} files."
+                )
+
+                # Save miner output
+                await self._save_json(miner_output_file, miner_output)
+
+            # ============== PHASE 2: ARCHITECT ==============
+            navigation_file = project_output_path / "navigation.json"
+            navigation = None
+
+            # [COST-SAVING] Check if navigation exists (Cache)
+            if navigation_file.exists():
+                logger.info(
+                    f"[Service] Loading existing navigation from {navigation_file}"
+                )
+                await self._broadcast_stage(
+                    project_id, "planning", "Loading cached documentation structure..."
+                )
+                async with aiofiles.open(navigation_file, "r", encoding="utf-8") as f:
+                    content = await f.read()
+                    navigation = json.loads(content)  # Use dict directly
+
+                    # Broadcast the plan so frontend knows intended structure
+                    await manager.broadcast(
+                        project_id,
+                        {
+                            "type": "plan_generated",
+                            "plan": {"tree": navigation["tree"]},
+                        },
+                    )
+            else:
+                await self._broadcast_stage(
+                    project_id, "planning", "Designing documentation structure..."
+                )
+
+                architect = ArchitectAgent(client, on_event=event_handler)
+                # Architect expects the dict output from miner
+                nav_obj = await architect.plan_navigation(miner_output)
+
+                if not nav_obj:
+                    await self._broadcast_stage(
+                        project_id,
+                        "error",
+                        "Failed to generate documentation structure",
+                    )
+                    return {"status": "error", "message": "Architect failed"}
+
+                # Broadcast the generated plan
                 await manager.broadcast(
                     project_id,
                     {
-                        "type": "pipeline_progress",
-                        "stage": "writing_page",
-                        "current": i + 1,
-                        "total": total_pages,
-                        "page_label": page.label,
-                        "page_id": page.id,
+                        "type": "plan_generated",
+                        "plan": {"tree": [item.model_dump() for item in nav_obj.tree]},
                     },
                 )
 
-                target_modules = self._resolve_target_modules(
-                    page.id, page.label, all_modules
-                )
-                page_type = self._determine_page_type(page.id, page.label)
+                navigation = nav_obj.model_dump()
 
-                wiki_page = await scribe.write_page(
-                    page_id=page.id,
-                    page_type=page_type,
-                    page_title=page.label,
-                    target_modules=target_modules,
-                    miner_output=miner_output,
+                # Save navigation
+                await self._save_json(navigation_file, navigation)
+
+                logger.info(
+                    f"[Service] Architect completed. Navigation has {len(nav_obj.tree)} top-level items."
                 )
 
-                if wiki_page:
-                    await self._save_json(
-                        os.path.join(project_docs_dir, f"{page.id}.json"),
-                        wiki_page.model_dump(),
+            # ============== PHASE 3: SCRIBE ==============
+            await self._broadcast_stage(
+                project_id, "writing", "Writing documentation pages..."
+            )
+
+            scribe = ScribeAgent(client, on_event=event_handler)
+            pages_dir = project_output_path / "pages"
+            pages_dir.mkdir(exist_ok=True)
+
+            # Use helper to extract pages from the dict structure (which handles both new and cached plans)
+            tree_data = (
+                navigation["tree"]
+                if isinstance(navigation, dict)
+                else [item.model_dump() for item in navigation.tree]
+            )
+            all_pages = self._get_all_pages_from_dict(tree_data)
+
+            pages_generated = 0
+
+            for idx, page_info in enumerate(all_pages):
+                page_id = page_info["id"]
+                page_title = page_info["label"]
+                target_modules = page_info["modules"]
+
+                # Check if page already exists to skip writing if needed?
+                # For now let's overwrite pages to allow content updates, or we could add another cache check here.
+                # User complaining about cost suggests we should probably skip existing pages too unless forced.
+                # But Scribe is less expensive than Miner. Let's overwrite for correctness.
+
+                await self._broadcast_progress(
+                    project_id,
+                    idx + 1,
+                    len(all_pages),
+                    page_title,
+                    f"Writing: {page_title}",
+                )
+
+                # Determine page type
+                page_type = (
+                    "architecture_overview" if "overview" in page_id.lower() else "page"
+                )
+
+                try:
+                    page_content = await scribe.write_page(
+                        page_id=page_id,
+                        page_type=page_type,
+                        page_title=page_title,
+                        target_modules=target_modules,
+                        miner_output=miner_output,
                     )
-                    results.append({"id": page.id, "status": "success"})
-                else:
-                    results.append({"id": page.id, "status": "failed"})
 
-                await asyncio.sleep(1)
+                    if page_content:
+                        # Save page as markdown
+                        page_filename = f"{page_id}.md"
+                        async with aiofiles.open(
+                            pages_dir / page_filename, "w", encoding="utf-8"
+                        ) as f:
+                            await f.write(f"# {page_content.title}\n\n")
+                            await f.write(page_content.content_markdown)
+                            if page_content.diagram_mermaid:
+                                await f.write(
+                                    f"\n\n## Diagram\n\n```mermaid\n{page_content.diagram_mermaid}\n```\n"
+                                )
+                            if page_content.related_files:
+                                await f.write(f"\n\n## Related Files\n\n")
+                                for rf in page_content.related_files:
+                                    await f.write(f"- `{rf}`\n")
 
-            await manager.broadcast(
+                        pages_generated += 1
+                        # Rate limit to be nice
+                        await asyncio.sleep(0.5)
+
+                except Exception as e:
+                    logger.error(f"Failed to write page {page_id}: {e}")
+                    # Continue with other pages
+
+            # ============== COMPLETE ==============
+            await self._broadcast_stage(
                 project_id,
-                {
-                    "type": "pipeline_stage",
-                    "stage": "completed",
-                    "message": "Documentation generation finished.",
-                },
+                "completed",
+                f"Documentation generated! {pages_generated} pages created.",
+            )
+
+            logger.info(
+                f"[Service] Documentation pipeline completed. Output: {project_output_path}"
             )
 
             return {
-                "project_id": project_id,
                 "status": "completed",
-                "docs_path": project_docs_dir,
-                "total_pages": len(pages_to_write),
-                "pages": results,
+                "project_id": project_id,
+                "output_path": str(project_output_path),
+                "pages_generated": pages_generated,
             }
 
         except Exception as e:
-            logger.error(f"Documentation generation failed for {project_id}: {str(e)}")
-            return {"project_id": project_id, "status": "failed", "error": str(e)}
+            logger.error(f"[Service] Error: {e}")
+            await self._broadcast_stage(project_id, "error", str(e))
+            raise e
 
-    def _determine_page_type(self, page_id: str, label: str) -> str:
-        """Determines if a page is an overview or a reference."""
-        if (
-            "overview" in page_id
-            or "architecture" in label.lower()
-            or "intro" in label.lower()
-        ):
-            return "architecture_overview"
-        return "module_reference"
+    async def _collect_source_files(self, repo_path: str) -> List[tuple]:
+        """
+        Collects source files from the repository using async file reading.
+        [COST-SAVING] Strictly skips defined directories to avoid scanning dependencies.
+        Returns list of (relative_path, content) tuples.
+        """
+        files = []
+        repo = Path(repo_path)
 
-    async def _run_miner(
-        self, miner: MinerAgent, root_path: str, project_id: str
-    ) -> Dict[str, Any]:
-        """Runs the miner over the project directory."""
-        logger.info("Miner is collecting facts...")
-        files_to_analyze = await self._collect_files(root_path)
+        # Use simple os.walk first to completely prune SKIP_DIRS from traversal
+        # This is much safer than rglob for huge directories like node_modules
+        for root, dirs, filenames in os.walk(repo_path):
+            # Prune skipped directories in-place
+            dirs[:] = [d for d in dirs if d not in SKIP_DIRS and not d.startswith(".")]
 
-        total_files = len(files_to_analyze)
-        await manager.broadcast(
-            project_id,
-            {
-                "type": "pipeline_progress",
-                "stage": "mining_files",
-                "current": 0,
-                "total": total_files,
-            },
-        )
+            for filename in filenames:
+                file_path = Path(root) / filename
 
-        # Batch process
-        all_results = []
-        batch_size = 5
-        for i in range(0, total_files, batch_size):
-            chunk = files_to_analyze[i : i + batch_size]
+                # Check extension blacklist
+                if file_path.suffix.lower() in IGNORE_EXTENSIONS:
+                    continue
 
-            await manager.broadcast(
-                project_id,
-                {
-                    "type": "pipeline_progress",
-                    "stage": "mining_files",
-                    "current": i,
-                    "total": total_files,
-                },
-            )
+                # Double check for hidden files
+                if filename.startswith("."):
+                    continue
 
-            batch_result = await miner.analyze_batch(chunk)
-            if batch_result:
-                all_results.extend([r.model_dump() for r in batch_result.results])
-            await asyncio.sleep(2)  # Rate limit
+                try:
+                    # Use aiofiles for non-blocking I/O
+                    async with aiofiles.open(
+                        file_path, "r", encoding="utf-8", errors="ignore"
+                    ) as f:
+                        content = await f.read()
 
-        # Final broadcast
-        await manager.broadcast(
-            project_id,
-            {
-                "type": "pipeline_progress",
-                "stage": "mining_files",
-                "current": total_files,
-                "total": total_files,
-            },
-        )
+                    # Check for null bytes (binary file)
+                    if "\0" in content:
+                        continue
 
-        return {"total_files": total_files, "results": all_results}
+                    # Skip very large files (> 50KB) - Costs protection
+                    if len(content) > 50000:
+                        continue
 
-    async def _collect_files(self, root_path: str) -> List[Tuple[str, str]]:
-        """Scans directory and returns list of (rel_path, content)."""
-        collected = []
-        for root, _, files in os.walk(root_path):
-            if any(skip in root for skip in ["__pycache__", ".venv", "tests", ".git"]):
-                continue
-            for file in files:
-                if file.endswith(".py") and file != "__init__.py":
-                    await self._process_single_file(root_path, root, file, collected)
-        return collected
+                    relative_path = str(file_path.relative_to(repo))
+                    files.append((relative_path, content))
 
-    async def _process_single_file(
-        self, root_path: str, root: str, file: str, collected: list
-    ):
-        """Reads a single file and adds to collection if not empty."""
-        full_path = os.path.join(root, file)
-        rel_path = os.path.relpath(full_path, root_path)
-        try:
-            async with aiofiles.open(full_path, "r", encoding="utf-8") as f:
-                content = await f.read()
-            if content.strip():
-                collected.append((rel_path, content))
-        except Exception as e:
-            logger.warning(f"Could not read {rel_path}: {e}")
+                    # [COST-SAVING] HARD LIMIT for safety if things go wrong again
+                    if len(files) > 200:
+                        logger.warning(
+                            "Reached safety limit of 200 files. Stopping collection to save costs."
+                        )
+                        return files
 
-    def _collect_pages(self, nodes: List[Any], pages: List[Any]):
-        """Recursively collects all 'page' nodes from the tree."""
-        for node in nodes:
-            if node.type == "page":
-                pages.append(node)
-            if node.children:
-                self._collect_pages(node.children, pages)
+                except Exception as e:
+                    logger.warning(f"Could not read {file_path}: {e}")
 
-    def _get_unique_modules(self, miner_output: Dict[str, Any]) -> List[str]:
-        """Extracts unique set of module names (parent directories)."""
-        all_modules = {
-            os.path.dirname(item.get("file", ""))
-            for item in miner_output.get("results", [])
-            if os.path.dirname(item.get("file", ""))
-        }
-        return list(all_modules)
+        return files
 
-    def _resolve_target_modules(
-        self, page_id: str, page_title: str, all_modules: List[str]
-    ) -> List[str]:
-        """Matches a page to potential code modules using keywords."""
-        keywords = (
-            page_id.replace("-", " ").lower().split() + page_title.lower().split()
-        )
-        unique_keywords = set(k for k in keywords if len(k) > 2)
+    def _get_all_pages_from_dict(
+        self, items: List[Dict], parent_modules=None
+    ) -> List[Dict]:
+        """Recursive helper for dict-based navigation tree (used when loading cached plan)."""
+        if parent_modules is None:
+            parent_modules = []
+        pages = []
+        for item in items:
+            node_type = item.get("type")
+            node_id = item.get("id")
+            node_label = item.get("label")
+            children = item.get("children", [])
 
-        targets = []
-        for mod in all_modules:
-            if any(k in mod.lower() for k in unique_keywords):
-                targets.append(mod)
+            if node_type == "page":
+                pages.append(
+                    {
+                        "id": node_id,
+                        "label": node_label,
+                        "modules": parent_modules + ([node_id] if node_id else []),
+                    }
+                )
 
-        # Fallback for broad pages
-        if not targets and "backend" in unique_keywords:
-            return ["app"] if "app" in all_modules else all_modules[:1]
+            if children:
+                child_modules = parent_modules + ([node_id] if node_id else [])
+                pages.extend(self._get_all_pages_from_dict(children, child_modules))
+        return pages
 
-        return targets[:5]
-
-    async def _save_json(self, path: str, data: Dict[str, Any]):
-        """Saves data to a JSON file in the output directory."""
+    async def _save_json(self, path: Path, data: Dict[str, Any]):
+        """Saves data to a JSON file"""
         async with aiofiles.open(path, "w", encoding="utf-8") as f:
             await f.write(json.dumps(data, indent=2))
-        logger.info(f"Saved: {path}")
+
+    async def _broadcast_stage(self, project_id: str, stage: str, message: str):
+        """Helper to broadcast pipeline stage updates."""
+        await manager.broadcast(
+            project_id, {"type": "pipeline_stage", "stage": stage, "message": message}
+        )
+
+    async def _broadcast_progress(
+        self, project_id: str, current: int, total: int, label: str, message: str
+    ):
+        """Helper to broadcast progress updates."""
+        await manager.broadcast(
+            project_id,
+            {
+                "type": "pipeline_progress",
+                "current": current,
+                "total": total,
+                "page_label": label,
+                "message": message,
+            },
+        )
+
+    def _create_event_handler(self, project_id: str):
+        """Creates an event handler for agent callbacks."""
+
+        async def on_event(event: Dict[str, Any]):
+            # AgentExecutor emits a full event dictionary
+            if event.get("type") == "agent_thought":
+                # Ensure it has an ID and timestamp
+                if "id" not in event:
+                    event["id"] = str(uuid.uuid4())
+                if "timestamp" not in event:
+                    event["timestamp"] = asyncio.get_event_loop().time()
+                await manager.broadcast(project_id, event)
+            else:
+                # If for some reason we get something else
+                # Fallback broadcast
+                await manager.broadcast(
+                    project_id,
+                    {"type": "agent_thought", "subtype": "unknown", "data": event},
+                )
+
+        return on_event
+
+
+# Global instance
+documentation_service = DocumentationService()
