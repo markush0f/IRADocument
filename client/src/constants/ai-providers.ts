@@ -4,9 +4,17 @@ export const AI_PROVIDERS: Record<AIProviderId, AIProvider> = {
     openai: {
         name: 'OpenAI',
         models: [
-            { id: 'gpt-4', name: 'GPT-4', recommended: true },
+            { id: 'gpt-4o-mini', name: 'GPT-4o Mini', recommended: true },
+            { id: 'gpt-4o', name: 'GPT-4o' },
             { id: 'gpt-4-turbo', name: 'GPT-4 Turbo' },
             { id: 'gpt-3.5-turbo', name: 'GPT-3.5 Turbo' },
+        ]
+    },
+    gemini: {
+        name: 'Google Gemini',
+        models: [
+            { id: 'gemini-1.5-flash', name: 'Gemini 1.5 Flash', recommended: true },
+            { id: 'gemini-pro', name: 'Gemini Pro' },
         ]
     },
     ollama: {

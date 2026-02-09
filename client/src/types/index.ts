@@ -128,6 +128,7 @@ export interface GithubRepo {
     language: string;
     created_at: string;
     updated_at: string;
+    html_url: string;
 }
 
 export interface AIModel {
@@ -146,4 +147,4 @@ export interface AnalysisOptions {
     tree: boolean;
 }
 
-export type AIProviderId = 'openai' | 'ollama';
+export type AIProviderId = 'openai' | 'ollama' | 'gemini';

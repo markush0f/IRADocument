@@ -158,14 +158,21 @@ export const AnalysisProvider: React.FC<{ children: ReactNode }> = ({ children }
             console.log('[Frontend] WebSocket ready check:', wsRef.current?.readyState);
 
             // 3. Trigger simulation via API
-            console.log(`[Frontend] Triggering simulation via POST to ${API_BASE_URL}/simulate/documentation`);
-            const response = await fetch(`${API_BASE_URL}/simulate/documentation`, {
+            // 3. Trigger documentation generation via API
+            const endpoint = `${API_BASE_URL}/documentation/generate`;
+            console.log(`[Frontend] Triggering generation via POST to ${endpoint}`);
+            
+            const response = await fetch(endpoint, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    project_id: repoDetails?.name || 'simulation_demo'
+                    project_id: repoDetails?.name,
+                    repo_url: repoDetails?.html_url, // Assuming standard GitHub API structure
+                    branch: selectedBranch || 'main',
+                    provider: selectedProvider || 'openai',
+                    model: selectedModel || 'gpt-4o-mini'
                 }),
             });
 
