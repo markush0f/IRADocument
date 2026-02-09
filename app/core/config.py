@@ -17,6 +17,9 @@ class Settings(BaseSettings):
     # OpenAI Configuration
     openai_api_key: str | None = None
 
+    # Gemini Configuration
+    gemini_api_key: str | None = None
+
     model_config = SettingsConfigDict(
         env_file=".env", env_prefix="IRA_", extra="ignore"
     )

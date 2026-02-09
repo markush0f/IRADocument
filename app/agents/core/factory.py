@@ -19,6 +19,13 @@ class LLMFactory:
                 model=kwargs.get("model", "gpt-4o-mini"),
                 api_key=kwargs.get("api_key") or settings.openai_api_key,
             )
+        elif provider == "gemini":
+            from .gemini_client import GeminiClient
+
+            return GeminiClient(
+                api_key=kwargs.get("api_key") or settings.gemini_api_key,
+                model=kwargs.get("model", "gemini-1.5-flash"),
+            )
         # More models can be added here
         else:
             raise ValueError(f"Unsupported LLM provider: {provider}")
