@@ -13,6 +13,18 @@ from typing import Dict, Any, Optional, List, Tuple, Callable
 
 
 class MinerAgent:
+    """
+    The Miner Agent creates 'Atomic Facts' from source code.
+
+    It wraps an AgentExecutor to facilitate LLM interaction with a specific
+    system prompt and toolset designed for code analysis.
+
+    Key Responsibilities:
+    - Analyze individual or batched source files.
+    - extract structured 'MinerOutput' containing conclusions about the code.
+    - Ensure isolation between file analyses to prevent context leakage and high token costs.
+    """
+
     def __init__(self, client: BaseLLMClient, on_event: Optional[Callable] = None):
         self.client = client
         self.executor = AgentExecutor(client=client, on_event=on_event)
@@ -22,7 +34,13 @@ class MinerAgent:
         self, file_path: str, file_content: str
     ) -> Optional[MinerOutput]:
         """
-        Analyzes a single file and extracts conclusions using Tool Calling.
+        Analyzes a single source file to extract key architectural conclusions.
+
+        This method:
+        1. Resets the executor state to ensure a clean context window (CRITICAL for cost).
+        2. Injects the file content into the prompt.
+        3. Forces the LLM to use the `submit_conclusions` tool.
+        4. Returns the structured output or attempts a fallback parsing if tool calling fails.
         """
         # CRITICAL: Reset executor state to prevent message accumulation across files
         # Without this, each file analysis carries the ENTIRE history of all previous files,

@@ -81,6 +81,20 @@ IGNORE_EXTENSIONS = {
 
 
 class DocumentationService:
+    """
+    Orchestrates the AI Documentation Pipeline.
+
+    This service manages the lifecycle of documentation generation, including:
+    1. Source Code Mining: Extracting facts using MinerAgent.
+    2. Architecture Planning: Structuring content using ArchitectAgent.
+    3. Content Writing: Generating pages using ScribeAgent.
+
+    It implements critical safety mechanisms:
+    - Token counting and Cost Estimation (aborting if > $0.50).
+    - Rate Limit protection (concurrency control).
+    - Caching (resuming from existing JSON outputs).
+    """
+
     def __init__(self):
         self.output_dir = Path("output/docs")
 
@@ -93,7 +107,18 @@ class DocumentationService:
     ) -> Dict[str, Any]:
         """
         Executes the full Triad pipeline (Miner -> Architect -> Scribe) for a project.
-        Includes caching logic to resume from previous steps if output files exist.
+
+        Args:
+            project_id: Unique identifier for the project session.
+            repo_path: Local filesystem path to the repository root.
+            provider: LLM provider id (openai, gemini, ollama).
+            model: Specific model name (e.g., gpt-4o-mini, gemini-1.5-flash).
+
+        Returns:
+            Dict containing status, output path, and statistics.
+
+        Raises:
+            Exception: If cost safety checks fail or critical errors occur.
         """
         logger.info(f"[Service] Starting documentation generation for {project_id}")
 

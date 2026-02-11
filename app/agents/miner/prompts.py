@@ -1,3 +1,9 @@
+"""
+This module defines the System Prompt for the Miner Agent.
+The Miner Agent is responsible for analyzing source code files and extracting
+'Atomic Facts' or conclusions about their functionality, architecture, and implementation details.
+"""
+
 MINER_SYSTEM_PROMPT = """
 You are The Miner, the Foundation Layer of a documentation engine.
 Your goal is Atomic Extraction: Identify facts with architectural or business significance from code.
