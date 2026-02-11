@@ -24,6 +24,13 @@ class MinerAgent:
         """
         Analyzes a single file and extracts conclusions using Tool Calling.
         """
+        # CRITICAL: Reset executor state to prevent message accumulation across files
+        # Without this, each file analysis carries the ENTIRE history of all previous files,
+        # causing token usage to grow exponentially and multiply costs dramatically.
+        self.executor.set_system_prompt(MINER_SYSTEM_PROMPT)
+        self.executor.tools_definitions = []
+        self.executor.tools_registry = {}
+
         user_message = (
             f"File Context:\nPath: {file_path}\nContent:\n```\n{file_content}\n```"
         )

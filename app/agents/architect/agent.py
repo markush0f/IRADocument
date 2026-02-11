@@ -177,7 +177,7 @@ class ArchitectAgent:
 
         # Context safety limit
         max_context_chars = (
-            60000  # Approx 15k tokens. Safe for gpt-4o-mini (128k) but good practice.
+            60000 
         )
         if len(relevant_facts) > max_context_chars:
             logger.warning(

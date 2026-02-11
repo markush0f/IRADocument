@@ -9,11 +9,12 @@ import type {
     SocketMessage
 } from '../types';
 
-const API_BASE_URL = ''; // Use empty string for relative paths (proxied)
+const API_BASE_URL = 'http://localhost:8000'; // Point to FastAPI backend
 // Calculate WS URL dynamically based on project_id
 const getWsUrl = (projectId: string) => {
-    const protocol = globalThis.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    return `${protocol}//${globalThis.location.host}/ws/${projectId}`;
+    // For development, hardcode to backend port 8000
+    // In production, this would be relative or configurable
+    return `ws://localhost:8000/ws/${projectId}`;
 };
 
 interface AnalysisState {

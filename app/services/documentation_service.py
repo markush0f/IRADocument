@@ -12,6 +12,7 @@ from app.agents.architect.agent import ArchitectAgent
 from app.agents.scribe.agent import ScribeAgent
 from app.core.logger import get_logger
 from app.core.socket_manager import manager
+from app.core.tokenizer import Tokenizer
 
 logger = get_logger(__name__)
 
@@ -143,17 +144,43 @@ class DocumentationService:
                     )
                     return {"status": "error", "message": "No source files found"}
 
+                # [COST-SAFETY] Calculate projected cost BEFORE execution
+                total_tokens = 0
+                for _, content in files:
+                    total_tokens += Tokenizer.count(content)
+
+                # Pricing for gpt-4o-mini (conservative estimate: input + expected output expansion)
+                # Input: $0.15 / 1M tokens
+                # Let's assume input is dominant factor for mining.
+                estimated_cost = (total_tokens / 1_000_000) * 0.15
+
+                MAX_COST_USD = 0.50  # Hard limit of 50 cents per run
+
+                logger.info(
+                    f"[Safety] Total tokens to analyze: {total_tokens}. Estimated input cost: ${estimated_cost:.4f}"
+                )
+
+                if estimated_cost > MAX_COST_USD:
+                    msg = f"SAFETY BREAK: Estimated cost ${estimated_cost:.2f} exceeds limit of ${MAX_COST_USD}"
+                    logger.error(msg)
+                    await self._broadcast_stage(project_id, "error", msg)
+                    return {"status": "error", "message": msg}
+
                 # Run Miner on each file
                 miner = MinerAgent(client, on_event=event_handler)
                 miner_results = []
 
                 # [PERFORMANCE] Analyze files with controlled concurrency
-                CONCURRENCY_LIMIT = 20
+                # Increased to 10 for Gemini Flash high throughput (1000 RPM)
+                CONCURRENCY_LIMIT = 10
                 semaphore = asyncio.Semaphore(CONCURRENCY_LIMIT)
                 total_files = len(files)
 
                 async def analyze_with_limit(idx, file_path, content):
                     async with semaphore:
+                        # Minimal delay for stability
+                        await asyncio.sleep(0.5)
+
                         await self._broadcast_progress(
                             project_id,
                             idx + 1,

@@ -122,8 +122,41 @@ class GeminiClient(BaseLLMClient):
         )
 
     async def process_messages(self, messages, tools=None):
-        # Basic implementation, can be expanded for tool calling
-        return await self.generate_response(messages)
+        """
+        Process messages and return OpenAI-compatible response dict.
+        """
+        # If tools are provided, we need to instruct Gemini to use JSON mode for tool calls
+        # because we are using a simplified tool calling mechanism via parsing.
+        if tools:
+            import copy
+
+            # Create a copy to avoid mutating the original message history
+            messages = copy.deepcopy(messages)
+
+            # Inject tool definitions into system prompt or user message
+            tools_desc = "\n".join(
+                [
+                    f"- {t['function']['name']}: {t['function']['description']}"
+                    for t in tools
+                ]
+            )
+            tool_instruction = (
+                f"\n\nAVAILABLE TOOLS:\n{tools_desc}\n\n"
+                "To use a tool, you MUST respond with a valid JSON object in this format:\n"
+                '```json\n{"function": "tool_name", "arguments": {"arg": "value"}}\n```\n'
+                "Do not add any other text outside the JSON block if you are calling a tool."
+            )
+
+            # Find the last user message to append instructions
+            for i in range(len(messages) - 1, -1, -1):
+                if messages[i]["role"] == "user":
+                    messages[i]["content"] += tool_instruction
+                    break
+
+        response_text = await self.generate_response(messages)
+
+        # Return dict compatible with AgentExecutor
+        return {"role": "assistant", "content": response_text}
 
     async def stream_generate(self, messages, **kwargs):
         # Streaming not implemented in this basic client yet
