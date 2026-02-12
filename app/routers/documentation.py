@@ -21,7 +21,7 @@ class DocumentationRequest(BaseModel):
     repo_path: Optional[str] = None
     branch: str = "main"
     provider: str = "openai"
-    model: Optional[str] = "gpt-4o-mini"  # or ollama/llama2
+    model: Optional[str] = "gpt-4o-mini"
 
 
 class DocumentationResponse(BaseModel):
@@ -81,8 +81,6 @@ async def generate_documentation(
         )
 
     # 3. Start pipeline in background
-    # We use asyncio.create_task to ensure it runs independently of the request scope
-    # properly within the async loop. BackgroundTasks is standard FastAPI.
     background_tasks.add_task(
         documentation_service.generate_documentation,
         project_id=project_id,

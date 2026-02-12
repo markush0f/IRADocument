@@ -31,17 +31,43 @@ class ScribeAgent:
     async def _prepare_facts(
         self, modules_map: Dict[str, List[Any]], target_modules: List[str]
     ) -> str:
-        """Concatenate facts for the target modules."""
+        """Concatenate facts for the target modules.
+        Uses fuzzy matching because target_modules are page IDs (e.g. 'modules-scanner')
+        while modules_map keys are directory paths (e.g. 'ira/app/modules/scanner').
+        """
         text = ""
-        for mod in target_modules:
-            if mod in modules_map:
-                text += f"=== MODULE: {mod} ===\n"
-                for f in modules_map[mod]:
-                    fname = os.path.basename(f.get("file", ""))
+
+        for mod_target in target_modules:
+            # Normalize the target: 'modules-scanner' -> ['modules', 'scanner']
+            target_parts = mod_target.lower().replace("_", "-").split("-")
+
+            for mod_key, mod_files in modules_map.items():
+                # Normalize the module path: 'ira/app/modules/scanner' -> ['ira', 'app', 'modules', 'scanner']
+                key_parts = mod_key.lower().replace("\\", "/").split("/")
+
+                # Match if ALL target parts appear in the key path
+                if all(part in key_parts for part in target_parts):
+                    text += f"=== MODULE: {mod_key} ===\n"
+                    for f in mod_files:
+                        fname = f.get("file", "")
+                        text += f"\nFILE: {fname}\n"
+                        for c in f.get("conclusions", []):
+                            text += f"- [{c.get('topic')}]: {c.get('statement')}\n"
+
+        # Fallback: if no matches found, include ALL facts so the LLM has something to work with
+        if not text:
+            logger.warning(
+                f"No matching modules found for targets: {target_modules}. "
+                f"Available modules: {list(modules_map.keys())}. Including all facts."
+            )
+            for mod_key, mod_files in modules_map.items():
+                text += f"=== MODULE: {mod_key} ===\n"
+                for f in mod_files:
+                    fname = f.get("file", "")
                     text += f"\nFILE: {fname}\n"
-                    # Add facts
                     for c in f.get("conclusions", []):
                         text += f"- [{c.get('topic')}]: {c.get('statement')}\n"
+
         return text
 
     async def write_page(

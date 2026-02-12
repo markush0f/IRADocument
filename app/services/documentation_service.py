@@ -39,12 +39,16 @@ SKIP_DIRS = {
     "assets",
 }
 
-# [COST-SAVING] Extensions to ignore (Binary, lockfiles, maps, logs)
+# [COST-SAVING] Extensions to ignore (Binary, lockfiles, maps, logs, non-code text)
 IGNORE_EXTENSIONS = {
     ".lock",
     ".json-lock",
     ".map",
     ".log",
+    ".md",
+    ".txt",
+    ".rst",
+    ".csv",
     ".png",
     ".jpg",
     ".jpeg",
@@ -196,15 +200,18 @@ class DocumentationService:
                 miner_results = []
 
                 # [PERFORMANCE] Analyze files with controlled concurrency
-                # Increased to 10 for Gemini Flash high throughput (1000 RPM)
-                CONCURRENCY_LIMIT = 10
+                # Reduced to 2 to respect Free Tier Limits (which can be strict on recent models)
+                CONCURRENCY_LIMIT = 2
                 semaphore = asyncio.Semaphore(CONCURRENCY_LIMIT)
                 total_files = len(files)
 
                 async def analyze_with_limit(idx, file_path, content):
                     async with semaphore:
-                        # Minimal delay for stability
-                        await asyncio.sleep(0.5)
+                        # Minimal delay for rate limit safety
+                        await asyncio.sleep(3.0)
+
+                        # [COST-SAVING] Truncate large files before sending to LLM
+                        truncated_content = Tokenizer.truncate(content, 2000)
 
                         await self._broadcast_progress(
                             project_id,
@@ -213,7 +220,7 @@ class DocumentationService:
                             file_path,
                             f"Analyzing: {file_path}",
                         )
-                        return await miner.analyze_file(file_path, content)
+                        return await miner.analyze_file(file_path, truncated_content)
 
                 tasks = [analyze_with_limit(i, f[0], f[1]) for i, f in enumerate(files)]
 
