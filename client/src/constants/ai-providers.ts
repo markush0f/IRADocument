@@ -13,8 +13,8 @@ export const AI_PROVIDERS: Record<AIProviderId, AIProvider> = {
     gemini: {
         name: 'Google Gemini',
         models: [
-            { id: 'gemini-1.5-flash', name: 'Gemini 1.5 Flash', recommended: true },
-            { id: 'gemini-pro', name: 'Gemini Pro' },
+            { id: 'gemini-2.0-flash-lite', name: 'Gemini 2.0 Flash Lite', recommended: true },
+            { id: 'gemini-2.0-flash', name: 'Gemini 2.0 Flash' },
         ]
     },
     ollama: {
