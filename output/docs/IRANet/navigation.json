@@ -1,0 +1,371 @@
+{
+  "project_name": "IRA Software Project",
+  "detected_subsystems": [
+    "backend",
+    "frontend",
+    "cli",
+    "infrastructure"
+  ],
+  "tree": [
+    {
+      "id": "project-overview",
+      "label": "Project Overview",
+      "type": "page",
+      "children": []
+    },
+    {
+      "id": "backend-architecture",
+      "label": "Backend Architecture",
+      "type": "category",
+      "children": [
+        {
+          "id": "backend-architecture-overview",
+          "label": "Architecture Overview",
+          "type": "page",
+          "children": []
+        },
+        {
+          "id": "backend-module-reference",
+          "label": "Module Reference",
+          "type": "category",
+          "children": [
+            {
+              "id": "ira-app",
+              "label": "ira/app",
+              "type": "page",
+              "children": []
+            },
+            {
+              "id": "ira-app-repositories",
+              "label": "ira/app/repositories",
+              "type": "page",
+              "children": []
+            },
+            {
+              "id": "ira-app-modules",
+              "label": "ira/app/modules",
+              "type": "category",
+              "children": [
+                {
+                  "id": "ira-app-modules-system",
+                  "label": "ira/app/modules/system",
+                  "type": "category",
+                  "children": [
+                    {
+                      "id": "ira-app-modules-system-packages",
+                      "label": "ira/app/modules/system/packages",
+                      "type": "page",
+                      "children": []
+                    },
+                    {
+                      "id": "ira-app-modules-systemd-simple",
+                      "label": "ira/app/modules/systemd/simple",
+                      "type": "page",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "id": "ira-app-modules-types",
+                  "label": "ira/app/modules/types",
+                  "type": "page",
+                  "children": []
+                },
+                {
+                  "id": "ira-app-modules-services",
+                  "label": "ira/app/modules/services",
+                  "type": "page",
+                  "children": []
+                },
+                {
+                  "id": "ira-app-modules-scanner",
+                  "label": "ira/app/modules/scanner",
+                  "type": "page",
+                  "children": []
+                },
+                {
+                  "id": "ira-app-modules-internet",
+                  "label": "ira/app/modules/internet",
+                  "type": "page",
+                  "children": []
+                },
+                {
+                  "id": "ira-app-modules-common",
+                  "label": "ira/app/modules/common",
+                  "type": "page",
+                  "children": []
+                },
+                {
+                  "id": "ira-app-modules-processes-top",
+                  "label": "ira/app/modules/processes/top",
+                  "type": "page",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "ira-app-services",
+              "label": "ira/app/services",
+              "type": "category",
+              "children": [
+                {
+                  "id": "ira-app-services-system",
+                  "label": "ira/app/services/system",
+                  "type": "page",
+                  "children": []
+                },
+                {
+                  "id": "ira-app-services-extensions",
+                  "label": "ira/app/services/extensions",
+                  "type": "page",
+                  "children": []
+                },
+                {
+                  "id": "ira-app-services-collector",
+                  "label": "ira/app/services/collector",
+                  "type": "page",
+                  "children": []
+                },
+                {
+                  "id": "ira-app-services-applications",
+                  "label": "ira/app/services/applications",
+                  "type": "page",
+                  "children": []
+                },
+                {
+                  "id": "ira-app-services-internet",
+                  "label": "ira/app/services/internet",
+                  "type": "page",
+                  "children": []
+                },
+                {
+                  "id": "ira-app-services-clasification",
+                  "label": "ira/app/services/clasification",
+                  "type": "page",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "ira-app-extensions-ai_chat",
+              "label": "ira/app/extensions/ai_chat",
+              "type": "category",
+              "children": [
+                {
+                  "id": "ira-app-extensions-ai_chat-tools",
+                  "label": "ira/app/extensions/ai_chat/tools",
+                  "type": "page",
+                  "children": []
+                },
+                {
+                  "id": "ira-app-extensions-ai_chat-services",
+                  "label": "ira/app/extensions/ai_chat/services",
+                  "type": "page",
+                  "children": []
+                },
+                {
+                  "id": "ira-app-extensions-ai_chat-core",
+                  "label": "ira/app/extensions/ai_chat/core",
+                  "type": "category",
+                  "children": [
+                    {
+                      "id": "ira-app-extensions-ai_chat-migrations",
+                      "label": "ira/app/extensions/ai_chat/migrations",
+                      "type": "page",
+                      "children": []
+                    },
+                    {
+                      "id": "ira-app-extensions-ai_chat-prompts",
+                      "label": "ira/app/extensions/ai_chat/prompts",
+                      "type": "page",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "ira-app-extensions-iraterm",
+              "label": "ira/app/extensions/iraterm",
+              "type": "category",
+              "children": [
+                {
+                  "id": "ira-app-extensions-iraterm-host",
+                  "label": "ira/app/extensions/iraterm/host",
+                  "type": "page",
+                  "children": []
+                },
+                {
+                  "id": "ira-app-extensions-iraterm-backend",
+                  "label": "ira/app/extensions/iraterm/backend",
+                  "type": "category",
+                  "children": [
+                    {
+                      "id": "ira-app-extensions-iraterm-backend-src",
+                      "label": "ira/app/extensions/iraterm/backend/src",
+                      "type": "category",
+                      "children": [
+                        {
+                          "id": "ira-app-extensions-iraterm-backend-src-services",
+                          "label": "ira/app/extensions/iraterm/backend/src/services",
+                          "type": "page",
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "id": "ira-app-extensions-iraterm-frontend",
+                  "label": "ira/app/extensions/iraterm/frontend",
+                  "type": "category",
+                  "children": [
+                    {
+                      "id": "ira-app-extensions-iraterm-frontend-src",
+                      "label": "ira/app/extensions/iraterm/frontend/src",
+                      "type": "category",
+                      "children": [
+                        {
+                          "id": "ira-app-extensions-iraterm-frontend-src-components",
+                          "label": "ira/app/extensions/iraterm/frontend/src/components",
+                          "type": "page",
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "ira-app-api",
+              "label": "ira/app/api",
+              "type": "page",
+              "children": []
+            },
+            {
+              "id": "ira-app-config",
+              "label": "ira/app/config",
+              "type": "page",
+              "children": []
+            },
+            {
+              "id": "ira-app-sql-application",
+              "label": "ira/app/sql/application",
+              "type": "page",
+              "children": []
+            },
+            {
+              "id": "ira-app-shared",
+              "label": "ira/app/shared",
+              "type": "page",
+              "children": []
+            },
+            {
+              "id": "ira-app-models-dto",
+              "label": "ira/app/models/dto",
+              "type": "category",
+              "children": [
+                {
+                  "id": "ira-app-models-entities",
+                  "label": "ira/app/models/entities",
+                  "type": "page",
+                  "children": []
+                },
+                {
+                  "id": "ira-app-models-requests",
+                  "label": "ira/app/models/requests",
+                  "type": "page",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "ira-app-core",
+              "label": "ira/app/core",
+              "type": "page",
+              "children": []
+            },
+            {
+              "id": "ira-app-infrastructure-docker",
+              "label": "ira/app/infrastructure/docker",
+              "type": "page",
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "frontend-architecture",
+          "label": "Frontend App",
+          "type": "category",
+          "children": [
+            {
+              "id": "frontend-architecture-overview",
+              "label": "Architecture Overview",
+              "type": "page",
+              "children": []
+            },
+            {
+              "id": "frontend-module-reference",
+              "label": "Module Reference",
+              "type": "category",
+              "children": [
+                {
+                  "id": "frontend-src",
+                  "label": "frontend/src",
+                  "type": "category",
+                  "children": [
+                    {
+                      "id": "frontend-src-services",
+                      "label": "frontend/src/services",
+                      "type": "page",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "cli-tools-architecture",
+          "label": "CLI Tools",
+          "type": "category",
+          "children": [
+            {
+              "id": "cli-tools-architecture-overview",
+              "label": "Architecture Overview",
+              "type": "page",
+              "children": []
+            },
+            {
+              "id": "cli-tools-module-reference",
+              "label": "Module Reference",
+              "type": "page",
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "docker-infrastructure-architecture",
+          "label": "Docker Infrastructure",
+          "type": "category",
+          "children": [
+            {
+              "id": "docker-infrastructure-architecture-overview",
+              "label": "Architecture Overview",
+              "type": "page",
+              "children": []
+            },
+            {
+              "id": "docker-infrastructure-module-reference",
+              "label": "Module Reference",
+              "type": "page",
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
