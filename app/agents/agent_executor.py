@@ -33,7 +33,7 @@ class AgentExecutor:
 
         Args:
             definition: A dictionary containing the tool's JSON schema (name, description, parameters).
-                      Must follow the OpenAI/Ollama tool calling format.
+                      Must follow the OpenAI/Ollama... tool calling format.
             func: The callable Python function or coroutine that implements the tool's logic.
         """
         name = definition["function"]["name"]
@@ -115,7 +115,7 @@ class AgentExecutor:
 
         return response_message
 
-    async def run_until_complete(self, max_iterations: int = 5) -> str:
+    async def run_until_complete(self, max_iterations: int = 2) -> str:
         """
         Runs multiple steps until the agent provides a final text response without tool calls.
         """
