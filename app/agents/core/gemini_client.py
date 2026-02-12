@@ -8,10 +8,10 @@ logger = get_logger(__name__)
 
 
 class GeminiClient(BaseLLMClient):
-    def __init__(self, api_key: str, model: str = "gemini-1.5-flash"):
+    def __init__(self, api_key: str, model: str = "gemini-2.0-flash-lite"):
         """
         Initialize Gemini client.
-        Default model is 'gemini-1.5-flash' for speed/cost efficiency.
+        Default model is 'gemini-2.0-flash-lite' for speed/cost efficiency.
         """
         if not api_key:
             raise ValueError("GEMINI_API_KEY is required for GeminiClient")
@@ -81,14 +81,28 @@ class GeminiClient(BaseLLMClient):
                 ),
             )
 
-            # Generate
-            response = await self.client.generate_content_async(
-                contents=chat_history,
-                generation_config=generation_config,
-                safety_settings=self.safety_settings,
-            )
+            # Retry with exponential backoff for rate limit errors (429)
+            import asyncio
 
-            return response.text
+            max_retries = 3
+            for attempt in range(max_retries):
+                try:
+                    response = await self.client.generate_content_async(
+                        contents=chat_history,
+                        generation_config=generation_config,
+                        safety_settings=self.safety_settings,
+                    )
+                    return response.text
+                except Exception as retry_err:
+                    if "429" in str(retry_err) and attempt < max_retries - 1:
+                        wait_time = (attempt + 1) * 5
+                        logger.warning(
+                            f"Rate limited (429). Retrying in {wait_time}s "
+                            f"(attempt {attempt + 1}/{max_retries})"
+                        )
+                        await asyncio.sleep(wait_time)
+                    else:
+                        raise retry_err
 
         except Exception as e:
             logger.error(f"Gemini generation error: {e}")
