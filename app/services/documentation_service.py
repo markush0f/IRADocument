@@ -16,72 +16,7 @@ from app.core.tokenizer import Tokenizer
 
 logger = get_logger(__name__)
 
-# [COST-SAVING] Directories to skip - CRITICAL to avoid scanning dependencies
-SKIP_DIRS = {
-    "node_modules",
-    ".git",
-    "__pycache__",
-    ".venv",
-    "venv",
-    "env",
-    "dist",
-    "build",
-    ".next",
-    ".cache",
-    "coverage",
-    ".pytest_cache",
-    ".idea",
-    ".vscode",
-    "tmp",
-    "temp",
-    "logs",
-    "public",
-    "assets",
-}
-
-# [COST-SAVING] Extensions to ignore (Binary, lockfiles, maps, logs, non-code text)
-IGNORE_EXTENSIONS = {
-    ".lock",
-    ".json-lock",
-    ".map",
-    ".log",
-    ".md",
-    ".txt",
-    ".rst",
-    ".csv",
-    ".png",
-    ".jpg",
-    ".jpeg",
-    ".gif",
-    ".svg",
-    ".ico",
-    ".woff",
-    ".woff2",
-    ".ttf",
-    ".eot",
-    ".mp4",
-    ".mp3",
-    ".zip",
-    ".tar",
-    ".gz",
-    ".pyc",
-    ".class",
-    ".o",
-    ".obj",
-    ".dll",
-    ".exe",
-    ".so",
-    ".dylib",
-    ".pdf",
-    ".doc",
-    ".docx",
-    ".xls",
-    ".xlsx",
-    ".ppt",
-    ".pptx",
-    ".min.js",
-    ".min.css",
-}
+from app.core.constants import SKIP_DIRS, IGNORE_EXTENSIONS
 
 
 class DocumentationService:
@@ -115,7 +50,7 @@ class DocumentationService:
         Args:
             project_id: Unique identifier for the project session.
             repo_path: Local filesystem path to the repository root.
-            provider: LLM provider id (openai, gemini, ollama).
+            provider: LLM provider id (openai, gemini, ollama...s).
             model: Specific model name (e.g., gpt-4o-mini, gemini-1.5-flash).
 
         Returns:
@@ -145,7 +80,7 @@ class DocumentationService:
             miner_output_file = project_output_path / "miner_output.json"
             miner_output = None
 
-            # [COST-SAVING] Check if miner output exists (Cache)
+            #  Check if miner output exists (Cache)
             if miner_output_file.exists():
                 logger.info(
                     f"[Service] Loading existing miner output from {miner_output_file}"
@@ -173,17 +108,13 @@ class DocumentationService:
                     )
                     return {"status": "error", "message": "No source files found"}
 
-                # [COST-SAFETY] Calculate projected cost BEFORE execution
                 total_tokens = 0
                 for _, content in files:
                     total_tokens += Tokenizer.count(content)
 
-                # Pricing for gpt-4o-mini (conservative estimate: input + expected output expansion)
-                # Input: $0.15 / 1M tokens
-                # Let's assume input is dominant factor for mining.
                 estimated_cost = (total_tokens / 1_000_000) * 0.15
 
-                MAX_COST_USD = 0.50  # Hard limit of 50 cents per run
+                MAX_COST_USD = 0.50
 
                 logger.info(
                     f"[Safety] Total tokens to analyze: {total_tokens}. Estimated input cost: ${estimated_cost:.4f}"
@@ -195,12 +126,9 @@ class DocumentationService:
                     await self._broadcast_stage(project_id, "error", msg)
                     return {"status": "error", "message": msg}
 
-                # Run Miner on each file
                 miner = MinerAgent(client, on_event=event_handler)
                 miner_results = []
 
-                # [PERFORMANCE] Analyze files with controlled concurrency
-                # Reduced to 2 to respect Free Tier Limits (which can be strict on recent models)
                 CONCURRENCY_LIMIT = 2
                 semaphore = asyncio.Semaphore(CONCURRENCY_LIMIT)
                 total_files = len(files)
@@ -378,7 +306,6 @@ class DocumentationService:
                     logger.error(f"Failed to write page {page_id}: {e}")
                     # Continue with other pages
 
-            # ============== COMPLETE ==============
             await self._broadcast_stage(
                 project_id,
                 "completed",
@@ -404,8 +331,6 @@ class DocumentationService:
     async def _collect_source_files(self, repo_path: str) -> List[tuple]:
         """
         Collects source files from the repository using async file reading.
-        [COST-SAVING] Strictly skips defined directories to avoid scanning dependencies.
-        Returns list of (relative_path, content) tuples.
         """
         files = []
         repo = Path(repo_path)
