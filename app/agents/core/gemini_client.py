@@ -8,10 +8,10 @@ logger = get_logger(__name__)
 
 
 class GeminiClient(BaseLLMClient):
-    def __init__(self, api_key: str, model: str = "gemini-2.0-flash-lite"):
+    def __init__(self, api_key: str, model: str = "gemini-pro-latest"):
         """
         Initialize Gemini client.
-        Default model is 'gemini-2.0-flash-lite' for speed/cost efficiency.
+        Default is 'gemini-pro-latest' (available in your account).
         """
         if not api_key:
             raise ValueError("GEMINI_API_KEY is required for GeminiClient")

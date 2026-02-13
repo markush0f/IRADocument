@@ -24,7 +24,7 @@ class LLMFactory:
 
             return GeminiClient(
                 api_key=kwargs.get("api_key") or settings.gemini_api_key,
-                model=kwargs.get("model", "gemini-2.0-flash-lite"),
+                model=kwargs.get("model", "gemini-pro-latest"),
             )
         # More models can be added here
         else:
