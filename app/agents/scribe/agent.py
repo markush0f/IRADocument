@@ -54,19 +54,12 @@ class ScribeAgent:
                         for c in f.get("conclusions", []):
                             text += f"- [{c.get('topic')}]: {c.get('statement')}\n"
 
-        # Fallback: if no matches found, include ALL facts so the LLM has something to work with
+        # Fallback: if no matches found, do NOT include all facts to save cost.
         if not text:
+            text = "No specific technical facts found for this module."
             logger.warning(
-                f"No matching modules found for targets: {target_modules}. "
-                f"Available modules: {list(modules_map.keys())}. Including all facts."
+                f"No matching modules found for targets: {target_modules}. Sending empty context."
             )
-            for mod_key, mod_files in modules_map.items():
-                text += f"=== MODULE: {mod_key} ===\n"
-                for f in mod_files:
-                    fname = f.get("file", "")
-                    text += f"\nFILE: {fname}\n"
-                    for c in f.get("conclusions", []):
-                        text += f"- [{c.get('topic')}]: {c.get('statement')}\n"
 
         return text
 

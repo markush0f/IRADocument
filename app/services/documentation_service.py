@@ -351,21 +351,24 @@ class DocumentationService:
                     )
 
                     if page_content:
-                        # Save page as markdown
-                        page_filename = f"{page_id}.md"
+                        # Save page as JSON with full metadata
+                        page_filename = f"{page_id}.json"
+
+                        # Convert WikiPageDetail to dict
+                        page_data = page_content.model_dump()
+
+                        # Add metadata if missing or fix inconsistencies
+                        if not page_data.get("id"):
+                            page_data["id"] = page_id
+
+                        # Ensure content_markdown is populated
+                        if not page_data.get("content_markdown"):
+                            page_data["content_markdown"] = "# Content not generated."
+
                         async with aiofiles.open(
                             pages_dir / page_filename, "w", encoding="utf-8"
                         ) as f:
-                            await f.write(f"# {page_content.title}\n\n")
-                            await f.write(page_content.content_markdown)
-                            if page_content.diagram_mermaid:
-                                await f.write(
-                                    f"\n\n## Diagram\n\n```mermaid\n{page_content.diagram_mermaid}\n```\n"
-                                )
-                            if page_content.related_files:
-                                await f.write(f"\n\n## Related Files\n\n")
-                                for rf in page_content.related_files:
-                                    await f.write(f"- `{rf}`\n")
+                            await f.write(json.dumps(page_data, indent=2))
 
                         pages_generated += 1
                         # Rate limit to be nice
