@@ -1,0 +1,8 @@
+{
+  "id": "extensions-modules-iraterm-backend",
+  "title": "Backend Architecture Diagram",
+  "description": "This section visually represents the architecture of the backend module for easier understanding.",
+  "content_markdown": "```mermaid\n graph TD;\n    A[Frontend Client] -->|sends data via WebSocket| B[Backend Service];\n    B[Backend Service] -->|manages extensions| C[Extension Status Service];\n    B[Backend Service] -->|interacts with| D[AI Chat Service];\n    D -->|uses| E[Model Interpreter];\n    C -->|reads| F[Port Configurations];\n    F -->|returns| G[Extension Status DTO];\n```",
+  "diagram_mermaid": null,
+  "related_files": []
+}

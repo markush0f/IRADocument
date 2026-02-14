@@ -1,0 +1,8 @@
+{
+  "id": "extensions-modules-ai_chat-tools",
+  "title": "Tools Usage Patterns",
+  "description": "Documentation of common usage patterns in the Tools module.",
+  "content_markdown": "## Common Usage Patterns\n1. **Managing Extensions**: Users can interact with extensions through the UI, utilizing buttons to enable or disable functionalities. This is commonly handled by components that communicate with API functions.\n   - Example: `ExtensionsView` component manages the state of multiple extensions, fetching current statuses and allowing users to update configurations.\n\n2. **AI Chat Functionality**: The AI chat system leverages the `ChatStorageService` to handle chat data dynamically. Users can interact in real-time, with the service managing database interactions asynchronously.\n   - Example: `ServerChatService` processes user questions, bridging responses from `ModelInterpreter` and handling session state.\n\n3. **Terminal Interactions**: The frontend utilizes WebSocket connections to interact with the backend terminal service, facilitating a responsive command-line interface.\n   - Example: `Terminal` component establishes a WebSocket connection for real-time updates, ensuring user inputs are processed immediately and outputs are displayed correctly.",
+  "diagram_mermaid": null,
+  "related_files": []
+}
